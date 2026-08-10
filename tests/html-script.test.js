@@ -14,7 +14,7 @@ for (const file of ["converter/index.html", "党項語藏文轉寫方案.html"])
 }
 const home = fs.readFileSync("converter/index.html", "utf8");
 assert.doesNotMatch(home, /http-equiv="refresh"|location\.replace/u);
-assert.match(home, /<script src="converter\.js"><\/script>/u);
+assert.match(home, /<script src="converter\.js\?v=w-hw-20260810"><\/script>/u);
 assert.match(home, /ShangguSans-Bold-core\.woff2\?v=shanggu-web-v1/u);
 assert.match(home, /shanggu-web\.css\?v=shanggu-web-v1/u);
 assert.match(home, /webfont-loader\.js\?v=shanggu-web-v1/u);
