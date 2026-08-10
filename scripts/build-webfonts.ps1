@@ -47,4 +47,12 @@ if ($LASTEXITCODE -ne 0) {
     throw "Failed to generate Shanggu Sans web subsets"
 }
 
-Write-Host "Generated complete WOFF2 webfonts and Shanggu web subsets in $outputRoot"
+$tangutFull = Join-Path $outputRoot "NotoSerifTangut-Regular.woff2"
+$tangutPage = Join-Path $outputRoot "NotoSerifTangut-Page.woff2"
+$schemePage = Join-Path $projectRoot "党項語藏文轉寫方案.html"
+& python (Join-Path $PSScriptRoot "build-tangut-page-font.py") $tangutFull $schemePage $tangutPage
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to generate the Tangut page subset"
+}
+
+Write-Host "Generated complete WOFF2 webfonts and page-optimized subsets in $outputRoot"

@@ -6,6 +6,7 @@
   <meta name="description" content="以藏文拼寫党項語的轉寫方案，基於龔勳擬音。">
   <link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
   <title>党項語藏文轉寫方案</title>
+  <link rel="preload" href="fonts/NotoSerifTangut-Page.woff2?v=tangut-page-20260810" as="font" type="font/woff2" crossorigin fetchpriority="high">
   <link rel="preload" href="fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v1" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v1" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="fonts/shanggu-web.css?v=shanggu-web-v1">
@@ -26,9 +27,16 @@
       font-weight: 600 700; font-style: normal; font-display: swap;
     }
     @font-face {
-      font-family: "Noto Serif Tangut Web";
+      font-family: "Noto Serif Tangut Page";
+      src: url("fonts/NotoSerifTangut-Page.woff2?v=tangut-page-20260810") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+      unicode-range: U+16FE0, U+17000-187FF, U+18800-18AFF, U+18D00-18DFF;
+    }
+    @font-face {
+      font-family: "Noto Serif Tangut Full";
       src: url("fonts/NotoSerifTangut-Regular.woff2?v=full-20260810") format("woff2");
       font-weight: 400; font-style: normal; font-display: swap;
+      unicode-range: U+16FE0, U+17000-187FF, U+18800-18AFF, U+18D00-18DFF;
     }
     @font-face {
       font-family: "Noto Serif Tibetan Web";
@@ -90,7 +98,7 @@
     tbody tr:hover { background: #f8fafb; }
     .phonetic { font-family: "Libertinus Sans Web", sans-serif; font-style: italic; }
     .tibetan { font-family: "Noto Serif Tibetan Web", serif; font-size: 1.35em; line-height: 1.2; }
-    .tangut { font-family: "Noto Serif Tangut Web", serif; font-size: 1.45em; }
+    .tangut { font-family: "Noto Serif Tangut Page", "Noto Serif Tangut Full", serif; font-size: 1.45em; }
     .matrix td.phonetic { color: var(--ink); }
     .matrix td.tibetan { color: #294f6d; }
     .matrix { table-layout: auto; font-size: .82rem; }
@@ -109,7 +117,7 @@
     .filter input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px #dce7ef; }
     .count { color: var(--muted); font-size: .8rem; white-space: nowrap; }
     .rhyme-table td:first-child { color: var(--accent); font-weight: 650; }
-    .rhyme-table td:nth-child(2), .rhyme-table td:nth-child(3) { font-family: "Noto Serif Tangut Web", "Libertinus Sans Web", sans-serif; }
+    .rhyme-table td:nth-child(2), .rhyme-table td:nth-child(3) { font-family: "Noto Serif Tangut Page", "Noto Serif Tangut Full", "Libertinus Sans Web", sans-serif; }
     .rhyme-table td:nth-child(-n+3) { white-space: nowrap; }
     footer { margin-top: 4rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; }
     @media (max-width: 1100px) {
@@ -417,7 +425,5 @@ R.105|1.97 𗇜||(r- -ar?)|རྸ?`}
     document.querySelector('#rhyme-filter').addEventListener('input', event => renderRhymes(event.target.value.trim().toLocaleLowerCase()));
 
   </script>
-  <script src="fonts/shanggu-web-manifest.js?v=shanggu-web-v1"></script>
-  <script src="fonts/webfont-loader.js?v=shanggu-web-v1"></script>
 </body>
 </html>

@@ -64,6 +64,8 @@ const sentenceGx = "mə̱¹ lləh² rur¹ qae̱h² ne²,";
 const sentenceTibetan = "མའྀ་དྷྀ༹ས་རྸུ་ཀྷཨེས་ནེས།";
 assert.equal(converter.gxToTibetan(sentenceGx).output, sentenceTibetan);
 assert.equal(converter.tibetanToGx(sentenceTibetan).output, sentenceGx);
+assert.equal(converter.tibetanToGx("ནེས།ཕུས").output, "ne², phu²");
+assert.equal(converter.tibetanToGx("ནེས།།ཕུས").output, "ne². phu²");
 
 const sentences = [
   ["bi̱² lhih² tśhə¹ zoh² śa².", "བའིས་ཐྷི༹ས་ཆྀ་ཟྷོས་ཤས།།"],
@@ -99,4 +101,4 @@ for (const gx of roundTrips) {
   }, `${gx} should parse and round-trip`);
 }
 
-console.log(`ok - ${examples.length + shapingPairs.length + 11 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);
+console.log(`ok - ${examples.length + shapingPairs.length + 13 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);

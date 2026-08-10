@@ -1,5 +1,5 @@
 from pathlib import Path
-import json
+import re
 import subprocess
 
 from fontTools.ttLib import TTFont
@@ -50,24 +50,21 @@ for source, output_name in checks:
 
 print(f"ok - {len(checks)} complete webfonts retain their source cmap")
 
-manifest_text = (ROOT / "fonts" / "shanggu-web-manifest.js").read_text(
-    encoding="utf-8"
-)
-manifest = json.loads(
-    manifest_text.removeprefix("window.SHANGGU_WEBFONT_CHUNKS=").removesuffix(";\n")
-)
 chunk_css = (ROOT / "fonts" / "shanggu-web.css").read_text(encoding="utf-8")
 if len(chunk_css.encode("utf-8")) >= 20_000:
     raise AssertionError("Shanggu chunk CSS grew beyond the 20 KB performance budget")
 if "font-display: swap" not in chunk_css:
     raise AssertionError("Shanggu chunk CSS must keep font-display: swap")
-for entry in manifest:
-    if entry["file"] not in chunk_css:
-        raise AssertionError(f"Chunk CSS does not reference {entry['file']}")
+css_files = set(re.findall(r'url\("shanggu-web/([^?"\)]+)\?v=', chunk_css))
+disk_files = {path.name for path in (ROOT / "fonts" / "shanggu-web").glob("*.woff2")}
+if css_files != disk_files:
+    raise AssertionError(
+        f"Shanggu CSS/file mismatch: css-only={css_files - disk_files} "
+        f"disk-only={disk_files - css_files}"
+    )
 core_bytes = sum(
-    (ROOT / "fonts" / "shanggu-web" / entry["file"].split("?", 1)[0]).stat().st_size
-    for entry in manifest
-    if entry["core"]
+    path.stat().st_size
+    for path in (ROOT / "fonts" / "shanggu-web").glob("*-core.woff2")
 )
 if core_bytes >= 150_000:
     raise AssertionError(f"Shanggu core exceeds its 150 KB budget: {core_bytes}")
@@ -78,18 +75,17 @@ page_text += (ROOT / "converter" / "converter.js").read_text(encoding="utf-8")
 for style, weight in (("Regular", 400), ("Bold", 700)):
     source = asset_root / "shanggu" / f"ShangguSans-{style}.ttf"
     source_chars = characters(source)
-    entries = [entry for entry in manifest if entry["weight"] == weight]
+    entries = sorted((ROOT / "fonts" / "shanggu-web").glob(f"ShangguSans-{style}-*.woff2"))
     chunk_union: set[int] = set()
     core_chars: set[int] = set()
     for entry in entries:
-        filename = entry["file"].split("?", 1)[0]
-        chunk_chars = characters(ROOT / "fonts" / "shanggu-web" / filename)
+        chunk_chars = characters(entry)
         overlap = chunk_union & chunk_chars
         if overlap:
             sample = min(overlap)
             raise AssertionError(f"{style} chunks overlap at U+{sample:04X}")
         chunk_union.update(chunk_chars)
-        if entry["core"]:
+        if entry.name.endswith("-core.woff2"):
             core_chars.update(chunk_chars)
     if chunk_union != source_chars:
         missing = source_chars - chunk_union
@@ -109,4 +105,26 @@ for style, weight in (("Regular", 400), ("Bold", 700)):
 print(
     f"ok - Shanggu web chunks are disjoint and retain the complete cmap; "
     f"core={core_bytes} bytes css={len(chunk_css.encode('utf-8'))} bytes"
+)
+
+tangut_full = ROOT / "fonts" / "NotoSerifTangut-Regular.woff2"
+tangut_page = ROOT / "fonts" / "NotoSerifTangut-Page.woff2"
+scheme_text = (ROOT / "党項語藏文轉寫方案.html").read_text(encoding="utf-8")
+full_tangut_chars = characters(tangut_full)
+page_tangut_chars = characters(tangut_page)
+required_tangut_chars = {
+    codepoint
+    for codepoint in ({ord(character) for character in scheme_text} & full_tangut_chars)
+    if codepoint == 0x16FE0 or 0x17000 <= codepoint <= 0x18DFF
+}
+if page_tangut_chars != required_tangut_chars:
+    raise AssertionError(
+        f"Tangut page subset mismatch: missing={len(required_tangut_chars - page_tangut_chars)} "
+        f"extra={len(page_tangut_chars - required_tangut_chars)}"
+    )
+if tangut_page.stat().st_size >= tangut_full.stat().st_size // 4:
+    raise AssertionError("Tangut page subset exceeds 25% of the complete font")
+print(
+    f"ok - Tangut page subset covers {len(page_tangut_chars)} page characters; "
+    f"page={tangut_page.stat().st_size} bytes full={tangut_full.stat().st_size} bytes"
 )

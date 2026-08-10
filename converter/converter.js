@@ -347,7 +347,7 @@
         needSpace = true;
         continue;
       }
-      if (needSpace && output.length && !/[,.]$/u.test(output[output.length - 1])) output.push(" ");
+      if (needSpace && output.length && output[output.length - 1] !== " ") output.push(" ");
       try {
         output.push(tibetanSyllableToGx(part));
       } catch (error) {
