@@ -41,4 +41,10 @@ foreach ($fontJob in $fontJobs) {
     Move-Item -LiteralPath $temporaryPath -Destination $outputPath -Force
 }
 
-Write-Host "Generated complete WOFF2 webfonts in $outputRoot"
+$shangguSourceRoot = Join-Path $assetRoot "shanggu"
+& python (Join-Path $PSScriptRoot "build-shanggu-webfonts.py") $shangguSourceRoot $projectRoot
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to generate Shanggu Sans web subsets"
+}
+
+Write-Host "Generated complete WOFF2 webfonts and Shanggu web subsets in $outputRoot"

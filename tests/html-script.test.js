@@ -15,12 +15,27 @@ for (const file of ["converter/index.html", "党項語藏文轉寫方案.html"])
 const home = fs.readFileSync("converter/index.html", "utf8");
 assert.doesNotMatch(home, /http-equiv="refresh"|location\.replace/u);
 assert.match(home, /<script src="converter\.js"><\/script>/u);
-assert.match(home, /ShangguSans-Bold\.woff2\?v=full-20260810/u);
+assert.match(home, /ShangguSans-Bold-core\.woff2\?v=shanggu-web-v1/u);
+assert.match(home, /shanggu-web\.css\?v=shanggu-web-v1/u);
+assert.match(home, /webfont-loader\.js\?v=shanggu-web-v1/u);
+assert.match(home, /data-font-warmup/u);
+assert.doesNotMatch(home, /ShangguSans-(?:Regular|Bold)\.woff2/u);
 assert.match(home, /NotoSerifTibetan-Regular\.woff2\?v=full-20260810/u);
 assert.match(home, /id="input"/u);
 assert.match(home, /id="output"/u);
 const scheme = fs.readFileSync("党項語藏文轉寫方案.html", "utf8");
 assert.doesNotMatch(scheme, /id="converter-input"|src="converter\.js"/u);
+assert.match(scheme, /shanggu-web\.css\?v=shanggu-web-v1/u);
+assert.doesNotMatch(scheme, /ShangguSans-(?:Regular|Bold)\.woff2/u);
+
+for (const file of ["fonts/webfont-loader.js", "fonts/shanggu-web-manifest.js"]) {
+  const source = fs.readFileSync(file, "utf8");
+  assert.doesNotThrow(() => new vm.Script(source), `${file} should compile`);
+}
+const loader = fs.readFileSync("fonts/webfont-loader.js", "utf8");
+assert.match(loader, /requestIdleCallback/u);
+assert.match(loader, /IntersectionObserver/u);
+assert.match(loader, /focusin/u);
 
 const root = fs.readFileSync("index.html", "utf8");
 assert.match(root, /url=converter\//u);
