@@ -11,8 +11,8 @@
   const SHAD = "།";
   const SUB_WA = "ྭ";
   const SUB_YA = "ྱ";
-  const SUB_HA = "ྷ";
   const SUB_A = "ྸ";
+  const SUPER_SA = "ས";
 
   const initials = [
     ["tśh", "ཆ"], ["tṣh", "ཆ"], ["tsh", "ཚ"],
@@ -194,16 +194,18 @@
     const base = chooseBaseInitial(parsed.main.gx);
     const spec = initialByGx.get(base === "" ? "Ø" : base);
     let onset = parsed.preinitial ? "འ" : "";
-    if (parsed.retroflex) {
-      onset += "ར";
-      onset += base === "r" || base === "Ø" ? SUB_A : subjoined.get(spec.letter);
+    if (parsed.retroflex) onset += "ར";
+    if (parsed.tight) onset += SUPER_SA;
+    if (parsed.retroflex || parsed.tight) {
+      onset += base === "Ø" || (parsed.retroflex && base === "r")
+        ? SUB_A
+        : subjoined.get(spec.letter);
     } else {
       onset += spec.letter;
     }
     if (spec.builtInWa) onset += SUB_WA;
     if (parsed.medial === "w") onset += SUB_WA;
     if (parsed.medial === "y") onset += SUB_YA;
-    if (parsed.tight) onset += SUB_HA;
     if (spec.tsaPhru) onset += TSA_PHRU;
     return onset;
   }

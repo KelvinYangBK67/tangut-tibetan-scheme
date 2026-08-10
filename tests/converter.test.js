@@ -6,9 +6,9 @@ const converter = require("../converter/converter.js");
 const examples = [
   ["nye¹", "ནྱེ"], ["phu²", "ཕུས"], ["dźə?", "ཇྀ?"],
   ["świ¹", "ཤྭི"], ["baa̱¹", "བཨ"], ["śeṃ¹", "ཤེམ"],
-  ["li̱w¹", "ལའིག༹"], ["śih²", "ཤྷིས"],
-  ["hae̱ṃ²", "ཧཨེམས"], ["ġhai̱h²", "གྷ༹ཨིས"],
-  ["rŋo̱ṃr²", "རྔའོམས"], ["llo̱ṃh²", "དྷ༹འོམས"],
+  ["li̱w¹", "ལའིག༹"], ["śih²", "སྴིས"],
+  ["hae̱ṃ²", "ཧཨེམས"], ["ġhai̱h²", "སྒ༹ཨིས"],
+  ["rŋo̱ṃr²", "རྔའོམས"], ["llo̱ṃh²", "སྡ༹འོམས"],
   ["rġhwe̱r²", "རྒྭ༹འེས"]
 ];
 
@@ -18,9 +18,8 @@ for (const [gx, tibetan] of examples) {
 }
 
 const shapingPairs = [
-  ["ད༹ྷའོམས", "དྷ༹འོམས"],
   ["རྒ༹ྭའེས", "རྒྭ༹འེས"],
-  ["ག༹ྷཨིས", "གྷ༹ཨིས"]
+  ["སྒ༹ྭཨིས", "སྒྭ༹ཨིས"]
 ];
 for (const [semanticOrder, shapingOrder] of shapingPairs) {
   assert.equal(converter.normalizeTibetan(semanticOrder), shapingOrder);
@@ -52,25 +51,27 @@ for (const [vowel, suffix] of wVowels) {
   }
 }
 const wDerivedForms = [
-  ["wah²", "ཨྭྷས"], ["hwah²", "ཧྭྷས"],
-  ["rwar?", "རྸྭ?"], ["rhwar?", "རྷྭ?"]
+  ["wah²", "སྸྭས"], ["hwah²", "སྷྭས"],
+  ["rwar?", "རྸྭ?"], ["rhwar?", "རྷྭ?"],
+  ["mbah¹", "འསྦ"], ["byah¹", "སྦྱ"], ["rbahr¹", "རསྦ"]
 ];
 for (const [gx, tibetan] of wDerivedForms) {
   assert.equal(converter.gxSyllableToTibetan(gx), tibetan, `${gx} derived forward`);
   assert.equal(converter.tibetanSyllableToGx(tibetan), gx, `${gx} derived reverse`);
 }
+assert.throws(() => converter.tibetanSyllableToGx("ཨྷི"), /不是本方案/u);
 
 const sentenceGx = "mə̱¹ lləh² rur¹ qae̱h² ne²,";
-const sentenceTibetan = "མའྀ་དྷྀ༹ས་རྸུ་ཀྷཨེས་ནེས།";
+const sentenceTibetan = "མའྀ་སྡྀ༹ས་རྸུ་སྐཨེས་ནེས།";
 assert.equal(converter.gxToTibetan(sentenceGx).output, sentenceTibetan);
 assert.equal(converter.tibetanToGx(sentenceTibetan).output, sentenceGx);
 assert.equal(converter.tibetanToGx("ནེས།ཕུས").output, "ne², phu²");
 assert.equal(converter.tibetanToGx("ནེས།།ཕུས").output, "ne². phu²");
 
 const sentences = [
-  ["bi̱² lhih² tśhə¹ zoh² śa².", "བའིས་ཐྷི༹ས་ཆྀ་ཟྷོས་ཤས།།"],
-  ["swi̱w¹ na̱¹ ẓaə̱h¹ rtṣai̱r¹ dẓae̱²,", "སྭའིག༹་ནའ་ཞྷཨྀ་རྕཨི་ཇཨེས།"],
-  ["tsa¹ da̱h² phu² bi² ŋwe̱².", "ཙ་དྷའས་ཕུས་བིས་ངྭའེས།།"]
+  ["bi̱² lhih² tśhə¹ zoh² śa².", "བའིས་སྠི༹ས་ཆྀ་སྯོས་ཤས།།"],
+  ["swi̱w¹ na̱¹ ẓaə̱h¹ rtṣai̱r¹ dẓae̱²,", "སྭའིག༹་ནའ་སྮཨྀ་རྕཨི་ཇཨེས།"],
+  ["tsa¹ da̱h² phu² bi² ŋwe̱².", "ཙ་སྡའས་ཕུས་བིས་ངྭའེས།།"]
 ];
 for (const [gx, tibetan] of sentences) {
   assert.equal(converter.gxToTibetan(gx).output, tibetan, `${gx} sentence forward`);
@@ -101,4 +102,4 @@ for (const gx of roundTrips) {
   }, `${gx} should parse and round-trip`);
 }
 
-console.log(`ok - ${examples.length + shapingPairs.length + 13 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);
+console.log(`ok - ${examples.length + shapingPairs.length + 14 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);
