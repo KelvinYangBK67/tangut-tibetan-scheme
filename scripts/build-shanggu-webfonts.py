@@ -9,7 +9,7 @@ from fontTools import subset
 from fontTools.ttLib import TTFont
 
 
-VERSION = "shanggu-web-v1"
+VERSION = "shanggu-web-v2"
 WEIGHTS = (("Regular", 400), ("Bold", 700))
 CHUNK_RANGES = (
     ("symbols", 0x0000, 0x33FF),

@@ -49,6 +49,22 @@
   ].map(([gx, tibetan, grade]) => ({ gx, tibetan, grade }));
   const vowelByGx = new Map(vowels.map(item => [item.gx, item]));
 
+  const xunpinInitials = new Map([
+    ["tśh", "tjh"], ["tṣh", "trh"], ["dź", "dj"], ["dẓ", "dr"],
+    ["tś", "tj"], ["tṣ", "tr"], ["ś", "sj"], ["ṣ", "sr"],
+    ["ź", "zj"], ["ẓ", "zr"], ["ṇ", "nr"], ["ġh", "ggh"],
+    ["ġ", "gg"], ["ŋ", "ng"], ["Ø", ""]
+  ]);
+
+  const xunpinVowels = [
+    ["ayy", "aə̱"], ["aaa", "aa̱"], ["aee", "ae̱"],
+    ["aii", "ai̱"], ["aoo", "ao̱"], ["auu", "au̱"],
+    ["aa", "a̱"], ["ee", "e̱"], ["ii", "i̱"],
+    ["oo", "o̱"], ["uu", "u̱"], ["yy", "ə̱"],
+    ["uo", "uo"], ["a", "a"], ["e", "e"], ["i", "i"],
+    ["o", "o"], ["u", "u"], ["y", "ə"]
+  ];
+
   const conditioned = {
     k: ["k", "q"], kh: ["kh", "qh"], g: ["g", "ġ"], gh: ["gh", "ġh"],
     "tś": ["tś", "tṣ"], "tśh": ["tśh", "tṣh"], "ś": ["ś", "ṣ"],
@@ -118,6 +134,83 @@
     if (["k", "kh", "g", "gh", "ŋ"].includes(base)) return "ŋ";
     if (["t", "th", "d", "n", "ts", "tsh", "dz", "tś", "tśh", "dź"].includes(base)) return "n";
     return "n";
+  }
+
+  function initialToXunpin(gx) {
+    return xunpinInitials.get(gx) ?? gx;
+  }
+
+  const xunpinOnsets = new Map();
+  function addXunpinOnset(xunpin, candidate) {
+    const values = xunpinOnsets.get(xunpin) || [];
+    if (!values.some(value => value.gx === candidate.gx && value.base === candidate.base)) values.push(candidate);
+    xunpinOnsets.set(xunpin, values);
+  }
+  for (const spec of initials) {
+    for (const medial of ["", "w", "y"]) {
+      if (spec.builtInWa && medial === "w") continue;
+      const gxInitial = spec.gx === "Ø" ? "" : spec.gx;
+      const xunpinInitial = initialToXunpin(spec.gx);
+      addXunpinOnset(xunpinInitial + medial, { gx: gxInitial + medial, base: spec.gx, preinitial: false });
+      if (spec.gx !== "Ø") {
+        const nasal = nasalPrefixFor(chooseBaseInitial(spec.gx));
+        addXunpinOnset(initialToXunpin(nasal) + xunpinInitial + medial, {
+          gx: nasal + gxInitial + medial,
+          base: spec.gx,
+          preinitial: true
+        });
+      }
+    }
+  }
+
+  function parseXunpin(raw) {
+    const source = String(raw).trim();
+    if (!/^[a-z]+$/u.test(source)) throw new Error("勳拼只能使用小寫 ASCII 字母");
+
+    const tone = source.endsWith("x") ? "²" : "¹";
+    let body = tone === "²" ? source.slice(0, -1) : source;
+    if (!body || body.includes("x")) throw new Error("勳拼的 x 只能作爲末尾上聲標記");
+
+    let retroflex = false;
+    if (body.endsWith("r")) {
+      retroflex = true;
+      body = body.slice(0, -1);
+    }
+    let tight = false;
+    if (body.endsWith("h")) {
+      tight = true;
+      body = body.slice(0, -1);
+    }
+    let coda = "";
+    if (body.endsWith("m") || body.endsWith("w")) {
+      coda = body.endsWith("m") ? "ṃ" : "w";
+      body = body.slice(0, -1);
+    }
+
+    const vowel = xunpinVowels.find(([spelling]) => body.endsWith(spelling));
+    if (!vowel) throw new Error("不符合合法勳拼音節結構：無法辨認韻母");
+    const onset = body.slice(0, -vowel[0].length);
+    const onsetCandidates = xunpinOnsets.get(onset) || [];
+    const canonicalCandidates = [];
+    for (const candidate of onsetCandidates) {
+      let gxOnset = candidate.gx;
+      if (retroflex && candidate.base !== "r") gxOnset = "r" + gxOnset;
+      const canonical = gxOnset + vowel[1] + coda + (tight ? "h" : "") + (retroflex ? "r" : "") + tone;
+      try {
+        parseGxSyllable(canonical);
+        if (!canonicalCandidates.some(value => value.canonical === canonical)) {
+          canonicalCandidates.push({ canonical, preinitial: candidate.preinitial });
+        }
+      } catch (_) {
+        // Candidate generation is deliberately broader than the GX parser;
+        // canonical GX remains the final authority on syllable legality.
+      }
+    }
+    if (!canonicalCandidates.length) throw new Error("不符合合法勳拼音節結構：無法辨認聲母或介音");
+    const directCandidates = canonicalCandidates.filter(candidate => !candidate.preinitial);
+    const preferred = directCandidates.length ? directCandidates : canonicalCandidates;
+    if (preferred.length > 1) throw new Error("勳拼音節有多個可能的 GX 分析");
+    return preferred[0].canonical;
   }
 
   function parseGxSyllable(raw) {
@@ -301,7 +394,7 @@
 
   function gxToTibetan(input) {
     const source = normalizeGx(input);
-    const token = /[\p{L}\p{M}Ø]+[¹²?]/gu;
+    const token = /[\p{L}\p{M}Ø]+[¹²?]?/gu;
     let output = "";
     let cursor = 0;
     let converted = 0;
@@ -311,7 +404,8 @@
       if (converted && /^\s*$/u.test(gap)) output += TSHEG;
       else output += punctuationToTibetan(gap);
       try {
-        output += gxSyllableToTibetan(match[0]);
+        const canonicalGx = /[¹²?]$/u.test(match[0]) ? match[0] : parseXunpin(match[0]);
+        output += gxSyllableToTibetan(canonicalGx);
       } catch (error) {
         errors.push(`${match[0]}：${error.message}`);
         output += match[0];
@@ -320,7 +414,7 @@
       cursor = match.index + match[0].length;
     }
     output += punctuationToTibetan(source.slice(cursor));
-    if (!converted && source.trim()) errors.push("找不到以 ¹、² 或 ? 結尾的 GX 音節");
+    if (!converted && source.trim()) errors.push("找不到可辨認的 GX 或勳拼音節");
     return { output, errors };
   }
 
@@ -365,6 +459,7 @@
     normalizeGx,
     normalizeTibetan,
     parseGxSyllable,
+    parseXunpin,
     gxSyllableToTibetan,
     tibetanSyllableToGx,
     gxToTibetan,

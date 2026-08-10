@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="GX202411 與党項語藏文轉寫方案的雙向轉換工具。">
+  <meta name="description" content="GX202411／勳拼輸入與党項語藏文轉寫方案的雙向轉換工具。">
   <title>GX–藏文互轉工具</title>
-  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v1" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v1">
+  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v2">
   <style>
     @font-face { font-family: "Libertinus"; src: url("../fonts/LibertinusSans-Regular.woff2?v=full-20260810") format("woff2"); font-weight: 400; font-display: swap; }
     @font-face { font-family: "Libertinus"; src: url("../fonts/LibertinusSans-Bold.woff2?v=full-20260810") format("woff2"); font-weight: 700; font-display: swap; }
@@ -58,37 +58,37 @@
       <div>
         <p class="eyebrow">Tangut · Tibetan transcription</p>
         <h1>GX–藏文互轉</h1>
-        <p class="lead">在 GX202411 擬音與本方案的規範藏文之間即時轉換。藏文反向輸入會先正規化，再轉回 GX。</p>
+        <p class="lead">GX202411 與勳拼共用同一輸入框，自動判別並轉成規範藏文。藏文反向輸入會先正規化，再轉回 GX。</p>
       </div>
       <a class="scheme-link" href="../党項語藏文轉寫方案.html">閱讀完整轉寫方案</a>
     </header>
 
-    <section class="tool" aria-label="GX–藏文互轉工具">
+    <section class="tool" aria-label="GX／勳拼–藏文互轉工具">
       <div class="toolbar">
         <div class="directions" role="group" aria-label="轉換方向">
-          <button id="direction-gx" type="button" aria-pressed="true">GX → 藏文</button>
+          <button id="direction-gx" type="button" aria-pressed="true">GX／勳拼 → 藏文</button>
           <button id="direction-bo" type="button" aria-pressed="false">藏文 → GX</button>
         </div>
         <button id="swap" type="button">交換</button>
       </div>
       <div class="editors">
         <div class="pane">
-          <div class="pane-head"><label id="input-label" for="input">GX</label><button id="clear" type="button">清除</button></div>
-          <textarea id="input" spellcheck="false" autocomplete="off" placeholder="例如：nye¹ phu² dźə?"></textarea>
+          <div class="pane-head"><label id="input-label" for="input">GX／勳拼</label><button id="clear" type="button">清除</button></div>
+          <textarea id="input" spellcheck="false" autocomplete="off" placeholder="例如：tjiw sjihx tśiw¹ śih²"></textarea>
         </div>
         <div class="pane">
           <div class="pane-head"><label id="output-label" for="output">藏文</label><button id="copy" type="button">複製</button></div>
           <textarea id="output" class="tibetan" readonly aria-live="polite"></textarea>
         </div>
       </div>
-      <p class="status" id="status">輸入 GX 後即時轉換；每個音節須標 ¹、² 或 ?。</p>
+      <p class="status" id="status">輸入 GX（須標 ¹、² 或 ?）或勳拼（無標記／末尾 x）後即時轉換。</p>
     </section>
 
     <p class="note">含 <span class="tibetan-inline">༹</span> 的複雜 stack 以 shaping 穩定爲準：先連續寫完下加字母，再寫 <span class="tibetan-inline">༹</span>；反向轉換也能辨認舊次序。</p>
     <footer>© 2026 Kelvin Yang · <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant">CC BY-NC-SA 4.0</a></footer>
   </main>
 
-  <script src="converter.js?v=tight-super-sa-20260811"></script>
+  <script src="converter.js?v=xunpin-input-20260811"></script>
   <script>
     const state = { direction: 'gx' };
     const input = document.querySelector('#input');
@@ -106,7 +106,7 @@
         : input.value.trim()
           ? '轉換完成。'
           : state.direction === 'gx'
-            ? '輸入 GX 後即時轉換；每個音節須標 ¹、² 或 ?。'
+            ? '輸入 GX（須標 ¹、² 或 ?）或勳拼（無標記／末尾 x）後即時轉換。'
             : '輸入本方案藏文後即時正規化並轉回 GX。';
     }
 
@@ -114,11 +114,11 @@
       state.direction = direction;
       directionGx.setAttribute('aria-pressed', direction === 'gx');
       directionBo.setAttribute('aria-pressed', direction === 'bo');
-      document.querySelector('#input-label').textContent = direction === 'gx' ? 'GX' : '藏文';
+      document.querySelector('#input-label').textContent = direction === 'gx' ? 'GX／勳拼' : '藏文';
       document.querySelector('#output-label').textContent = direction === 'gx' ? '藏文' : 'GX';
       input.classList.toggle('tibetan', direction === 'bo');
       output.classList.toggle('tibetan', direction === 'gx');
-      input.placeholder = direction === 'gx' ? '例如：nye¹ phu² dźə?' : '例如：ནྱེ་ ཕུས་ ཇྀ?';
+      input.placeholder = direction === 'gx' ? '例如：tjiw sjihx tśiw¹ śih²' : '例如：ནྱེ་ ཕུས་ ཇྀ?';
       if (!preserve) { input.value = ''; output.value = ''; }
       convert();
     }

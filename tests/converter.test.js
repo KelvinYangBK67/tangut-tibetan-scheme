@@ -3,6 +3,24 @@
 const assert = require("node:assert/strict");
 const converter = require("../converter/converter.js");
 
+const xunpinExamples = [
+  ["tjiw", "tśiw¹"], ["sjihx", "śih²"],
+  ["gghweerx", "rġhwe̱r²"], ["ngqhaii", "ŋqhai̱¹"],
+  ["gom", "goṃ¹"], ["nraeemx", "ṇae̱ṃ²"]
+];
+for (const [xunpin, gx] of xunpinExamples) {
+  assert.equal(converter.parseXunpin(xunpin), gx, `${xunpin} canonical GX`);
+  assert.equal(converter.gxToTibetan(xunpin).output, converter.gxSyllableToTibetan(gx), `${xunpin} forward`);
+}
+assert.equal(
+  converter.gxToTibetan("tjiw sjihx tśiw¹ śih²").output,
+  ["tśiw¹", "śih²", "tśiw¹", "śih²"].map(converter.gxSyllableToTibetan).join("་")
+);
+for (const invalid of ["hello", "tśiw", "tjiw¹", "tjiw?", "abxc"]) {
+  assert.ok(converter.gxToTibetan(invalid).errors.length, `${invalid} must be rejected`);
+}
+assert.throws(() => converter.parseXunpin("tśiw"), /ASCII/u);
+
 const examples = [
   ["nye¹", "ནྱེ"], ["phu²", "ཕུས"], ["dźə?", "ཇྀ?"],
   ["świ¹", "ཤྭི"], ["baa̱¹", "བཨ"], ["śeṃ¹", "ཤེམ"],
@@ -102,4 +120,4 @@ for (const gx of roundTrips) {
   }, `${gx} should parse and round-trip`);
 }
 
-console.log(`ok - ${examples.length + shapingPairs.length + 14 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);
+console.log(`ok - ${19 + examples.length + shapingPairs.length + 14 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);
