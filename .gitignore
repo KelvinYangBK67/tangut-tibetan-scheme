@@ -1,14 +1,7 @@
-# LaTeX intermediate files
-*.aux
-*.fdb_latexmk
-*.fls
-*.log
-*.out
-*.synctex.gz
-*.toc
-*.xdv
-
-# Generated documents and page images
-/*.pdf
+# Generated build directory and page images
+/tex/build/
 /image/
 
+# Keep only the final named PDF at the repository root
+/*.pdf
+!/党項語藏文轉寫方案.pdf

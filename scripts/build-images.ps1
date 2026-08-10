@@ -7,13 +7,16 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$projectRoot = $PSScriptRoot
+$projectRoot = Split-Path -Parent $PSScriptRoot
 $documentTitle = -join @(
     [char]0x515A, [char]0x9805, [char]0x8A9E,
     [char]0x85CF, [char]0x6587, [char]0x8F49,
     [char]0x5BEB, [char]0x65B9, [char]0x6848
 )
-$sourcePath = Join-Path $projectRoot 'main.tex'
+$texDirectory = Join-Path $projectRoot 'tex'
+$buildDirectory = Join-Path $texDirectory 'build'
+$sourcePath = Join-Path $texDirectory 'main.tex'
+$builtPdfPath = Join-Path $buildDirectory "$documentTitle.pdf"
 $pdfPath = Join-Path $projectRoot "$documentTitle.pdf"
 $imageDirectory = Join-Path $projectRoot 'image'
 $imagePrefix = Join-Path $imageDirectory $documentTitle
@@ -30,13 +33,17 @@ if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf)) {
 
 Push-Location $projectRoot
 try {
+    New-Item -ItemType Directory -Path $buildDirectory -Force | Out-Null
+
     Write-Host "Building $documentTitle.pdf ..."
     for ($pass = 1; $pass -le 2; $pass++) {
-        & xelatex -interaction=nonstopmode -halt-on-error "-jobname=$documentTitle" main.tex
+        & xelatex -interaction=nonstopmode -halt-on-error "-jobname=$documentTitle" "-output-directory=$buildDirectory" $sourcePath
         if ($LASTEXITCODE -ne 0) {
             throw "LaTeX build pass $pass failed with exit code $LASTEXITCODE."
         }
     }
+
+    Copy-Item -LiteralPath $builtPdfPath -Destination $pdfPath -Force
 
     New-Item -ItemType Directory -Path $imageDirectory -Force | Out-Null
 
