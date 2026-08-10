@@ -28,8 +28,37 @@ for (const [semanticOrder, shapingOrder] of shapingPairs) {
 
 assert.equal(converter.tibetanSyllableToGx("ས"), "sa¹");
 assert.equal(converter.tibetanSyllableToGx("སས"), "sa²");
-assert.equal(converter.gxSyllableToTibetan("wo̱²"), "ཧྭའོས");
-assert.equal(converter.tibetanSyllableToGx("ཧྭའོས"), "wo̱²");
+assert.equal(converter.gxSyllableToTibetan("wo̱²"), "ཨྭའོས");
+assert.equal(converter.tibetanSyllableToGx("ཨྭའོས"), "wo̱²");
+assert.equal(converter.gxSyllableToTibetan("hwo̱²"), "ཧྭའོས");
+assert.equal(converter.tibetanSyllableToGx("ཧྭའོས"), "hwo̱²");
+assert.equal(converter.gxSyllableToTibetan("wa¹"), "ཨྭ");
+assert.equal(converter.tibetanSyllableToGx("ཨྭ"), "wa¹");
+assert.equal(converter.gxSyllableToTibetan("hwa¹"), "ཧྭ");
+assert.equal(converter.tibetanSyllableToGx("ཧྭ"), "hwa¹");
+
+const wVowels = [
+  ["a", ""], ["e", "ེ"], ["i", "ི"], ["o", "ོ"], ["u", "ུ"], ["ə", "ྀ"],
+  ["a̱", "འ"], ["e̱", "འེ"], ["i̱", "འི"], ["o̱", "འོ"], ["u̱", "འུ"], ["ə̱", "འྀ"],
+  ["aa̱", "ཨ"], ["ae̱", "ཨེ"], ["ai̱", "ཨི"], ["ao̱", "ཨོ"], ["au̱", "ཨུ"], ["aə̱", "ཨྀ"],
+  ["uo", "ོུ"]
+];
+for (const [vowel, suffix] of wVowels) {
+  for (const [gxOnset, tibetanOnset] of [["w", "ཨྭ"], ["hw", "ཧྭ"]]) {
+    const gx = `${gxOnset}${vowel}¹`;
+    const tibetan = tibetanOnset + suffix;
+    assert.equal(converter.gxSyllableToTibetan(gx), tibetan, `${gxOnset} across ${vowel}`);
+    assert.equal(converter.tibetanSyllableToGx(tibetan), gx, `${tibetanOnset} across ${vowel}`);
+  }
+}
+const wDerivedForms = [
+  ["wah²", "ཨྭྷས"], ["hwah²", "ཧྭྷས"],
+  ["rwar?", "རྸྭ?"], ["rhwar?", "རྷྭ?"]
+];
+for (const [gx, tibetan] of wDerivedForms) {
+  assert.equal(converter.gxSyllableToTibetan(gx), tibetan, `${gx} derived forward`);
+  assert.equal(converter.tibetanSyllableToGx(tibetan), gx, `${gx} derived reverse`);
+}
 
 const sentenceGx = "mə̱¹ lləh² rur¹ qae̱h² ne²,";
 const sentenceTibetan = "མའྀ་དྷྀ༹ས་རྸུ་ཀྷཨེས་ནེས།";
@@ -70,4 +99,4 @@ for (const gx of roundTrips) {
   }, `${gx} should parse and round-trip`);
 }
 
-console.log(`ok - ${examples.length + shapingPairs.length + 5 + sentences.length * 2 + roundTrips.length} converter checks`);
+console.log(`ok - ${examples.length + shapingPairs.length + 11 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);

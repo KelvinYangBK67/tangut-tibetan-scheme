@@ -24,7 +24,7 @@
     ["p", "པ"], ["t", "ཏ"], ["b", "བ"], ["d", "ད"],
     ["f", "ཕ", true], ["s", "ས"], ["z", "ཟ"], ["k", "ཀ"],
     ["q", "ཀ"], ["g", "ག"], ["v", "ཝ"], ["l", "ལ"],
-    ["y", "ཡ"], ["r", "ར"], ["h", "ཧ"], ["w", "ཧ", false, true],
+    ["y", "ཡ"], ["r", "ར"], ["h", "ཧ"], ["w", "ཨ", false, true],
     ["m", "མ"], ["n", "ན"], ["Ø", "ཨ"]
   ].map(([gx, letter, tsaPhru = false, builtInWa = false]) => ({ gx, letter, tsaPhru, builtInWa }));
 
@@ -65,7 +65,7 @@
     ["f", "ཕ", true], ["s", "ས", false], ["z", "ཟ", false],
     ["k", "ཀ", false], ["g", "ག", false], ["v", "ཝ", false],
     ["l", "ལ", false], ["y", "ཡ", false], ["r", "ར", false],
-    ["h", "ཧ", false], ["w", "ཧ", false, true], ["m", "མ", false],
+    ["h", "ཧ", false], ["w", "ཨ", false, true], ["m", "མ", false],
     ["n", "ན", false], ["ṇ", "ཎ", false], ["ŋ", "ང", false], ["Ø", "ཨ", false]
   ].map(([gx, letter, tsaPhru, builtInWa = false]) => ({ gx, letter, tsaPhru, builtInWa }));
 
@@ -294,10 +294,7 @@
       return b.vowel.tibetan.length - a.vowel.tibetan.length;
     });
     const { vowel, candidate, coda, tone } = matches[0];
-    let gxOnset = candidate.gx;
-    if (!candidate.preinitial && !candidate.retroflex && candidate.base === "h" && candidate.medial === "w" &&
-        ["o̱", "u̱"].includes(vowel.gx)) gxOnset = "w";
-    return gxOnset + vowel.gx + coda + (candidate.tight ? "h" : "") + (candidate.retroflex ? "r" : "") + tone;
+    return candidate.gx + vowel.gx + coda + (candidate.tight ? "h" : "") + (candidate.retroflex ? "r" : "") + tone;
   }
 
   function gxToTibetan(input) {

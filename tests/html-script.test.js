@@ -25,6 +25,8 @@ assert.match(home, /id="input"/u);
 assert.match(home, /id="output"/u);
 const scheme = fs.readFileSync("党項語藏文轉寫方案.html", "utf8");
 assert.doesNotMatch(scheme, /id="converter-input"|src="converter\.js"/u);
+assert.match(scheme, /\["w","ཨྭ"\]/u);
+assert.doesNotMatch(scheme, /\["w","ཧྭ"\]/u);
 assert.match(scheme, /shanggu-web\.css\?v=shanggu-web-v1/u);
 assert.doesNotMatch(scheme, /ShangguSans-(?:Regular|Bold)\.woff2/u);
 
