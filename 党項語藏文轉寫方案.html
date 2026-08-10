@@ -83,25 +83,6 @@
     h1 { margin: 0; font-size: clamp(1.85rem, 2.7vw, 2.3rem); font-weight: 700; line-height: 1.25; letter-spacing: 0; }
     .lead { max-width: 48rem; margin: 1rem 0 0; color: #47515c; font-size: 1rem; line-height: 1.75; word-break: break-all; }
     .hero-meta { display: flex; gap: 1rem; margin-top: 1rem; color: var(--muted); font-size: .8rem; }
-    .converter { margin-top: 2rem; }
-    .converter-shell { border: 1px solid var(--line-strong); background: #fff; }
-    .converter-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem; border-bottom: 1px solid var(--line); background: var(--soft); }
-    .direction-tabs { display: flex; gap: .25rem; }
-    button { border: 1px solid var(--line-strong); padding: .48rem .75rem; color: var(--ink); background: #fff; font: inherit; font-size: .84rem; cursor: pointer; }
-    button:hover { border-color: var(--accent); color: var(--accent); }
-    button[aria-pressed="true"] { border-color: var(--accent); color: #fff; background: var(--accent); }
-    button:focus-visible, textarea:focus-visible { outline: 2px solid #9bbbd3; outline-offset: 2px; }
-    .converter-grid { display: grid; grid-template-columns: 1fr 1fr; }
-    .editor-pane { min-width: 0; }
-    .editor-pane + .editor-pane { border-left: 1px solid var(--line); }
-    .editor-label { display: flex; align-items: center; justify-content: space-between; min-height: 2.4rem; padding: .45rem .7rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .78rem; font-weight: 700; }
-    .editor-label button { padding: .22rem .5rem; font-size: .75rem; }
-    textarea { display: block; width: 100%; min-height: 12rem; resize: vertical; border: 0; padding: 1rem; color: var(--ink); background: #fff; font: 1.05rem/1.8 "Libertinus Sans Web", "Shanggu Sans Web", sans-serif; }
-    textarea.tibetan-editor { font-family: "Noto Serif Tibetan Web", serif; font-size: 1.65rem; line-height: 1.8; }
-    textarea[readonly] { background: #fbfcfd; }
-    .converter-status { min-height: 2.35rem; margin: 0; padding: .55rem .75rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; }
-    .converter-status.error { color: #8a342c; background: #fff5f3; }
-    .converter-help { margin: .8rem 0 0; color: var(--muted); font-size: .82rem; }
     section { scroll-margin-top: 1.5rem; margin-top: 3rem; }
     .section-head { margin-bottom: 1.15rem; border-bottom: 1px solid var(--line); }
     .section-no { display: none; }
@@ -152,8 +133,6 @@
       .matrix { font-size: .74rem; }
       .matrix th, .matrix td { padding-left: .18rem; padding-right: .18rem; }
       .tibetan { font-size: 1.18em; }
-      .converter-grid { grid-template-columns: 1fr; }
-      .editor-pane + .editor-pane { border-left: 0; border-top: 1px solid var(--line); }
     }
     @media (max-width: 560px) {
       h1 { font-size: 1.8rem; }
@@ -179,7 +158,7 @@
       <p class="rail-title">党項語藏文轉寫方案</p>
       <p class="rail-meta">Kelvin Yang · 2026年8月</p>
       <nav aria-label="章節導航">
-        <a href="#converter">互轉工具</a><a href="#initials">聲母</a><a href="#vowels">元音</a><a href="#marks">標記與聲調</a>
+        <a href="converter/">互轉工具</a><a href="#initials">聲母</a><a href="#vowels">元音</a><a href="#marks">標記與聲調</a>
         <a href="#segments">音段成分</a><a href="#tests">拼寫測試</a><a href="#rhymes">韻類總表</a>
         <a class="sub" href="#cycle-main">大循環 R.1–R.60</a>
         <a class="sub" href="#cycle-tight">緊元音 R.61–R.76</a>
@@ -196,31 +175,6 @@
         <p class="lead">以藏文拼寫党項語之方案，以<a href="https://semakosa.github.io/tangut-pronunciation-db/docs/GX202411-zh.html">龔勳擬音</a>爲基礎，務求簡潔、自然。本方案以娛樂爲主。</p>
         <div class="hero-meta"><span>Kelvin Yang</span><span>2026年8月</span></div>
       </header>
-
-      <section class="converter" id="converter">
-        <div class="section-head"><h2>GX–藏文互轉</h2></div>
-        <div class="converter-shell">
-          <div class="converter-toolbar">
-            <div class="direction-tabs" role="group" aria-label="轉換方向">
-              <button id="direction-gx" type="button" aria-pressed="true">GX → 藏文</button>
-              <button id="direction-bo" type="button" aria-pressed="false">藏文 → GX</button>
-            </div>
-            <button id="swap-conversion" type="button">交換</button>
-          </div>
-          <div class="converter-grid">
-            <div class="editor-pane">
-              <label class="editor-label" for="converter-input"><span id="input-label">GX</span><button id="clear-conversion" type="button">清除</button></label>
-              <textarea id="converter-input" spellcheck="false" autocomplete="off" placeholder="例如：nye¹ phu² dźə?"></textarea>
-            </div>
-            <div class="editor-pane">
-              <label class="editor-label" for="converter-output"><span id="output-label">藏文</span><button id="copy-conversion" type="button">複製</button></label>
-              <textarea id="converter-output" class="tibetan-editor" readonly aria-live="polite"></textarea>
-            </div>
-          </div>
-          <p class="converter-status" id="converter-status">輸入 GX 後即時轉換；每個音節須標 ¹、² 或 ?。</p>
-        </div>
-        <p class="converter-help">藏文反向輸入會先按本方案正規化。含 <span class="tibetan">༹</span> 的複雜 stack 以 shaping 穩定爲準：先連續寫完所有下加字母，再寫 <span class="tibetan">༹</span>；舊次序亦可辨認。</p>
-      </section>
 
       <section id="initials">
         <div class="section-head"><span class="section-no">01</span><h2>聲母</h2></div>
@@ -277,7 +231,6 @@
     </main>
   </div>
 
-  <script src="converter.js"></script>
   <script>
     const initials = {
       groups: ["唇音", "舌尖前", "舌尖中", "舌面", "舌尖後", "舌根", "小舌", "喉音"],
@@ -470,64 +423,6 @@ R.105|1.97 𗇜||(r- -ar?)|རྸ?`}
     renderInitials(); renderVowels(); renderTests(); renderRhymes();
     document.querySelector('#rhyme-filter').addEventListener('input', event => renderRhymes(event.target.value.trim().toLocaleLowerCase()));
 
-    const converterState = { direction: 'gx' };
-    const converterInput = document.querySelector('#converter-input');
-    const converterOutput = document.querySelector('#converter-output');
-    const converterStatus = document.querySelector('#converter-status');
-    const directionGx = document.querySelector('#direction-gx');
-    const directionBo = document.querySelector('#direction-bo');
-
-    function runConversion() {
-      const result = converterState.direction === 'gx'
-        ? GxTibetan.gxToTibetan(converterInput.value)
-        : GxTibetan.tibetanToGx(converterInput.value);
-      converterOutput.value = result.output;
-      converterStatus.classList.toggle('error', result.errors.length > 0);
-      converterStatus.textContent = result.errors.length
-        ? result.errors.join('；')
-        : converterInput.value.trim()
-          ? '轉換完成。'
-          : converterState.direction === 'gx'
-            ? '輸入 GX 後即時轉換；每個音節須標 ¹、² 或 ?。'
-            : '輸入本方案藏文後即時正規化並轉回 GX。';
-    }
-
-    function setDirection(direction, keepText = false) {
-      converterState.direction = direction;
-      directionGx.setAttribute('aria-pressed', direction === 'gx');
-      directionBo.setAttribute('aria-pressed', direction === 'bo');
-      document.querySelector('#input-label').textContent = direction === 'gx' ? 'GX' : '藏文';
-      document.querySelector('#output-label').textContent = direction === 'gx' ? '藏文' : 'GX';
-      converterInput.classList.toggle('tibetan-editor', direction === 'bo');
-      converterOutput.classList.toggle('tibetan-editor', direction === 'gx');
-      converterInput.placeholder = direction === 'gx' ? '例如：nye¹ phu² dźə?' : '例如：ནྱེ་ ཕུས་ ཇྀ?';
-      if (!keepText) { converterInput.value = ''; converterOutput.value = ''; }
-      runConversion();
-    }
-
-    converterInput.addEventListener('input', runConversion);
-    directionGx.addEventListener('click', () => setDirection('gx'));
-    directionBo.addEventListener('click', () => setDirection('bo'));
-    document.querySelector('#swap-conversion').addEventListener('click', () => {
-      const nextInput = converterOutput.value;
-      setDirection(converterState.direction === 'gx' ? 'bo' : 'gx', true);
-      converterInput.value = nextInput;
-      runConversion();
-      converterInput.focus();
-    });
-    document.querySelector('#clear-conversion').addEventListener('click', () => {
-      converterInput.value = ''; runConversion(); converterInput.focus();
-    });
-    document.querySelector('#copy-conversion').addEventListener('click', async event => {
-      if (!converterOutput.value) return;
-      try {
-        await navigator.clipboard.writeText(converterOutput.value);
-        event.currentTarget.textContent = '已複製';
-        setTimeout(() => { event.currentTarget.textContent = '複製'; }, 1200);
-      } catch (_) {
-        converterOutput.select(); document.execCommand('copy');
-      }
-    });
   </script>
 </body>
 </html>

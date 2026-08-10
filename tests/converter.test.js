@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
-const converter = require("../converter.js");
+const converter = require("../converter/converter.js");
 
 const examples = [
   ["nye¹", "ནྱེ"], ["phu²", "ཕུས"], ["dźə?", "ཇྀ?"],

@@ -1,19 +1,14 @@
 $ErrorActionPreference = "Stop"
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$htmlFiles = @(Get-ChildItem -LiteralPath $projectRoot -Filter "*.html" -File)
-$htmlPath = if ($htmlFiles.Count -eq 1) { $htmlFiles[0].FullName } else { $null }
 $outputRoot = Join-Path $projectRoot "fonts"
 $templateClass = (& kpsewhich nextart_zh.cls).Trim()
 
-if (-not $htmlPath) {
-    throw "Expected exactly one HTML file in the project root."
-}
 if (-not $templateClass) {
     throw "nextart_zh.cls was not found. Install the LaTeX template first."
 }
-if (-not (Get-Command pyftsubset -ErrorAction SilentlyContinue)) {
-    throw "pyftsubset was not found. Install fonttools and brotli first."
+if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
+    throw "Python was not found. Install Python, fonttools and brotli first."
 }
 
 $templateRoot = Split-Path -Parent $templateClass
@@ -34,21 +29,16 @@ foreach ($fontJob in $fontJobs) {
     }
 
     $outputPath = Join-Path $outputRoot $fontJob.Output
-    & pyftsubset $fontJob.Source `
-        "--text-file=$htmlPath" `
-        "--output-file=$outputPath" `
-        "--flavor=woff2" `
-        "--layout-features=*" `
-        "--glyph-names" `
-        "--symbol-cmap" `
-        "--legacy-cmap" `
-        "--notdef-glyph" `
-        "--notdef-outline" `
-        "--recommended-glyphs"
+    $temporaryPath = "$outputPath.tmp.woff2"
+    if (Test-Path -LiteralPath $temporaryPath) {
+        Remove-Item -LiteralPath $temporaryPath -Force
+    }
+    & python -m fontTools.ttLib.woff2 compress $fontJob.Source -o $temporaryPath
 
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to generate $($fontJob.Output)"
     }
+    Move-Item -LiteralPath $temporaryPath -Destination $outputPath -Force
 }
 
-Write-Host "Generated webfont subsets in $outputRoot"
+Write-Host "Generated complete WOFF2 webfonts in $outputRoot"
