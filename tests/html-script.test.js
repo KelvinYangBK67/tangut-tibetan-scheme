@@ -15,6 +15,8 @@ for (const file of ["converter/index.html", "党項語藏文轉寫方案.html"])
 const home = fs.readFileSync("converter/index.html", "utf8");
 assert.doesNotMatch(home, /http-equiv="refresh"|location\.replace/u);
 assert.match(home, /<script src="converter\.js"><\/script>/u);
+assert.match(home, /ShangguSans-Bold\.woff2\?v=full-20260810/u);
+assert.match(home, /NotoSerifTibetan-Regular\.woff2\?v=full-20260810/u);
 assert.match(home, /id="input"/u);
 assert.match(home, /id="output"/u);
 const scheme = fs.readFileSync("党項語藏文轉寫方案.html", "utf8");
