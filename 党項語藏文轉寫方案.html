@@ -7,6 +7,51 @@
   <link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
   <title>党項語藏文轉寫方案</title>
   <style>
+    @font-face {
+      font-family: "Libertinus Serif Web";
+      src: local("Libertinus Serif"), url("fonts/LibertinusSerif-Regular.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "Libertinus Serif Web";
+      src: local("Libertinus Serif Italic"), url("fonts/LibertinusSerif-Italic.woff2") format("woff2");
+      font-weight: 400; font-style: italic; font-display: swap;
+    }
+    @font-face {
+      font-family: "Libertinus Serif Web";
+      src: local("Libertinus Serif Semibold"), url("fonts/LibertinusSerif-Semibold.woff2") format("woff2");
+      font-weight: 600; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "Libertinus Serif Web";
+      src: local("Libertinus Serif Bold"), url("fonts/LibertinusSerif-Bold.woff2") format("woff2");
+      font-weight: 700; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "Noto Serif TC Web";
+      src: local("Noto Serif TC"), url("fonts/NotoSerifTC-Regular.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "Noto Serif TC Web";
+      src: local("Noto Serif TC Bold"), url("fonts/NotoSerifTC-Bold.woff2") format("woff2");
+      font-weight: 700; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "Noto Serif CJK Fallback Web";
+      src: url("fonts/NotoSerifCJKFallback-Regular.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "Noto Serif Tangut Web";
+      src: local("Noto Serif Tangut"), url("fonts/NotoSerifTangut-Regular.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "Noto Serif Tibetan Web";
+      src: local("Noto Serif Tibetan"), url("fonts/NotoSerifTibetan-Regular.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
     :root {
       --paper: #f5f0e7;
       --paper-deep: #e9e0d1;
@@ -17,7 +62,7 @@
       --accent-soft: #ead5cf;
       --panel: rgba(255, 253, 248, .78);
       --shadow: 0 18px 50px rgba(67, 50, 33, .10);
-      font-family: "Libertinus Serif", "Noto Serif CJK TC", "Noto Serif TC", "Songti TC", serif;
+      font-family: "Libertinus Serif Web", "Noto Serif TC Web", "Noto Serif CJK Fallback Web", serif;
       color: var(--ink);
       background: var(--paper);
       font-synthesis: none;
@@ -48,7 +93,7 @@
     .hero-meta { display: flex; gap: 1rem; margin-top: 2rem; color: var(--muted); font-size: .85rem; }
     section { scroll-margin-top: 1.5rem; margin-top: 4.5rem; }
     .section-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
-    .section-no { color: var(--accent); font: italic 1rem "Libertinus Serif", serif; }
+    .section-no { color: var(--accent); font: italic 1rem "Libertinus Serif Web", serif; }
     h2 { margin: 0 0 .7rem; font-size: clamp(1.5rem, 2.2vw, 2rem); font-weight: 600; letter-spacing: -.015em; }
     h3 { margin: 2.6rem 0 1rem; font-size: 1.05rem; font-weight: 600; }
     .note { max-width: 58rem; margin: 1.4rem 0; padding: 1rem 1.2rem; border-left: 3px solid var(--accent); background: var(--accent-soft); line-height: 1.8; }
@@ -58,9 +103,9 @@
     thead th { position: sticky; top: 0; z-index: 1; background: #e9dfd1; color: #51483e; font-size: .76rem; letter-spacing: .04em; }
     tbody tr:last-child td { border-bottom: 0; }
     tbody tr:hover { background: rgba(142, 53, 44, .055); }
-    .phonetic { font-family: "Libertinus Serif", "Charis SIL", serif; font-style: italic; }
-    .tibetan { font-family: "Noto Serif Tibetan", "Microsoft Himalaya", serif; font-size: 1.35em; line-height: 1.2; }
-    .tangut { font-family: "Noto Serif Tangut", "Tangut N4694", serif; font-size: 1.45em; }
+    .phonetic { font-family: "Libertinus Serif Web", serif; font-style: italic; }
+    .tibetan { font-family: "Noto Serif Tibetan Web", serif; font-size: 1.35em; line-height: 1.2; }
+    .tangut { font-family: "Noto Serif Tangut Web", serif; font-size: 1.45em; }
     .matrix td.phonetic { color: var(--ink); }
     .matrix td.tibetan { color: var(--accent); }
     .matrix { table-layout: auto; font-size: .86rem; }
@@ -79,7 +124,7 @@
     .filter input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
     .count { color: var(--muted); font-size: .8rem; white-space: nowrap; }
     .rhyme-table td:first-child { color: var(--accent); font-weight: 650; }
-    .rhyme-table td:nth-child(2), .rhyme-table td:nth-child(3) { font-family: "Noto Serif Tangut", serif; }
+    .rhyme-table td:nth-child(2), .rhyme-table td:nth-child(3) { font-family: "Noto Serif Tangut Web", "Libertinus Serif Web", serif; }
     .rhyme-table td:nth-child(-n+3) { white-space: nowrap; }
     footer { margin-top: 7rem; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
     @media (max-width: 850px) {
