@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="以藏文拼寫党項語的轉寫方案，基於龔勳擬音。">
+  <link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+  <title>党項語藏文轉寫方案</title>
+  <style>
+    :root {
+      --paper: #f5f0e7;
+      --paper-deep: #e9e0d1;
+      --ink: #25221f;
+      --muted: #756d62;
+      --line: #d5c9b8;
+      --accent: #8e352c;
+      --accent-soft: #ead5cf;
+      --panel: rgba(255, 253, 248, .78);
+      --shadow: 0 18px 50px rgba(67, 50, 33, .10);
+      font-family: "Libertinus Serif", "Noto Serif CJK TC", "Noto Serif TC", "Songti TC", serif;
+      color: var(--ink);
+      background: var(--paper);
+      font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: linear-gradient(135deg, #f8f4ed 0, var(--paper) 45%, #eee5d8 100%); }
+    a { color: var(--accent); text-underline-offset: .18em; }
+    .layout { display: grid; grid-template-columns: 18rem minmax(0, 1fr); min-height: 100vh; }
+    .rail {
+      position: sticky; top: 0; height: 100vh; padding: 2.4rem 1.7rem;
+      border-right: 1px solid var(--line); background: rgba(242, 235, 224, .86);
+      backdrop-filter: blur(14px); overflow-y: auto;
+    }
+    .seal { display: grid; place-items: center; width: 3.2rem; height: 3.2rem; margin-bottom: 1.3rem;
+      color: #fff; background: var(--accent); border-radius: .35rem; font-size: 1.35rem; letter-spacing: .08em; }
+    .rail-title { margin: 0 0 .35rem; font-size: .95rem; line-height: 1.45; }
+    .rail-meta { margin: 0 0 2rem; color: var(--muted); font-size: .8rem; }
+    nav a { display: block; padding: .38rem 0; color: var(--muted); text-decoration: none; font-size: .9rem; }
+    nav a:hover { color: var(--accent); transform: translateX(.15rem); }
+    nav .sub { padding-left: .9rem; font-size: .82rem; }
+    .rail-foot { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: .78rem; color: var(--muted); }
+    main { justify-self: center; width: min(100%, 84rem); padding: 4.5rem clamp(2.5rem, 5vw, 5.5rem) 8rem; }
+    .hero { min-height: 46vh; display: flex; flex-direction: column; justify-content: center; padding-bottom: 3rem; }
+    .eyebrow { margin: 0 0 1rem; color: var(--accent); font-size: .78rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+    h1 { max-width: 14em; margin: 0; font-size: clamp(2.25rem, 4vw, 3.4rem); font-weight: 650; line-height: 1.12; letter-spacing: -.025em; }
+    .lead { max-width: 48rem; margin: 2rem 0 0; font-size: clamp(1.05rem, 1.8vw, 1.35rem); line-height: 1.9; color: #514b43; }
+    .hero-meta { display: flex; gap: 1rem; margin-top: 2rem; color: var(--muted); font-size: .85rem; }
+    section { scroll-margin-top: 1.5rem; margin-top: 4.5rem; }
+    .section-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
+    .section-no { color: var(--accent); font: italic 1rem "Libertinus Serif", serif; }
+    h2 { margin: 0 0 .7rem; font-size: clamp(1.5rem, 2.2vw, 2rem); font-weight: 600; letter-spacing: -.015em; }
+    h3 { margin: 2.6rem 0 1rem; font-size: 1.05rem; font-weight: 600; }
+    .note { max-width: 58rem; margin: 1.4rem 0; padding: 1rem 1.2rem; border-left: 3px solid var(--accent); background: var(--accent-soft); line-height: 1.8; }
+    .table-wrap { width: fit-content; max-width: 100%; margin: 1rem 0 2rem; border: 1px solid var(--line); border-radius: .55rem; background: var(--panel); box-shadow: var(--shadow); }
+    table { width: auto; max-width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+    th, td { padding: .68rem .7rem; border-bottom: 1px solid #e2d9cc; text-align: left; }
+    thead th { position: sticky; top: 0; z-index: 1; background: #e9dfd1; color: #51483e; font-size: .76rem; letter-spacing: .04em; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: rgba(142, 53, 44, .055); }
+    .phonetic { font-family: "Libertinus Serif", "Charis SIL", serif; font-style: italic; }
+    .tibetan { font-family: "Noto Serif Tibetan", "Microsoft Himalaya", serif; font-size: 1.35em; line-height: 1.2; }
+    .tangut { font-family: "Noto Serif Tangut", "Tangut N4694", serif; font-size: 1.45em; }
+    .matrix td.phonetic { color: var(--ink); }
+    .matrix td.tibetan { color: var(--accent); }
+    .matrix { table-layout: auto; font-size: .86rem; }
+    .matrix th, .matrix td { padding-left: .42rem; padding-right: .42rem; }
+    .matrix td:empty { background: rgba(0,0,0,.018); }
+    .compact { width: fit-content; min-width: 0; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: .8rem; }
+    .word-card { padding: 1.1rem; border: 1px solid var(--line); border-radius: .55rem; background: var(--panel); box-shadow: 0 8px 24px rgba(67,50,33,.06); }
+    .word-card .tangut { display: block; margin-bottom: .75rem; font-size: 2.4rem; }
+    .word-card dl { display: grid; grid-template-columns: 2.3rem 1fr; gap: .3rem .5rem; margin: 0; }
+    .word-card dt { color: var(--muted); font-size: .72rem; }
+    .word-card dd { margin: 0; }
+    .filter { display: flex; align-items: center; gap: .7rem; margin: 1.5rem 0; }
+    .filter input { width: min(100%, 28rem); padding: .75rem .9rem; border: 1px solid var(--line); border-radius: .4rem;
+      color: var(--ink); background: #fffcf7; font: inherit; outline: none; }
+    .filter input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .count { color: var(--muted); font-size: .8rem; white-space: nowrap; }
+    .rhyme-table td:first-child { color: var(--accent); font-weight: 650; }
+    .rhyme-table td:nth-child(2), .rhyme-table td:nth-child(3) { font-family: "Noto Serif Tangut", serif; }
+    .rhyme-table td:nth-child(-n+3) { white-space: nowrap; }
+    footer { margin-top: 7rem; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
+    @media (max-width: 850px) {
+      .layout { display: block; }
+      .rail { position: relative; width: 100%; height: auto; padding: 1.2rem; border-right: 0; border-bottom: 1px solid var(--line); }
+      .seal, .rail-meta, .rail-foot { display: none; }
+      .rail-title { margin-bottom: .7rem; }
+      nav { display: flex; gap: .8rem; overflow-x: auto; padding-bottom: .2rem; }
+      nav a { flex: 0 0 auto; padding: .25rem 0; }
+      nav .sub { display: none; }
+      main { padding: 2.5rem 1.5rem 6rem; }
+      .hero { min-height: 50vh; }
+      table { font-size: .82rem; }
+      th, td { padding: .52rem .38rem; }
+      .matrix { font-size: .74rem; }
+      .matrix th, .matrix td { padding-left: .18rem; padding-right: .18rem; }
+      .tibetan { font-size: 1.18em; }
+    }
+    @media (max-width: 560px) {
+      h1 { font-size: 2.4rem; }
+      th, td { padding: .6rem .65rem; }
+      .hero-meta { display: block; }
+      .hero-meta span { display: block; margin-top: .3rem; }
+    }
+    @media print {
+      .rail, .filter { display: none; }
+      .layout { display: block; }
+      main { width: 100%; padding: 0; }
+      body { background: #fff; }
+      .hero { min-height: auto; }
+      .table-wrap, .word-card { box-shadow: none; break-inside: avoid; }
+      thead th { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="rail">
+      <div class="seal" aria-hidden="true">党項</div>
+      <p class="rail-title">党項語藏文轉寫方案</p>
+      <p class="rail-meta">Kelvin Yang · 2026年8月</p>
+      <nav aria-label="章節導航">
+        <a href="#initials">聲母</a><a href="#vowels">元音</a><a href="#marks">標記與聲調</a>
+        <a href="#segments">音段成分</a><a href="#tests">拼寫測試</a><a href="#rhymes">韻類總表</a>
+        <a class="sub" href="#cycle-main">大循環 R.1–R.60</a>
+        <a class="sub" href="#cycle-tight">緊元音 R.61–R.76</a>
+        <a class="sub" href="#cycle-retroflex">捲舌元音 R.77–R.98</a>
+        <a class="sub" href="#cycle-misc">其他 R.99–R.105</a>
+      </nav>
+      <p class="rail-foot">本方案以娛樂爲主。<br><a href="../党項語藏文轉寫方案.pdf">下載 PDF 版本</a></p>
+    </aside>
+
+    <main>
+      <header class="hero">
+        <p class="eyebrow">Tangut · Tibetan transcription</p>
+        <h1>党項語<br>藏文轉寫方案</h1>
+        <p class="lead">以藏文拼寫党項語之方案，以<a href="https://semakosa.github.io/tangut-pronunciation-db/docs/GX202411-zh.html">龔勳擬音</a>爲基礎，務求簡潔、自然。本方案以娛樂爲主。</p>
+        <div class="hero-meta"><span>Kelvin Yang</span><span>2026年8月</span></div>
+      </header>
+
+      <section id="initials">
+        <div class="section-head"><span class="section-no">01</span><h2>聲母</h2></div>
+        <div class="table-wrap"><table class="matrix" id="initial-table"></table></div>
+        <p class="note">本方案不區分 <span class="phonetic">tś</span>/<span class="phonetic">tṣ</span> 組的聲母和 <span class="phonetic">k</span>/<span class="phonetic">q</span> 組的聲母；後者爲以小舌化爲條件的音位變體，可通過韻母的等第區分。</p>
+      </section>
+
+      <section id="vowels">
+        <div class="section-head"><span class="section-no">02</span><h2>元音</h2></div>
+        <div class="table-wrap"><table class="matrix" id="vowel-table"></table></div>
+      </section>
+
+      <section id="marks">
+        <div class="section-head"><span class="section-no">03</span><h2>體系外標記與聲調</h2></div>
+        <div class="table-wrap compact"><table><thead><tr><th>GX</th><th>藏文</th><th>類別</th></tr></thead><tbody>
+          <tr><td class="phonetic">?</td><td>後加?</td><td>聲調存疑</td></tr>
+          <tr><td class="phonetic">¹</td><td>無記號</td><td>平聲</td></tr>
+          <tr><td class="phonetic">²</td><td>後加<span class="tibetan">ས</span></td><td>上聲</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section id="segments">
+        <div class="section-head"><span class="section-no">04</span><h2>音段與超音段成分</h2></div>
+        <h3>音段性成分</h3>
+        <div class="table-wrap compact"><table><thead><tr><th>GX</th><th>藏文</th><th>類別</th></tr></thead><tbody>
+          <tr><td class="phonetic">n-, m-, ŋ-</td><td>前加<span class="tibetan">འ</span></td><td>鼻冠音</td></tr>
+          <tr><td class="phonetic">-w-</td><td>下加<span class="tibetan">ཝ</span></td><td>合口介音</td></tr>
+          <tr><td class="phonetic">-a-</td><td class="tibetan">ཨ</td><td>二等介音</td></tr>
+          <tr><td class="phonetic">-y-</td><td>下加<span class="tibetan">ཡ</span></td><td>細音介音</td></tr>
+          <tr><td class="phonetic">-w</td><td>後加<span class="tibetan">ག༹</span></td><td>軟齶韻尾</td></tr>
+          <tr><td class="phonetic">-ṃ</td><td>後加<span class="tibetan">མ</span></td><td>鼻音韻尾</td></tr>
+        </tbody></table></div>
+        <h3>全音節超音段性成分</h3>
+        <div class="table-wrap compact"><table><thead><tr><th>GX</th><th>藏文</th><th>類別</th></tr></thead><tbody>
+          <tr><td class="phonetic">-h</td><td>下加<span class="tibetan">ཧ</span></td><td>緊元音</td></tr>
+          <tr><td class="phonetic">r-…-r</td><td>上加<span class="tibetan">ར</span></td><td>捲舌元音</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section id="tests">
+        <div class="section-head"><span class="section-no">05</span><h2>拼寫測試</h2></div>
+        <h3>單字測試</h3><div class="cards" id="word-cards"></div>
+        <h3>整句測試</h3>
+        <div class="table-wrap"><table id="sentence-table"><thead><tr><th>西夏文</th><th>GX</th><th>藏文</th></tr></thead><tbody></tbody></table></div>
+      </section>
+
+      <section id="rhymes">
+        <div class="section-head"><span class="section-no">06</span><h2>韻類總表</h2></div>
+        <div class="filter"><label for="rhyme-filter">篩選</label><input id="rhyme-filter" type="search" placeholder="輸入 R. 編號、GX、藏文或西夏字…"><span class="count" id="rhyme-count"></span></div>
+        <div id="rhyme-groups"></div>
+      </section>
+
+      <footer>© 2026 Kelvin Yang · <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant">CC BY-NC-SA 4.0</a></footer>
+    </main>
+  </div>
+
+  <script>
+    const initials = {
+      groups: ["唇音", "舌尖前", "舌尖中", "舌面", "舌尖後", "舌根", "小舌", "喉音"],
+      rows: [
+        [["p","པ"],["t","ཏ"],["ts","ཙ"],["tś","ཅ"],["tṣ","(ཅ)"],["k","ཀ"],["q","(ཀ)"],["Ø","ཨ"]],
+        [["ph","ཕ"],["th","ཐ"],["tsh","ཚ"],["tśh","ཆ"],["tṣh","(ཆ)"],["kh","ཁ"],["qh","(ཁ)"],["",""]],
+        [["b","བ"],["d","ད"],["dz","ཛ"],["dź","ཇ"],["dẓ","(ཇ)"],["g","ག"],["ġ","(ག)"],["",""]],
+        [["f","ཕ༹"],["lh","ཐ༹"],["s","ས"],["ś","ཤ"],["ṣ","(ཤ)"],["h","ཧ"],["h","ཧ"],["",""]],
+        [["",""] ,["ll","ད༹"],["z","ཟ"],["ź","ཞ"],["ẓ","(ཞ)"],["gh","ག༹"],["ġh","(ག༹)"],["",""]],
+        [["v","ཝ"],["l","ལ"],["",""] ,["y","ཡ"],["r","ར"],["",""] ,["",""] ,["w","ཧྭ"]],
+        [["m","མ"],["n","ན"],["",""] ,["",""] ,["ṇ","ཎ"],["",""] ,["ŋ","ང"],["",""]]
+      ]
+    };
+    const vowels = {
+      groups: ["等第", "a", "e", "i", "o", "u", "ə"],
+      rows: [
+        ["三等",["a","ཨ"],["e","ཨེ"],["i","ཨི"],["o","ཨོ"],["u","ཨུ"],["ə","ཨྀ"]],
+        ["一等",["a̱","ཨའ"],["e̱","ཨའེ"],["i̱","ཨའི"],["o̱","ཨའོ"],["u̱","ཨའུ"],["ə̱","ཨའྀ"]],
+        ["二等",["aa̱","ཨཨ"],["ae̱","ཨཨེ"],["ai̱","ཨཨི"],["ao̱","ཨཨོ"],["au̱","ཨཨུ"],["aə̱","ཨཨྀ"]]
+      ]
+    };
+    const words = [
+      ["𗗔","nye¹","ནྱེ"],["𗨁","phu²","ཕུས"],["𘝦","dźə?","ཇྀ?"],["𗒱","świ¹","ཤྭི"],
+      ["𗞽","baa̱¹","བཨ"],["𗵆","śeṃ¹","ཤེམ"],["𘈩","li̱w¹","ལའིག༹"],["𗉝","śih²","ཤྷིས"],
+      ["𗞠","hae̱ṃ²","ཧཨེམས"],["𗙏","ġhai̱h²","གྷ༹ཨིས"],["𗄑","rŋo̱ṃr²","རྔའོམས"],
+      ["𗀖","llo̱ṃh²","དྷ༹འོམས"],["𗵌","rġhwe̱r²","རྒྭ༹འེས"]
+    ];
+    const sentences = [
+      ["𗹦𗼻𗯨𗐯𗂥，","mə̱¹ lləh² rur¹ qae̱h² ne²,","མའྀ་དྷྀ༹ས་རྸུ་ཀྷཨེས་ནེས།"],
+      ["𗾔𗼑𗉘𘝨𗜓。","bi̱² lhih² tśhə¹ zoh² śa².","བའིས་ཐྷི༹ས་ཆྀ་ཟྷོས་ཤས།།"],
+      ["𗭼𗤼𗂈𗼛𘚢，","swi̱w¹ na̱¹ ẓaə̱h¹ rtṣai̱r¹ dẓae̱²,","སྭའིག༹་ནའ་ཞྷཨྀ་རྕཨི་ཇཨེས།"],
+      ["𗉅𗎒𗨁𗤢𗖠。","tsa¹ da̱h² phu² bi² ŋwe̱².","ཙ་དྷའས་ཕུས་བིས་ངྭའེས།།"]
+    ];
+    const rhymeGroups = [
+      { id:"cycle-main", title:"大循環（R.1 至 R.60）", rows:`
+R.1|1.01 𘁨|2.01 𗾴|-u̱|ཨའུ
+R.2|1.02 𘜲|2.02 𗲺|-u|ཨུ
+R.3|1.03 𗔠|2.03 𘆶|-u|ཨུ
+R.4|1.04 𘙼|2.04 𘓩|-u̱|ཨའུ
+R.5|1.05 𘃠|2.05 𗷪|n- -u̱|འཨའུ
+R.6|1.06 𗃴||n- -au̱|འཨཨུ
+R.7|1.07 𗴢|2.06 𗩈|n- -u|འཨུ
+R.8|1.08 𗬃|2.07 𗙐|-i̱|ཨའི
+R.9|1.09 𗠭|2.08 𗎃|-ai̱|ཨཨི
+R.10|1.10 𗚋|2.09 𗄐|-i|ཨི
+R.11|1.11 𗣣|2.10 𘒇|-i|ཨི
+R.12|1.12 𗛁|2.11 𗵿|n- -i̱|འཨའི
+R.13|1.13 𘎛||n- -ai̱|འཨཨི
+R.14|1.14 𗮦|2.12 𘏗|n- -i|འཨི
+R.15|1.15 𗗆|2.13 𗖗|-i̱ṃ|ཨའིམ
+R.16|1.16 𗑃||-iṃ|ཨིམ
+R.17|1.17 𗊡|2.14 𗊺|-a̱|ཨའ
+R.18|1.18 𗉺|2.15 𗺩|-aa̱|ཨཨ
+R.19|1.19 𗰭|2.16 𗜓|-a|ཨ
+R.20|1.20 𘅄|2.17 𗾥|-a|ཨ
+R.21|1.21 𘄢|2.18 𘏧|-aw|ཨག༹
+R.22|1.22 𗴡|2.19 𘆕|n- -a̱|འཨའ
+R.23||2.20 𗫬|n- -aa̱|འཨཨ
+R.24|1.23 𗫴|2.21 𘜴|n- -a|འཨ
+R.25|1.24 𘂦|2.22 𘟑|-a̱ṃ|ཨའམ
+R.26|1.25 𘅻|2.23 𗹺|-aa̱ṃ|ཨཨམ
+R.27|1.26 𘓾|2.24 𗶕|-aṃ|ཨམ
+R.28|1.27 𗢁|2.25 𗍉|-ə̱|ཨའྀ
+R.29|1.28 𗙌|2.26 𗞨|-aə̱|ཨཨྀ
+R.30|1.29 𘎻|2.27 𗶽|-ə|ཨྀ
+R.31|1.30 𗝚|2.28 𗸹|-ə|ཨྀ
+R.32|1.31 𘚾||n- -ə̱|འཨའྀ
+R.33|1.32 𘃔|2.29 𗠸|n- -ə|འཨྀ
+R.34|1.33 𗃰|2.30 𗨾|-e̱|ཨའེ
+R.35|1.34 𗷘|2.31 𗷛|-ae̱|ཨཨེ
+R.36|1.35 𘟅|2.32 𗜙|-e|ཨེ
+R.37|1.36 𘒋|2.33 𗆎|-e|ཨེ
+R.38|1.37 𘈧|2.34 𗥉|n- -e̱|འཨའེ
+R.39|1.38 𘘅||n- -ae̱|འཨཨེ
+R.40|1.39 𘅡|2.35 𗾫|n- -e|འཨེ
+R.41|1.40 𗣫||-e̱ṃ|ཨའེམ
+R.42|1.41 𘐝|2.36 𗨆|-ae̱ṃ|ཨཨེམ
+R.43|1.42 𗵆|2.37 𗼃|-eṃ|ཨེམ
+R.44|1.43 𗺹|2.38 𗬦|-i̱w|ཨའིག༹
+R.45|1.44 𗶥|2.39 𗉡|-ai̱w|ཨཨིག༹
+R.46|1.45 𘝖|2.40 𗺶|-iw|ཨིག༹
+R.47|1.46 𗪲||-iw|ཨིག༹
+R.48||2.41 𗅢|n- -i̱w|འཨའིག༹
+R.49|1.47 𘞘||n- -iw|འཨིག༹
+R.50|1.48 𗄈||-ow|ཨོག༹
+R.51|1.49 𘀁|2.42 𗟌|-o̱|ཨའོ
+R.52|1.50 𗆉|2.43 𘋘|-ao̱|ཨཨོ
+R.53|1.51 𗔆|2.44 𗚂|-o|ཨོ
+R.54|1.52 𗫕|2.45 𘉼|n- -o̱|འཨའོ
+R.55|1.53 𗠟|2.46 𘘁|n- -ao̱, n- -o|འཨཨོ, འཨོ
+R.56|1.54 𘙾|2.47 𗫫|-o̱ṃ|ཨའོམ
+R.57|1.55 𘙠|2.48 𗽕|-ao̱ṃ, -oṃ|ཨཨོམ, ཨོམ
+R.58|1.56 𗭴|2.49 𗭃|-oṃ|ཨོམ
+R.59|1.57 𘉐||-uo|ཨོུ
+R.60||2.50 𗷢|(-uo?)|ཨོུ?`},
+      { id:"cycle-tight", title:"第一小循環（R.61 至 R.76?）：緊元音 -h", rows:`
+R.61|1.58 𗚽|2.51 𗏒|-u̱h|ཨྷའུ
+R.62|1.59 𗤧|2.52 𘞏|-au̱h, -uh|ཨྷཨུ, ཨྷུ
+R.63|1.60 𗧎|2.53 𗐯|-e̱h, -ae̱h|ཨྷའེ, ཨྷཨེ
+R.64|1.61 𗖞|2.54 𗿩|-eh|ཨྷེ
+R.65|1.62 𗝾|2.55 𗅲|-eṃh|ཨྷེམ
+R.66|1.63 𘟫|2.56 𗰗|-a̱h|ཨྷའ
+R.67|1.64 𗕹|2.57 𘐓|-aa̱h, -ah|ཨྷཨ, ཨྷ
+R.68|1.65 𗄩|2.58 𗇠|-i̱h|ཨྷའི
+R.69|1.66 𗉁|2.59 𗙑|-ai̱h|ཨྷཨི
+R.70|1.67 𗳃|2.60 𗒣|-ih|ཨྷི
+R.71|1.68 𗨹||-ə̱h|ཨྷའྀ
+R.72|1.69 𗥇|2.61 𗲸|-aə̱h, -əh|ཨྷཨྀ, ཨྷྀ
+R.73|1.70 𘔸|2.62 𗥏|-o̱ṃh|ཨྷའོམ
+R.74|1.71 𗶪|2.63 𘒵|-o̱h|ཨྷའོ
+R.75|1.72 𗅼|2.64 𘈎|-oh|ཨྷོ
+R.76||2.65 𗽌|(-ae̱ṃh?)|ཨྷཨེམ?`},
+      { id:"cycle-retroflex", title:"第二小循環（R.77? 至 R.98）：捲舌元音 r-…-r", rows:`
+R.77|1.73 𗯿|2.66 𗯬|r- -e̱r|རྸའེ
+R.78||2.67 𘌀|r- -ae̱r|རྸཨེ
+R.79|1.74 𗙨|2.68 𗳭|r- -er|རྸེ
+R.80|1.75 𗌈|2.69 𗎑|r- -u̱r|རྸའུ
+R.81|1.76 𗋿|2.70 𗌏|r- -ur|རྸུ
+R.82|1.77 𗨈|2.71 𗄛|r- -i̱r|རྸའི
+R.83|1.78 𗈮||r- -ai̱r|རྸཨི
+R.84|1.79 𗟶|2.72 𘊝|r- -ir|རྸི
+R.85|1.80 𗴐|2.73 𗐔|r- -a̱r|རྸའ
+R.86|1.81 𗉾||r- -aa̱r|རྸཨ
+R.87|1.82 𗸪|2.74 𗔻|r- -ar|རྸ
+R.88|1.83 𗧵||n- -a̱r|འརྸའ
+R.89||2.75 𗡗|r- -awr|རྸག༹
+R.90|1.84 𗙅|2.76 𘟐|r- -ə̱r|རྸའྀ
+R.91|1.85 𗱘||r- -aə̱r|རྸཨྀ
+R.92|1.86 𗲆|2.77 𗬼|r- -ər|རྸྀ
+R.93|1.87 𗨎|2.78 𘜔|r- -i̱wr|རྸའིག༹
+R.94|1.88 𗖬|2.79 𘞫|r- -iwr|རྸིག༹
+R.95|1.89 𘈆|2.80 𘏴|r- -o̱r|རྸའོ
+R.96|1.90 𗑑|2.81 𗟽|r- -ao̱r, r- -or|རྸཨོ, རྸོ
+R.97|1.91 𗔶|2.82 𗡹|r- -o̱ṃr|རྸའོམ
+R.98||2.83 𘊈|(r- -oṃr?)|རྸོམ?`},
+      { id:"cycle-misc", title:"垃圾桶類別（R.99 至 R.105）", rows:`
+R.99||2.84 𗁌|(n- -e̱r?)|འརྸའེ?
+R.100|1.92 𗂴|2.85 𗉕|(r- -ər?)|རྸྀ?
+R.101|1.93 𗹙|2.86 𗎫|(r- -er?)|རྸེ?
+R.102|1.94 𗂌||(r- -or?)|རྸོ?
+R.103|1.95 𗌜||(r- -or?)|རྸོ?
+R.104|1.96 𗜰||-u̱ṃ|ཨའུམ
+R.105|1.97 𗇜||(r- -ar?)|རྸ?`}
+    ];
+
+    const el = (tag, className, text) => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    function renderInitials() {
+      const table = document.querySelector('#initial-table');
+      const head = el('thead'); const hr = el('tr');
+      initials.groups.forEach(g => { const th = el('th', '', g); th.colSpan = 2; hr.append(th); });
+      head.append(hr); table.append(head); const body = el('tbody');
+      initials.rows.forEach(row => { const tr = el('tr'); row.forEach(pair => {
+        tr.append(el('td', 'phonetic', pair[0]), el('td', 'tibetan', pair[1]));
+      }); body.append(tr); }); table.append(body);
+    }
+    function renderVowels() {
+      const table = document.querySelector('#vowel-table'); const head = el('thead'); const hr = el('tr');
+      vowels.groups.forEach((g,i) => { const th=el('th','',g); th.colSpan=i?2:1; hr.append(th); }); head.append(hr); table.append(head);
+      const body=el('tbody'); vowels.rows.forEach(row => { const tr=el('tr'); tr.append(el('td','',row[0]));
+        row.slice(1).forEach(pair => tr.append(el('td','phonetic',pair[0]),el('td','tibetan',pair[1]))); body.append(tr); }); table.append(body);
+    }
+    function renderTests() {
+      const cards=document.querySelector('#word-cards'); words.forEach(([tx,gx,bo]) => {
+        const card=el('article','word-card'); card.append(el('span','tangut',tx)); const dl=el('dl');
+        dl.append(el('dt','', 'GX'),el('dd','phonetic',gx),el('dt','', '藏文'),el('dd','tibetan',bo)); card.append(dl); cards.append(card);
+      });
+      const body=document.querySelector('#sentence-table tbody'); sentences.forEach(([tx,gx,bo]) => {
+        const tr=el('tr'); tr.append(el('td','tangut',tx),el('td','phonetic',gx),el('td','tibetan',bo)); body.append(tr);
+      });
+    }
+    function parsedRows(group) { return group.rows.trim().split('\n').map(line => line.split('|')); }
+    function renderRhymes(query='') {
+      const host=document.querySelector('#rhyme-groups'); host.replaceChildren(); let shown=0;
+      rhymeGroups.forEach(group => {
+        const rows=parsedRows(group).filter(row => row.join(' ').toLocaleLowerCase().includes(query));
+        if (!rows.length) return; shown += rows.length;
+        const section=el('section'); section.id=group.id; section.append(el('h3','',group.title));
+        const wrap=el('div','table-wrap'); const table=el('table','rhyme-table');
+        const head=el('thead'); const hr=el('tr'); ['韻類','平聲韻部','上聲韻部','GX','藏文'].forEach(x=>hr.append(el('th','',x))); head.append(hr); table.append(head);
+        const body=el('tbody'); rows.forEach(row => { const tr=el('tr'); row.forEach((value,i)=>tr.append(el('td',i===3?'phonetic':i===4?'tibetan':'',value))); body.append(tr); });
+        table.append(body); wrap.append(table); section.append(wrap); host.append(section);
+      });
+      document.querySelector('#rhyme-count').textContent=`${shown} / 105`;
+    }
+    renderInitials(); renderVowels(); renderTests(); renderRhymes();
+    document.querySelector('#rhyme-filter').addEventListener('input', event => renderRhymes(event.target.value.trim().toLocaleLowerCase()));
+  </script>
+</body>
+</html>
