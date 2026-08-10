@@ -8,48 +8,38 @@
   <title>党項語藏文轉寫方案</title>
   <style>
     @font-face {
-      font-family: "Libertinus Serif Web";
-      src: local("Libertinus Serif"), url("fonts/LibertinusSerif-Regular.woff2") format("woff2");
+      font-family: "Libertinus Sans Web";
+      src: url("fonts/LibertinusSans-Regular.woff2") format("woff2");
       font-weight: 400; font-style: normal; font-display: swap;
     }
     @font-face {
-      font-family: "Libertinus Serif Web";
-      src: local("Libertinus Serif Italic"), url("fonts/LibertinusSerif-Italic.woff2") format("woff2");
+      font-family: "Libertinus Sans Web";
+      src: url("fonts/LibertinusSans-Italic.woff2") format("woff2");
       font-weight: 400; font-style: italic; font-display: swap;
     }
     @font-face {
-      font-family: "Libertinus Serif Web";
-      src: local("Libertinus Serif Semibold"), url("fonts/LibertinusSerif-Semibold.woff2") format("woff2");
-      font-weight: 600; font-style: normal; font-display: swap;
+      font-family: "Libertinus Sans Web";
+      src: url("fonts/LibertinusSans-Bold.woff2") format("woff2");
+      font-weight: 600 700; font-style: normal; font-display: swap;
     }
     @font-face {
-      font-family: "Libertinus Serif Web";
-      src: local("Libertinus Serif Bold"), url("fonts/LibertinusSerif-Bold.woff2") format("woff2");
-      font-weight: 700; font-style: normal; font-display: swap;
-    }
-    @font-face {
-      font-family: "Noto Serif TC Web";
-      src: local("Noto Serif TC"), url("fonts/NotoSerifTC-Regular.woff2") format("woff2");
+      font-family: "Shanggu Sans Web";
+      src: url("fonts/ShangguSans-Regular.woff2") format("woff2");
       font-weight: 400; font-style: normal; font-display: swap;
     }
     @font-face {
-      font-family: "Noto Serif TC Web";
-      src: local("Noto Serif TC Bold"), url("fonts/NotoSerifTC-Bold.woff2") format("woff2");
+      font-family: "Shanggu Sans Web";
+      src: url("fonts/ShangguSans-Bold.woff2") format("woff2");
       font-weight: 700; font-style: normal; font-display: swap;
-    }
-    @font-face {
-      font-family: "Noto Serif CJK Fallback Web";
-      src: url("fonts/NotoSerifCJKFallback-Regular.woff2") format("woff2");
-      font-weight: 400; font-style: normal; font-display: swap;
     }
     @font-face {
       font-family: "Noto Serif Tangut Web";
-      src: local("Noto Serif Tangut"), url("fonts/NotoSerifTangut-Regular.woff2") format("woff2");
+      src: url("fonts/NotoSerifTangut-Regular.woff2") format("woff2");
       font-weight: 400; font-style: normal; font-display: swap;
     }
     @font-face {
       font-family: "Noto Serif Tibetan Web";
-      src: local("Noto Serif Tibetan"), url("fonts/NotoSerifTibetan-Regular.woff2") format("woff2");
+      src: url("fonts/NotoSerifTibetan-Regular.woff2") format("woff2");
       font-weight: 400; font-style: normal; font-display: swap;
     }
     :root {
@@ -59,7 +49,7 @@
       --line-strong: #b9c0c8;
       --accent: #315b7d;
       --soft: #f4f6f8;
-      font-family: "Libertinus Serif Web", "Noto Serif TC Web", "Noto Serif CJK Fallback Web", serif;
+      font-family: "Libertinus Sans Web", "Shanggu Sans Web", sans-serif;
       color: var(--ink);
       background: #fff;
       font-synthesis: none;
@@ -99,7 +89,7 @@
     thead th { background: var(--soft); color: #3f4852; font-size: .76rem; font-weight: 700; letter-spacing: .02em; }
     tbody tr:last-child td { border-bottom: 0; }
     tbody tr:hover { background: #f8fafb; }
-    .phonetic { font-family: "Libertinus Serif Web", serif; font-style: italic; }
+    .phonetic { font-family: "Libertinus Sans Web", sans-serif; font-style: italic; }
     .tibetan { font-family: "Noto Serif Tibetan Web", serif; font-size: 1.35em; line-height: 1.2; }
     .tangut { font-family: "Noto Serif Tangut Web", serif; font-size: 1.45em; }
     .matrix td.phonetic { color: var(--ink); }
@@ -120,7 +110,7 @@
     .filter input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px #dce7ef; }
     .count { color: var(--muted); font-size: .8rem; white-space: nowrap; }
     .rhyme-table td:first-child { color: var(--accent); font-weight: 650; }
-    .rhyme-table td:nth-child(2), .rhyme-table td:nth-child(3) { font-family: "Noto Serif Tangut Web", "Libertinus Serif Web", serif; }
+    .rhyme-table td:nth-child(2), .rhyme-table td:nth-child(3) { font-family: "Noto Serif Tangut Web", "Libertinus Sans Web", sans-serif; }
     .rhyme-table td:nth-child(-n+3) { white-space: nowrap; }
     footer { margin-top: 4rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; }
     @media (max-width: 850px) {
