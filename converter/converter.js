@@ -9,10 +9,17 @@
   const TSA_PHRU = "༹";
   const TSHEG = "་";
   const SHAD = "།";
+  const NYIS_SHAD = "༎";
   const SUB_WA = "ྭ";
   const SUB_YA = "ྱ";
   const SUB_A = "ྸ";
   const SUPER_SA = "ས";
+  const QUOTES = new Set(['"', "“", "”", "'", "‘", "’", "「", "」", "『", "』"]);
+  const BOX_MARKS = new Set([
+    "□", "■", "▢", "▣", "▤", "▥", "▦", "▧", "▨", "▩", "▪", "▫",
+    "◧", "◨", "◩", "◪", "◫", "◰", "◱", "◲", "◳", "◻", "◼",
+    "⬜", "⬛", "☐", "☒", "☑", "〓", "�"
+  ]);
 
   const initials = [
     ["tśh", "ཆ"], ["tṣh", "ཆ"], ["tsh", "ཚ"],
@@ -97,7 +104,9 @@
     // Do not apply NFC/NFD to Tibetan here.  Canonical combining-class
     // reordering can move U+0F39 behind a vowel sign, undoing the shaping
     // order deliberately used by this orthography.
-    let value = String(input);
+    let value = String(input)
+      .replace(/([\u0F40-\u0FBC])[\s"“”'‘’「」『』]+(?=[\u0F40-\u0FBC])/gu, `$1${TSHEG}`)
+      .replace(/["“”'‘’「」『』]/gu, "");
     // U+0F39 interrupts a Tibetan stack.  Move it behind all following
     // subjoined consonants: shaping stability is the canonical rule here.
     let previous;
@@ -398,19 +407,24 @@
     let output = "";
     let cursor = 0;
     let converted = 0;
+    let previousWasSyllable = false;
     const errors = [];
     for (const match of source.matchAll(token)) {
       const gap = source.slice(cursor, match.index);
-      if (converted && /^\s*$/u.test(gap)) output += TSHEG;
-      else output += punctuationToTibetan(gap);
+      let tokenOutput = match[0];
+      let currentIsSyllable = false;
       try {
         const canonicalGx = /[¹²?]$/u.test(match[0]) ? match[0] : parseXunpin(match[0]);
-        output += gxSyllableToTibetan(canonicalGx);
+        tokenOutput = gxSyllableToTibetan(canonicalGx);
+        currentIsSyllable = true;
       } catch (error) {
         errors.push(`${match[0]}：${error.message}`);
-        output += match[0];
       }
+      if (previousWasSyllable && currentIsSyllable && isSyllableSeparator(gap)) output += TSHEG;
+      else output += punctuationToTibetan(gap);
+      output += tokenOutput;
       converted += 1;
+      previousWasSyllable = currentIsSyllable;
       cursor = match.index + match[0].length;
     }
     output += punctuationToTibetan(source.slice(cursor));
@@ -418,16 +432,44 @@
     return { output, errors };
   }
 
+  function isSyllableSeparator(value) {
+    return [...value].every(character => /\s/u.test(character) || QUOTES.has(character));
+  }
+
   function punctuationToTibetan(value) {
-    return value
-      .replace(/\s+/gu, "")
-      .replace(/[，,；;]/gu, SHAD)
-      .replace(/[。\.]/gu, SHAD + SHAD);
+    let output = "";
+    for (let index = 0; index < value.length;) {
+      if (value.startsWith("\\?", index)) {
+        output += NYIS_SHAD + " ";
+        index += 2;
+        continue;
+      }
+      if (value.startsWith("...", index)) {
+        let end = index + 3;
+        while (value[end] === ".") end += 1;
+        output += value.slice(index, end);
+        index = end;
+        continue;
+      }
+      const character = String.fromCodePoint(value.codePointAt(index));
+      index += character.length;
+      if (/\s/u.test(character) || QUOTES.has(character)) continue;
+      if (character === "…" || BOX_MARKS.has(character)) {
+        output += character;
+      } else if (/[.。?？!！]/u.test(character)) {
+        output += NYIS_SHAD + " ";
+      } else if (/[,，;；:：、]/u.test(character) || /\p{P}/u.test(character)) {
+        output += SHAD + " ";
+      } else {
+        output += character;
+      }
+    }
+    return output;
   }
 
   function tibetanToGx(input) {
     const source = normalizeTibetan(input);
-    const parts = source.split(/(།།|།|་|\s+)/u);
+    const parts = source.split(/(༎|།།|།|་|\s+)/u);
     const errors = [];
     const output = [];
     let needSpace = false;
@@ -437,9 +479,9 @@
         needSpace = output.length > 0;
         continue;
       }
-      if (part === "།།" || part === "།") {
+      if (part === "༎" || part === "།།" || part === "།") {
         if (output.length && output[output.length - 1] === " ") output.pop();
-        output.push(part === "།།" ? "." : ",");
+        output.push(part === "།" ? "," : ".");
         needSpace = true;
         continue;
       }

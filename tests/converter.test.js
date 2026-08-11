@@ -80,21 +80,44 @@ for (const [gx, tibetan] of wDerivedForms) {
 assert.throws(() => converter.tibetanSyllableToGx("ཨྷི"), /不是本方案/u);
 
 const sentenceGx = "mə̱¹ lləh² rur¹ qae̱h² ne²,";
-const sentenceTibetan = "མའྀ་སྡྀ༹ས་རྸུ་སྐཨེས་ནེས།";
+const sentenceTibetan = "མའྀ་སྡྀ༹ས་རྸུ་སྐཨེས་ནེས། ";
 assert.equal(converter.gxToTibetan(sentenceGx).output, sentenceTibetan);
 assert.equal(converter.tibetanToGx(sentenceTibetan).output, sentenceGx);
 assert.equal(converter.tibetanToGx("ནེས།ཕུས").output, "ne², phu²");
 assert.equal(converter.tibetanToGx("ནེས།།ཕུས").output, "ne². phu²");
 
 const sentences = [
-  ["bi̱² lhih² tśhə¹ zoh² śa².", "བའིས་སྠི༹ས་ཆྀ་སྯོས་ཤས།།"],
-  ["swi̱w¹ na̱¹ ẓaə̱h¹ rtṣai̱r¹ dẓae̱²,", "སྭའིག༹་ནའ་སྮཨྀ་རྕཨི་ཇཨེས།"],
-  ["tsa¹ da̱h² phu² bi² ŋwe̱².", "ཙ་སྡའས་ཕུས་བིས་ངྭའེས།།"]
+  ["bi̱² lhih² tśhə¹ zoh² śa².", "བའིས་སྠི༹ས་ཆྀ་སྯོས་ཤས༎ "],
+  ["swi̱w¹ na̱¹ ẓaə̱h¹ rtṣai̱r¹ dẓae̱²,", "སྭའིག༹་ནའ་སྮཨྀ་རྕཨི་ཇཨེས། "],
+  ["tsa¹ da̱h² phu² bi² ŋwe̱².", "ཙ་སྡའས་ཕུས་བིས་ངྭའེས༎ "]
 ];
 for (const [gx, tibetan] of sentences) {
   assert.equal(converter.gxToTibetan(gx).output, tibetan, `${gx} sentence forward`);
   assert.equal(converter.tibetanToGx(tibetan).output, gx, `${gx} sentence reverse`);
 }
+
+const punctuationCases = [
+  ["ba¹: \"za¹?\"", "བ། ཟ༎ "],
+  ["ba¹, za¹", "བ། ཟ"],
+  ["ba¹。za¹！", "བ༎ ཟ༎ "],
+  ["śeṃ¹\"yə²", "ཤེམ་ཡྀས"],
+  ["ba¹「za¹」", "བ་ཟ"],
+  ["ba¹…za¹", "བ…ཟ"],
+  ["ba¹……za¹", "བ……ཟ"],
+  ["ba¹...za¹", "བ...ཟ"],
+  ["ba¹□za¹", "བ□ཟ"],
+  ["ba??", "བ?༎ "],
+  ["ba¹?", "བ༎ "],
+  ["dźə?", "ཇྀ?"],
+  ["dźə??", "ཇྀ?༎ "],
+  ["foo\\?", converter.gxSyllableToTibetan("fo̱¹") + "༎ "]
+];
+for (const [input, expected] of punctuationCases) {
+  assert.equal(converter.gxToTibetan(input).output, expected, `${input} punctuation`);
+}
+assert.equal(converter.normalizeTibetan("ཤེམ\"ཡྀས"), "ཤེམ་ཡྀས");
+assert.equal(converter.tibetanToGx("ཤེམ\"ཡྀས").output, "śeṃ¹ yə²");
+assert.equal(converter.tibetanToGx("ནེས༎ཕུས").output, "ne². phu²");
 
 const roundTrips = [
   "bu̱¹", "bu¹", "bau̱¹", "bi̱¹", "bai̱¹", "bi¹", "bi̱ṃ¹", "biṃ¹",
@@ -120,4 +143,4 @@ for (const gx of roundTrips) {
   }, `${gx} should parse and round-trip`);
 }
 
-console.log(`ok - ${19 + examples.length + shapingPairs.length + 14 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);
+console.log(`ok - ${36 + examples.length + shapingPairs.length + 14 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);
