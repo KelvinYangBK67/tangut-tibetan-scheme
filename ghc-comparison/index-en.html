@@ -5,53 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A structural correspondence chart between the Tangut Tibetan transcription and GHC.">
   <title>Tibetan Transcription and GHC Correspondence</title>
+  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v4" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v4" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v4">
-  <style>
-    @font-face { font-family: "Libertinus"; src: url("../fonts/LibertinusSans-Regular.woff2") format("woff2"); font-display: swap; }
-    @font-face { font-family: "Tibetan"; src: url("../fonts/NotoSerifTibetan-Regular.woff2") format("woff2"); font-display: swap; }
-    :root { color: #20242a; background: #f4f6f8; font: 17px/1.7 "Libertinus", "Shanggu Web", sans-serif; }
-    * { box-sizing: border-box; } body { margin: 0; } .layout { display: grid; grid-template-columns: 16rem minmax(0, 1fr); min-height: 100vh; }
-    aside { padding: 3rem 1.5rem; color: #eaf0f4; background: #273e52; } aside a { display: block; margin: .5rem 0; color: #d8e7f2; }
-    main { width: min(62rem, 100%); padding: clamp(2rem, 6vw, 5rem); } h1 { font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.1; } h2 { margin-top: 3rem; }
-    a { color: #315b7d; } table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 .8rem 2.5rem rgba(29,43,56,.08); }
-    th, td { border-bottom: 1px solid #d6dce2; padding: .65rem .8rem; text-align: left; vertical-align: top; } th { background: #eef2f5; }
-    .tibetan { font-family: "Tibetan", serif; font-size: 1.25em; } code { white-space: nowrap; } .note { color: #586574; }
-    footer { margin-top: 4rem; border-top: 1px solid #d6dce2; padding-top: 1rem; color: #68717c; }
-    @media (max-width: 760px) { .layout { display: block; } aside { padding: 1rem; } main { padding: 1rem; } }
-  </style>
+  <link rel="stylesheet" href="../scheme.css?v=20260811">
 </head>
-<body><div class="layout">
-  <aside><h2>Tibetan × GHC</h2><a href="../converter/">Converter</a><a href="../党項語藏文轉寫方案.html">Tibetan scheme</a><a href="index.html">中文</a><a href="Tibetan-GHC-Correspondence.pdf">Download PDF</a></aside>
-  <main>
-    <header><p>Tangut · Tibetan · GHC</p><h1>Tibetan Transcription and GHC Correspondence</h1><p>This chart compares the Tibetan structures actually used by the scheme with Gong Hwang-cherng’s reconstruction (GHC). Tibetan spelling preserves rhyme-table categories, while GX and GHC give different phonological readings of the same orthographic features.</p></header>
-    <h2>Vowels and grades</h2>
-    <table><thead><tr><th>Tibetan spelling</th><th>GX</th><th>GHC</th></tr></thead><tbody>
-      <tr><td class="tibetan">C</td><td>Ca</td><td>Cja</td></tr><tr><td class="tibetan">Cེ</td><td>Ce</td><td>Cjij</td></tr>
-      <tr><td class="tibetan">Cི</td><td>Ci</td><td>Cji</td></tr><tr><td class="tibetan">Cོ</td><td>Co</td><td>Cjo</td></tr>
-      <tr><td class="tibetan">Cུ</td><td>Cu</td><td>Cju</td></tr><tr><td class="tibetan">Cྀ</td><td>Cə</td><td>Cjɨ</td></tr>
-      <tr><td class="tibetan">Cའ</td><td>Ca̱</td><td>Ca</td></tr><tr><td class="tibetan">Cའེ</td><td>Ce̱</td><td>Cej</td></tr>
-      <tr><td class="tibetan">Cའི</td><td>Ci̱</td><td>Ce</td></tr><tr><td class="tibetan">Cའོ</td><td>Co̱</td><td>Co</td></tr>
-      <tr><td class="tibetan">Cའུ</td><td>Cu̱</td><td>Cu</td></tr><tr><td class="tibetan">Cའྀ</td><td>Cə̱</td><td>Cə</td></tr>
-    </tbody></table>
-    <h2>Structural devices</h2>
-    <table><thead><tr><th>Tibetan device</th><th>Rhyme-table category</th><th>GHC result</th></tr></thead><tbody>
-      <tr><td>postposed <span class="tibetan">འ</span></td><td>Grade I</td><td>vowel series without <code>j-</code></td></tr>
-      <tr><td>preposed <span class="tibetan">འ-</span></td><td>marked/column-2 series</td><td>corresponding long-vowel series</td></tr>
-      <tr><td><span class="tibetan">ར-</span> retroflex spelling</td><td>retroflex rhyme</td><td>final <code>-r</code></td></tr>
-      <tr><td>superscribed <span class="tibetan">ས-</span></td><td>tense rhyme</td><td>underdotted vowel</td></tr>
-      <tr><td><span class="tibetan">-མ</span></td><td>GX <code>-ṃ</code></td><td>nasalized or corresponding <code>-j/-w</code> rhyme</td></tr>
-      <tr><td><span class="tibetan">-ག༹</span></td><td>GX <code>-w</code></td><td>corresponding <code>-w</code> rhyme</td></tr>
-      <tr><td>no suffix / <span class="tibetan">-ས</span>／<code>?</code></td><td>level / rising / uncertain tone</td><td><code>¹／²／?</code></td></tr>
-    </tbody></table>
-    <h2>R.79/101 and R.92/100</h2>
-    <table><thead><tr><th>Rhyme</th><th>Tibetan</th><th>GX input</th><th>GHC</th></tr></thead><tbody>
-      <tr><td>R.79</td><td class="tibetan">…ར…ེ</td><td><code>-er</code></td><td><code>-jijr</code></td></tr>
-      <tr><td>R.101</td><td class="tibetan">འ…ར…ེ</td><td><code>-\er</code></td><td><code>-jiir</code></td></tr>
-      <tr><td>R.92</td><td class="tibetan">…ར…ྀ</td><td><code>-ər</code></td><td><code>-jɨr</code></td></tr>
-      <tr><td>R.100</td><td class="tibetan">འ…ར…ྀ</td><td><code>-\ər</code></td><td><code>-jɨɨr</code></td></tr>
-    </tbody></table>
-    <p class="note">GX merges each pair, so automatic GX → Tibetan conversion defaults to R.79/R.92. The backslash is a converter-only input extension that explicitly requests R.101/R.100; Tibetan → GX still defaults to standard GX.</p>
-    <p>Sources: <a href="https://homepage.univie.ac.at/xun.gong/tangut/phonology-202409.html">Gong Xun, <cite>Tangut phonology</cite></a>; <a href="https://semakosa.github.io/tangut-pronunciation-db/docs/GX202411-zh.html">GX202411</a>。</p>
-    <footer>© 2026 Kelvin Yang · CC BY-NC-SA 4.0</footer>
-  </main>
-</div></body></html>
+<body>
+  <div class="layout">
+    <aside class="rail">
+      <p class="rail-title">Tibetan Transcription and GHC Correspondence</p>
+      <p class="rail-meta">Kelvin Yang · August 2026</p>
+      <nav aria-label="Section navigation">
+        <a href="../converter/">Converter</a>
+        <a href="../党項語藏文轉寫方案-en.html">Tibetan scheme</a>
+        <a href="index.html">中文</a>
+        <a href="#vowels">Vowels and grades</a>
+        <a href="#structures">Structural devices</a>
+        <a href="#rhotic">R.79/101 and R.92/100</a>
+      </nav>
+      <p class="rail-foot"><a href="Tibetan-GHC-Correspondence.pdf">Download the PDF</a></p>
+    </aside>
+    <main>
+      <header class="hero">
+        <p class="eyebrow">Tangut · Tibetan · GHC</p>
+        <h1>Tibetan Transcription and GHC Correspondence</h1>
+        <p class="lead">This chart compares the Tibetan structures actually used by the scheme with Gong Hwang-cherng’s reconstruction (GHC). Tibetan spelling preserves rhyme-table categories, while GX and GHC give different phonological readings of the same orthographic features.</p>
+        <div class="hero-meta"><span>Kelvin Yang</span><span>August 2026</span></div>
+      </header>
+      <section id="vowels">
+        <div class="section-head"><span class="section-no">01</span><h2>Vowels and grades</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>Tibetan spelling</th><th>GX</th><th>GHC</th></tr></thead><tbody>
+          <tr><td class="tibetan">ཨ</td><td class="phonetic">Ca</td><td class="phonetic">Cja</td></tr>
+          <tr><td class="tibetan">ཨེ</td><td class="phonetic">Ce</td><td class="phonetic">Cjij</td></tr>
+          <tr><td class="tibetan">ཨི</td><td class="phonetic">Ci</td><td class="phonetic">Cji</td></tr>
+          <tr><td class="tibetan">ཨོ</td><td class="phonetic">Co</td><td class="phonetic">Cjo</td></tr>
+          <tr><td class="tibetan">ཨུ</td><td class="phonetic">Cu</td><td class="phonetic">Cju</td></tr>
+          <tr><td class="tibetan">ཨྀ</td><td class="phonetic">Cə</td><td class="phonetic">Cjɨ</td></tr>
+          <tr><td class="tibetan">ཨའ</td><td class="phonetic">Ca̱</td><td class="phonetic">Ca</td></tr>
+          <tr><td class="tibetan">ཨའེ</td><td class="phonetic">Ce̱</td><td class="phonetic">Cej</td></tr>
+          <tr><td class="tibetan">ཨའི</td><td class="phonetic">Ci̱</td><td class="phonetic">Ce</td></tr>
+          <tr><td class="tibetan">ཨའོ</td><td class="phonetic">Co̱</td><td class="phonetic">Co</td></tr>
+          <tr><td class="tibetan">ཨའུ</td><td class="phonetic">Cu̱</td><td class="phonetic">Cu</td></tr>
+          <tr><td class="tibetan">ཨའྀ</td><td class="phonetic">Cə̱</td><td class="phonetic">Cə</td></tr>
+        </tbody></table></div>
+      </section>
+      <section id="structures">
+        <div class="section-head"><span class="section-no">02</span><h2>Structural devices</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>Tibetan device</th><th>Rhyme-table category</th><th>GHC result</th></tr></thead><tbody>
+          <tr><td>postposed <span class="tibetan">འ</span></td><td>Grade I</td><td>vowel series without <code>j-</code></td></tr>
+          <tr><td>preposed <span class="tibetan">འ-</span></td><td>marked/column-2 series</td><td>corresponding long-vowel series</td></tr>
+          <tr><td><span class="tibetan">ར-</span> retroflex spelling</td><td>retroflex rhyme</td><td>final <code>-r</code></td></tr>
+          <tr><td>superscribed <span class="tibetan">ས-</span></td><td>tense rhyme</td><td>underdotted vowel</td></tr>
+          <tr><td><span class="tibetan">-མ</span></td><td>GX <code>-ṃ</code></td><td>nasalized or corresponding <code>-j/-w</code> rhyme</td></tr>
+          <tr><td><span class="tibetan">-ག༹</span></td><td>GX <code>-w</code></td><td>corresponding <code>-w</code> rhyme</td></tr>
+          <tr><td>no suffix/<span class="tibetan">-ས</span>/<code>?</code></td><td>level/rising/uncertain tone</td><td><code>¹/²/?</code></td></tr>
+        </tbody></table></div>
+      </section>
+      <section id="rhotic">
+        <div class="section-head"><span class="section-no">03</span><h2>R.79/101 and R.92/100</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>Rhyme</th><th>Tibetan</th><th>GX</th><th>GHC</th></tr></thead><tbody>
+          <tr><td>R.79</td><td class="tibetan">རྸེ</td><td class="phonetic">-er</td><td class="phonetic">-jijr</td></tr>
+          <tr><td>R.101</td><td class="tibetan">འརྸེ</td><td class="phonetic">-er</td><td class="phonetic">-jiir</td></tr>
+          <tr><td>R.92</td><td class="tibetan">རྸྀ</td><td class="phonetic">-ər</td><td class="phonetic">-jɨr</td></tr>
+          <tr><td>R.100</td><td class="tibetan">འརྸྀ</td><td class="phonetic">-ər</td><td class="phonetic">-jɨɨr</td></tr>
+        </tbody></table></div>
+        <p class="note">GX merges R.79/R.101 and R.92/R.100; this scheme preserves the traditional distinctions through the presence or absence of preposed <span class="tibetan">འ</span>.</p>
+        <p>Sources: <a href="https://homepage.univie.ac.at/xun.gong/tangut/phonology-202409.html">Gong Xun, <cite>Tangut phonology</cite></a>; <a href="https://semakosa.github.io/tangut-pronunciation-db/docs/GX202411-zh.html">GX202411</a>.</p>
+      </section>
+      <footer>© 2026 Kelvin Yang · CC BY-NC-SA 4.0</footer>
+    </main>
+  </div>
+</body>
+</html>

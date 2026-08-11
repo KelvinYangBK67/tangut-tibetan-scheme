@@ -5,53 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="党項語藏文轉寫與龔煌城擬音（GHC）的結構對照簡表。">
   <title>藏文轉寫與 GHC 對照簡表</title>
+  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v4" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v4" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v4">
-  <style>
-    @font-face { font-family: "Libertinus"; src: url("../fonts/LibertinusSans-Regular.woff2") format("woff2"); font-display: swap; }
-    @font-face { font-family: "Tibetan"; src: url("../fonts/NotoSerifTibetan-Regular.woff2") format("woff2"); font-display: swap; }
-    :root { color: #20242a; background: #f4f6f8; font: 17px/1.7 "Libertinus", "Shanggu Web", sans-serif; }
-    * { box-sizing: border-box; } body { margin: 0; } .layout { display: grid; grid-template-columns: 16rem minmax(0, 1fr); min-height: 100vh; }
-    aside { padding: 3rem 1.5rem; color: #eaf0f4; background: #273e52; } aside a { display: block; margin: .5rem 0; color: #d8e7f2; }
-    main { width: min(62rem, 100%); padding: clamp(2rem, 6vw, 5rem); } h1 { font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.1; } h2 { margin-top: 3rem; }
-    a { color: #315b7d; } table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 .8rem 2.5rem rgba(29,43,56,.08); }
-    th, td { border-bottom: 1px solid #d6dce2; padding: .65rem .8rem; text-align: left; vertical-align: top; } th { background: #eef2f5; }
-    .tibetan { font-family: "Tibetan", serif; font-size: 1.25em; } code { white-space: nowrap; } .note { color: #586574; }
-    footer { margin-top: 4rem; border-top: 1px solid #d6dce2; padding-top: 1rem; color: #68717c; }
-    @media (max-width: 760px) { .layout { display: block; } aside { padding: 1rem; } main { padding: 1rem; } }
-  </style>
+  <link rel="stylesheet" href="../scheme.css?v=20260811">
 </head>
-<body><div class="layout">
-  <aside><h2>藏文 × GHC</h2><a href="../converter/">互轉工具</a><a href="../党項語藏文轉寫方案.html">藏文轉寫方案</a><a href="index-en.html">English</a><a href="藏文轉寫與GHC對照簡表.pdf">下載 PDF</a></aside>
-  <main>
-    <header><p>Tangut · Tibetan · GHC</p><h1>藏文轉寫與 GHC 對照簡表</h1><p>本表將本方案已實際使用的藏文結構與龔煌城擬音（GHC）對照。藏文拼寫保存的是聲韻地位；GX 與 GHC 則是對同一批正字特徵的兩種讀音分析。</p></header>
-    <h2>元音與等第</h2>
-    <table><thead><tr><th>藏文拼寫</th><th>GX</th><th>GHC</th></tr></thead><tbody>
-      <tr><td class="tibetan">C</td><td>Ca</td><td>Cja</td></tr><tr><td class="tibetan">Cེ</td><td>Ce</td><td>Cjij</td></tr>
-      <tr><td class="tibetan">Cི</td><td>Ci</td><td>Cji</td></tr><tr><td class="tibetan">Cོ</td><td>Co</td><td>Cjo</td></tr>
-      <tr><td class="tibetan">Cུ</td><td>Cu</td><td>Cju</td></tr><tr><td class="tibetan">Cྀ</td><td>Cə</td><td>Cjɨ</td></tr>
-      <tr><td class="tibetan">Cའ</td><td>Ca̱</td><td>Ca</td></tr><tr><td class="tibetan">Cའེ</td><td>Ce̱</td><td>Cej</td></tr>
-      <tr><td class="tibetan">Cའི</td><td>Ci̱</td><td>Ce</td></tr><tr><td class="tibetan">Cའོ</td><td>Co̱</td><td>Co</td></tr>
-      <tr><td class="tibetan">Cའུ</td><td>Cu̱</td><td>Cu</td></tr><tr><td class="tibetan">Cའྀ</td><td>Cə̱</td><td>Cə</td></tr>
-    </tbody></table>
-    <h2>主要結構</h2>
-    <table><thead><tr><th>藏文手段</th><th>聲韻地位</th><th>GHC 結果</th></tr></thead><tbody>
-      <tr><td>後置 <span class="tibetan">འ</span></td><td>一等</td><td>無 <code>j-</code> 的元音系列</td></tr>
-      <tr><td>前置 <span class="tibetan">འ-</span></td><td>marked／column-2 系列</td><td>相應長元音系列</td></tr>
-      <tr><td><span class="tibetan">ར-</span> 卷舌拼寫</td><td>捲舌韻</td><td>韻尾 <code>-r</code></td></tr>
-      <tr><td>上加 <span class="tibetan">ས-</span></td><td>緊韻</td><td>元音下點</td></tr>
-      <tr><td><span class="tibetan">-མ</span></td><td>GX <code>-ṃ</code></td><td>鼻化或相應 <code>-j/-w</code> 韻</td></tr>
-      <tr><td><span class="tibetan">-ག༹</span></td><td>GX <code>-w</code></td><td>相應 <code>-w</code> 韻</td></tr>
-      <tr><td>無後綴／<span class="tibetan">-ས</span>／<code>?</code></td><td>平聲／上聲／存疑</td><td><code>¹／²／?</code></td></tr>
-    </tbody></table>
-    <h2>R.79／101 與 R.92／100</h2>
-    <table><thead><tr><th>韻類</th><th>藏文</th><th>GX 輸入</th><th>GHC</th></tr></thead><tbody>
-      <tr><td>R.79</td><td class="tibetan">…ར…ེ</td><td><code>-er</code></td><td><code>-jijr</code></td></tr>
-      <tr><td>R.101</td><td class="tibetan">འ…ར…ེ</td><td><code>-\er</code></td><td><code>-jiir</code></td></tr>
-      <tr><td>R.92</td><td class="tibetan">…ར…ྀ</td><td><code>-ər</code></td><td><code>-jɨr</code></td></tr>
-      <tr><td>R.100</td><td class="tibetan">འ…ར…ྀ</td><td><code>-\ər</code></td><td><code>-jɨɨr</code></td></tr>
-    </tbody></table>
-    <p class="note">GX 本身合併這兩組韻，因此自動 GX → 藏文預設輸出 R.79／R.92。反斜線只是一個轉換器輸入擴展，用來明確要求 R.101／R.100；藏文 → GX 預設仍回到標準 GX。</p>
-    <p>資料依據：<a href="https://homepage.univie.ac.at/xun.gong/tangut/phonology-202409.html">Gong Xun, <cite>Tangut phonology</cite></a>；<a href="https://semakosa.github.io/tangut-pronunciation-db/docs/GX202411-zh.html">GX202411</a>。</p>
-    <footer>© 2026 Kelvin Yang · CC BY-NC-SA 4.0</footer>
-  </main>
-</div></body></html>
+<body>
+  <div class="layout">
+    <aside class="rail">
+      <p class="rail-title">藏文轉寫與 GHC 對照簡表</p>
+      <p class="rail-meta">Kelvin Yang · 2026年8月</p>
+      <nav aria-label="章節導航">
+        <a href="../converter/">互轉工具</a>
+        <a href="../党項語藏文轉寫方案.html">藏文轉寫方案</a>
+        <a href="index-en.html">English</a>
+        <a href="#vowels">元音與等第</a>
+        <a href="#structures">主要結構</a>
+        <a href="#rhotic">R.79/101 與 R.92/100</a>
+      </nav>
+      <p class="rail-foot"><a href="藏文轉寫與GHC對照簡表.pdf">下載 PDF 版本</a></p>
+    </aside>
+    <main>
+      <header class="hero">
+        <p class="eyebrow">Tangut · Tibetan · GHC</p>
+        <h1>藏文轉寫與 GHC 對照簡表</h1>
+        <p class="lead">本表將本方案已實際使用的藏文結構與龔煌城擬音（GHC）對照。藏文拼寫保存的是聲韻地位；GX 與 GHC 則是對同一批正字特徵的兩種讀音分析。</p>
+        <div class="hero-meta"><span>Kelvin Yang</span><span>2026年8月</span></div>
+      </header>
+      <section id="vowels">
+        <div class="section-head"><span class="section-no">01</span><h2>元音與等第</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>藏文拼寫</th><th>GX</th><th>GHC</th></tr></thead><tbody>
+          <tr><td class="tibetan">ཨ</td><td class="phonetic">Ca</td><td class="phonetic">Cja</td></tr>
+          <tr><td class="tibetan">ཨེ</td><td class="phonetic">Ce</td><td class="phonetic">Cjij</td></tr>
+          <tr><td class="tibetan">ཨི</td><td class="phonetic">Ci</td><td class="phonetic">Cji</td></tr>
+          <tr><td class="tibetan">ཨོ</td><td class="phonetic">Co</td><td class="phonetic">Cjo</td></tr>
+          <tr><td class="tibetan">ཨུ</td><td class="phonetic">Cu</td><td class="phonetic">Cju</td></tr>
+          <tr><td class="tibetan">ཨྀ</td><td class="phonetic">Cə</td><td class="phonetic">Cjɨ</td></tr>
+          <tr><td class="tibetan">ཨའ</td><td class="phonetic">Ca̱</td><td class="phonetic">Ca</td></tr>
+          <tr><td class="tibetan">ཨའེ</td><td class="phonetic">Ce̱</td><td class="phonetic">Cej</td></tr>
+          <tr><td class="tibetan">ཨའི</td><td class="phonetic">Ci̱</td><td class="phonetic">Ce</td></tr>
+          <tr><td class="tibetan">ཨའོ</td><td class="phonetic">Co̱</td><td class="phonetic">Co</td></tr>
+          <tr><td class="tibetan">ཨའུ</td><td class="phonetic">Cu̱</td><td class="phonetic">Cu</td></tr>
+          <tr><td class="tibetan">ཨའྀ</td><td class="phonetic">Cə̱</td><td class="phonetic">Cə</td></tr>
+        </tbody></table></div>
+      </section>
+      <section id="structures">
+        <div class="section-head"><span class="section-no">02</span><h2>主要結構</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>藏文手段</th><th>聲韻地位</th><th>GHC 結果</th></tr></thead><tbody>
+          <tr><td>後置 <span class="tibetan">འ</span></td><td>一等</td><td>無 <code>j-</code> 的元音系列</td></tr>
+          <tr><td>前置 <span class="tibetan">འ-</span></td><td>marked/column-2 系列</td><td>相應長元音系列</td></tr>
+          <tr><td><span class="tibetan">ར-</span> 卷舌拼寫</td><td>捲舌韻</td><td>韻尾 <code>-r</code></td></tr>
+          <tr><td>上加 <span class="tibetan">ས-</span></td><td>緊韻</td><td>元音下點</td></tr>
+          <tr><td><span class="tibetan">-མ</span></td><td>GX <code>-ṃ</code></td><td>鼻化或相應 <code>-j/-w</code> 韻</td></tr>
+          <tr><td><span class="tibetan">-ག༹</span></td><td>GX <code>-w</code></td><td>相應 <code>-w</code> 韻</td></tr>
+          <tr><td>無後綴/<span class="tibetan">-ས</span>/<code>?</code></td><td>平聲/上聲/存疑</td><td><code>¹/²/?</code></td></tr>
+        </tbody></table></div>
+      </section>
+      <section id="rhotic">
+        <div class="section-head"><span class="section-no">03</span><h2>R.79/101 與 R.92/100</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>韻類</th><th>藏文</th><th>GX</th><th>GHC</th></tr></thead><tbody>
+          <tr><td>R.79</td><td class="tibetan">རྸེ</td><td class="phonetic">-er</td><td class="phonetic">-jijr</td></tr>
+          <tr><td>R.101</td><td class="tibetan">འརྸེ</td><td class="phonetic">-er</td><td class="phonetic">-jiir</td></tr>
+          <tr><td>R.92</td><td class="tibetan">རྸྀ</td><td class="phonetic">-ər</td><td class="phonetic">-jɨr</td></tr>
+          <tr><td>R.100</td><td class="tibetan">འརྸྀ</td><td class="phonetic">-ər</td><td class="phonetic">-jɨɨr</td></tr>
+        </tbody></table></div>
+        <p class="note">GX 本身合併 R.79/R.101 與 R.92/R.100；本方案則以有無前加 <span class="tibetan">འ</span> 保存傳統韻書中的區別。</p>
+        <p>資料依據：<a href="https://homepage.univie.ac.at/xun.gong/tangut/phonology-202409.html">Gong Xun, <cite>Tangut phonology</cite></a>；<a href="https://semakosa.github.io/tangut-pronunciation-db/docs/GX202411-zh.html">GX202411</a>。</p>
+      </section>
+      <footer>© 2026 Kelvin Yang · CC BY-NC-SA 4.0</footer>
+    </main>
+  </div>
+</body>
+</html>

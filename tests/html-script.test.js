@@ -15,9 +15,16 @@ for (const file of ["converter/index.html", "党項語藏文轉寫方案.html", 
 const home = fs.readFileSync("converter/index.html", "utf8");
 assert.doesNotMatch(home, /http-equiv="refresh"|location\.replace/u);
 assert.match(home, /<script src="converter\.js\?v=ghc-rhyme-classes-20260811"><\/script>/u);
-assert.match(home, /GX／勳拼 → 藏文/u);
+assert.match(home, /GX\/勳拼 → 藏文/u);
 assert.match(home, /GHC → 藏文/u);
 assert.match(home, /id="preserve-rhyme-marker"/u);
+assert.match(home, /id="language"/u);
+assert.match(home, /'zh-Hant': \{/u);
+assert.match(home, /instructionsTitle: 'Instructions'/u);
+assert.match(home, /instruction-punctuation/u);
+assert.match(home, /The GX → Tibetan direction also accepts/u);
+assert.match(home, /Sentence-final <code>/u);
+assert.match(home, /For complex stacks containing/u);
 assert.match(home, /ShangguSans-Bold-core\.woff2\?v=shanggu-web-v4/u);
 assert.match(home, /shanggu-web\.css\?v=shanggu-web-v4/u);
 assert.doesNotMatch(home, /shanggu-web-manifest|webfont-loader|data-font-warmup/u);
@@ -25,6 +32,31 @@ assert.doesNotMatch(home, /ShangguSans-(?:Regular|Bold)\.woff2/u);
 assert.match(home, /NotoSerifTibetan-Regular\.woff2\?v=full-20260810/u);
 assert.match(home, /id="input"/u);
 assert.match(home, /id="output"/u);
+
+const elements = new Map([...home.matchAll(/id="([^"]+)"/gu)].map(match => [match[1], {
+  value: "", textContent: "", innerHTML: "", href: "", hidden: false, checked: false,
+  listeners: {}, classList: { toggle() {} }, setAttribute() {}, focus() {}, select() {},
+  addEventListener(type, listener) { this.listeners[type] = listener; }
+}]));
+const metaDescription = { content: "" };
+const converterContext = {
+  GxTibetan: require("../converter/converter.js"),
+  navigator: { language: "en-US", clipboard: { writeText: async () => {} } },
+  localStorage: { getItem: () => "", setItem() {} },
+  document: {
+    title: "", documentElement: { lang: "" }, execCommand() {},
+    querySelector(selector) { return selector === 'meta[name="description"]' ? metaDescription : elements.get(selector.slice(1)); }
+  },
+  setTimeout() {}
+};
+const converterInline = [...home.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/giu)].at(-1)[1];
+new vm.Script(converterInline).runInNewContext(converterContext);
+assert.equal(elements.get("page-title").textContent, "GX/GHC–Tibetan Converter");
+assert.match(elements.get("instruction-punctuation").innerHTML, /Sentence-final/u);
+elements.get("language").listeners.change({ target: { value: "zh-Hant" } });
+assert.equal(elements.get("page-title").textContent, "GX/GHC–藏文互轉");
+assert.match(elements.get("instruction-xunpin").innerHTML, /勳拼/u);
+
 const scheme = fs.readFileSync("党項語藏文轉寫方案.html", "utf8");
 const schemeEn = fs.readFileSync("党項語藏文轉寫方案-en.html", "utf8");
 assert.doesNotMatch(scheme, /id="converter-input"|src="converter\.js"/u);
@@ -39,16 +71,18 @@ assert.match(scheme, /<h3>段落測試<\/h3>/u);
 assert.match(scheme, /shanggu-web\.css\?v=shanggu-web-v4/u);
 assert.doesNotMatch(scheme, /shanggu-web-manifest|webfont-loader|data-font-warmup/u);
 assert.match(scheme, /rel="preload" href="fonts\/NotoSerifTangut-Page\.woff2\?v=tangut-page-20260811"[^>]*fetchpriority="high"/u);
-assert.match(scheme, /font-family: "Noto Serif Tangut Page", "Noto Serif Tangut Full"/u);
+assert.match(scheme, /scheme\.css\?v=20260811/u);
 assert.doesNotMatch(scheme, /ShangguSans-(?:Regular|Bold)\.woff2/u);
+assert.doesNotMatch(scheme, /GX 自動轉換|rtś\\ər¹/u);
 
-const styleBlock = html => html.match(/<style>([\s\S]*?)<\/style>/u)?.[1];
 const sectionIds = html => [...html.matchAll(/<section id="([^"]+)"/gu)].map(match => match[1]);
 const rhymeRows = html => html.match(/^R\.\d+\|.*$/gmu) || [];
 const scriptCharacters = html => (html.match(/[\u0F00-\u0FFF\u{17000}-\u{18DFF}]/gu) || []).join("");
 const testAndInventory = html => html.slice(html.indexOf('<section id="tests">'));
 const constantBody = (html, name) => html.match(new RegExp(`const ${name} = ([\\s\\S]*?);\\n`, "u"))?.[1];
-assert.equal(styleBlock(schemeEn), styleBlock(scheme), "Chinese and English scheme CSS must be identical");
+assert.match(schemeEn, /scheme\.css\?v=20260811/u);
+assert.doesNotMatch(scheme, /<style>/u);
+assert.doesNotMatch(schemeEn, /<style>/u);
 assert.deepEqual(sectionIds(schemeEn), sectionIds(scheme), "Chinese and English scheme sections must match");
 assert.deepEqual(rhymeRows(schemeEn), rhymeRows(scheme), "Chinese and English R.1–105 data must match");
 assert.equal(rhymeRows(schemeEn).length, 105, "English scheme must contain the complete rhyme inventory");
@@ -56,6 +90,7 @@ assert.equal(scriptCharacters(testAndInventory(schemeEn)), scriptCharacters(test
 assert.equal(constantBody(schemeEn, "words"), constantBody(scheme, "words"), "word tests must match exactly");
 assert.equal(constantBody(schemeEn, "sentences"), constantBody(scheme, "sentences"), "sentence tests must match exactly");
 assert.match(schemeEn, /<h3>Paragraph test<\/h3>/u);
+assert.doesNotMatch(schemeEn, /automatic GX conversion|rtś\\ər¹/u);
 
 const root = fs.readFileSync("index.html", "utf8");
 assert.match(root, /url=converter\//u);
@@ -68,7 +103,18 @@ for (const file of ["党項語藏文轉寫方案-en.html", "ghc-comparison/index
 
 const ghcZh = fs.readFileSync("ghc-comparison/index.html", "utf8");
 const ghcEn = fs.readFileSync("ghc-comparison/index-en.html", "utf8");
-assert.equal(styleBlock(ghcEn), styleBlock(ghcZh), "Chinese and English GHC CSS must be identical");
+for (const html of [ghcZh, ghcEn]) {
+  assert.match(html, /\.\.\/scheme\.css\?v=20260811/u);
+  assert.match(html, /class="layout"/u);
+  assert.match(html, /class="rail"/u);
+  assert.match(html, /class="hero"/u);
+  assert.doesNotMatch(html, /<style>/u);
+  assert.doesNotMatch(html, /…ར/u);
+}
+assert.match(ghcZh, /<td class="tibetan">ཨེ<\/td>/u);
+assert.match(ghcZh, /<td class="tibetan">འརྸྀ<\/td>/u);
+assert.doesNotMatch(ghcZh, /GX 輸入|-\\e|-\\ə/u);
+assert.doesNotMatch(ghcEn, /GX input|-\\e|-\\ə/u);
 assert.equal((ghcEn.match(/<tr>/gu) || []).length, (ghcZh.match(/<tr>/gu) || []).length, "GHC table rows must match");
 assert.equal(scriptCharacters(ghcEn), scriptCharacters(ghcZh), "Chinese and English GHC data must match");
 assert.deepEqual([...ghcEn.matchAll(/<code>(.*?)<\/code>/gu)].map(match => match[1]), [...ghcZh.matchAll(/<code>(.*?)<\/code>/gu)].map(match => match[1]), "Chinese and English GHC values must match");
@@ -77,11 +123,19 @@ const texZh = fs.readFileSync("tex/main.tex", "utf8");
 const texEn = fs.readFileSync("tex/main-en.tex", "utf8");
 assert.match(texEn, /^\\documentclass\[12pt\]\{nextart\}$/mu);
 assert.doesNotMatch(texEn, /nextart_zh/u);
+assert.doesNotMatch(texEn, /automatic GX conversion|textbackslash ər/u);
 assert.equal((texEn.match(/^R\.\d+ &/gmu) || []).length, 105, "English TeX must contain R.1–105");
 assert.deepEqual(texEn.match(/^R\.\d+ &.*$/gmu), texZh.match(/^R\.\d+ &.*$/gmu), "Chinese and English TeX rhyme rows must match");
 assert.equal(scriptCharacters(texEn.slice(texEn.indexOf("\\section{Spelling tests}"))), scriptCharacters(texZh.slice(texZh.indexOf("\\section{拼寫測試}"))), "Chinese and English TeX examples and rhyme data must match");
 const ghcTexEn = fs.readFileSync("ghc-comparison/tex/main-en.tex", "utf8");
 assert.match(ghcTexEn, /^\\documentclass\[12pt\]\{nextart\}$/mu);
 assert.doesNotMatch(ghcTexEn, /nextart_zh/u);
+
+const sharedCss = fs.readFileSync("scheme.css", "utf8");
+assert.match(sharedCss, /font-family: "Libertinus Sans Web"/u);
+assert.match(sharedCss, /code \{ font-family: "Libertinus Sans Web"/u);
+for (const file of ["README.md", "converter/index.html", "converter/converter.js", "党項語藏文轉寫方案.html", "党項語藏文轉寫方案-en.html", "ghc-comparison/index.html", "ghc-comparison/index-en.html", "tex/main.tex", "tex/main-en.tex", "ghc-comparison/tex/main.tex", "ghc-comparison/tex/main-en.tex"]) {
+  assert.doesNotMatch(fs.readFileSync(file, "utf8"), /\uFF0F/u, `${file} must not use the fullwidth slash`);
+}
 
 console.log("ok - bilingual HTML/TeX structure, CSS, and complete data remain aligned");

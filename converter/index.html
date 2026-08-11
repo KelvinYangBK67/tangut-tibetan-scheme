@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="GX202411／勳拼／GHC 與党項語藏文轉寫方案的雙向轉換工具。">
-  <title>GX／GHC–藏文互轉工具</title>
+  <meta name="description" content="GX202411/勳拼/GHC 與党項語藏文轉寫方案的雙向轉換工具。">
+  <title>GX/GHC–藏文互轉工具</title>
   <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v4" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v4" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v4">
@@ -21,7 +21,10 @@
     h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.6rem); font-weight: 700; line-height: 1.12; letter-spacing: -.025em; }
     .lead { max-width: 42rem; margin: .8rem 0 0; color: #4f5964; }
     a { color: var(--accent); text-underline-offset: .18em; }
-    .scheme-links { display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; padding-bottom: .5rem; font-size: .9rem; }
+    .header-actions { display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; gap: .7rem; padding-bottom: .5rem; }
+    .language { display: inline-flex; align-items: center; gap: .45rem; color: var(--muted); font-size: .8rem; }
+    .language select { border: 1px solid #b9c1c9; padding: .3rem .45rem; color: var(--ink); background: #fff; font: inherit; }
+    .scheme-links { display: flex; flex-direction: column; align-items: flex-end; font-size: .9rem; }
     .tool { overflow: hidden; border: 1px solid var(--line); background: #fff; box-shadow: 0 1rem 3rem rgba(29, 43, 56, .08); }
     .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem; border-bottom: 1px solid var(--line); background: var(--soft); }
     .directions { display: flex; flex-wrap: wrap; gap: .25rem; }
@@ -41,13 +44,16 @@
     textarea.tibetan { font-family: "Tibetan", serif; font-size: 1.8rem; line-height: 1.9; }
     .status { min-height: 2.5rem; margin: 0; padding: .6rem .8rem; border-top: 1px solid var(--line); color: var(--muted); background: var(--soft); font-size: .8rem; }
     .status.error { color: #8a342c; background: #fff3f1; }
-    .note { margin: 1rem 0 0; color: var(--muted); font-size: .82rem; }
+    .instructions { margin-top: 1.5rem; padding: 1.2rem 1.4rem; border: 1px solid var(--line); background: #fff; }
+    .instructions h2 { margin: 0 0 .7rem; font-size: 1.05rem; }
+    .instructions p { margin: .65rem 0; color: #4f5964; font-size: .86rem; }
+    code { font-family: "Libertinus", sans-serif; }
     .tibetan-inline { font-family: "Tibetan", serif; font-size: 1.25em; }
     footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; }
     @media (max-width: 720px) {
       .page { width: min(100% - 1rem, 72rem); padding-top: 1.5rem; }
       header { display: block; }
-      .scheme-links { align-items: flex-start; margin-top: .8rem; }
+      .header-actions, .scheme-links { align-items: flex-start; margin-top: .8rem; }
       .editors { grid-template-columns: 1fr; }
       .pane + .pane { border-left: 0; border-top: 1px solid var(--line); }
       textarea { min-height: 12rem; }
@@ -59,26 +65,29 @@
     <header>
       <div>
         <p class="eyebrow">Tangut · Tibetan transcription</p>
-        <h1>GX／GHC–藏文互轉</h1>
-        <p class="lead">GX202411 與勳拼共用同一輸入框；另支援藏文與 GHC 互轉。藏文正字保存部分 GX 已合併、而傳統韻書及 GHC 仍區分的聲韻地位。</p>
+        <h1 id="page-title">GX/GHC–藏文互轉</h1>
+        <p class="lead" id="lead">GX202411 與勳拼共用同一輸入框；另支援藏文與 GHC 互轉。藏文正字保存部分 GX 已合併、而傳統韻書及 GHC 仍區分的聲韻地位。</p>
       </div>
-      <div class="scheme-links"><a href="../党項語藏文轉寫方案.html">閱讀完整轉寫方案</a><a href="../ghc-comparison/">閱讀 GHC 對照簡表</a></div>
+      <div class="header-actions">
+        <label class="language"><span id="language-label">語言</span><select id="language"><option value="zh-Hant">繁體中文</option><option value="en">English</option></select></label>
+        <div class="scheme-links"><a id="scheme-link" href="../党項語藏文轉寫方案.html">閱讀完整轉寫方案</a><a id="ghc-link" href="../ghc-comparison/">閱讀 GHC 對照簡表</a></div>
+      </div>
     </header>
 
-    <section class="tool" aria-label="GX／勳拼–藏文互轉工具">
+    <section class="tool" id="tool" aria-label="GX/勳拼–藏文互轉工具">
       <div class="toolbar">
-        <div class="directions" role="group" aria-label="轉換方向">
-          <button id="direction-gx" type="button" aria-pressed="true">GX／勳拼 → 藏文</button>
+        <div class="directions" id="directions" role="group" aria-label="轉換方向">
+          <button id="direction-gx" type="button" aria-pressed="true">GX/勳拼 → 藏文</button>
           <button id="direction-bo-gx" type="button" aria-pressed="false">藏文 → GX</button>
           <button id="direction-ghc" type="button" aria-pressed="false">GHC → 藏文</button>
           <button id="direction-bo-ghc" type="button" aria-pressed="false">藏文 → GHC</button>
         </div>
         <button id="swap" type="button">交換</button>
       </div>
-      <div class="options" id="gx-reverse-options" hidden><label><input id="preserve-rhyme-marker" type="checkbox"> R.100／R.101 在 GX 韻腹前輸出 <code>\</code></label></div>
+      <div class="options" id="gx-reverse-options" hidden><label><input id="preserve-rhyme-marker" type="checkbox"> <span id="preserve-label">R.100/R.101 在 GX 韻腹前輸出 <code>\</code></span></label></div>
       <div class="editors">
         <div class="pane">
-          <div class="pane-head"><label id="input-label" for="input">GX／勳拼</label><button id="clear" type="button">清除</button></div>
+          <div class="pane-head"><label id="input-label" for="input">GX/勳拼</label><button id="clear" type="button">清除</button></div>
           <textarea id="input" spellcheck="false" autocomplete="off" placeholder="例如：tjiw sjihx tśiw¹ śih²"></textarea>
         </div>
         <div class="pane">
@@ -86,16 +95,88 @@
           <textarea id="output" class="tibetan" readonly aria-live="polite"></textarea>
         </div>
       </div>
-      <p class="status" id="status">輸入 GX（須標 ¹、² 或 ?）或勳拼（無標記／末尾 x）後即時轉換。</p>
+      <p class="status" id="status">輸入 GX（須標 ¹、² 或 ?）或勳拼（無標記/末尾 x）後即時轉換。</p>
     </section>
 
-    <p class="note">GX 的 R.100／R.101 可在韻腹前加 <code>\</code>，如 <code>rtś\ər¹</code>、<code>rts\er¹</code>，強制保留前加 <span class="tibetan-inline">འ</span>。含 <span class="tibetan-inline">༹</span> 的複雜 stack 以 shaping 穩定爲準：先連續寫完下加字母，再寫 <span class="tibetan-inline">༹</span>；反向轉換也能辨認舊次序。</p>
-    <footer>© 2026 Kelvin Yang · <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant">CC BY-NC-SA 4.0</a></footer>
+    <section class="instructions" aria-labelledby="instructions-title">
+      <h2 id="instructions-title">使用說明</h2>
+      <p id="instruction-xunpin"></p>
+      <p id="instruction-rhymes"></p>
+      <p id="instruction-punctuation"></p>
+      <p id="instruction-shaping"></p>
+    </section>
+    <footer>© 2026 Kelvin Yang · <a id="license" rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant">CC BY-NC-SA 4.0</a></footer>
   </main>
 
   <script src="converter.js?v=ghc-rhyme-classes-20260811"></script>
   <script>
-    const state = { direction: 'gx' };
+    const translations = {
+      'zh-Hant': {
+        documentTitle: 'GX/GHC–藏文互轉工具',
+        description: 'GX202411/勳拼/GHC 與党項語藏文轉寫方案的雙向轉換工具。',
+        pageTitle: 'GX/GHC–藏文互轉',
+        lead: 'GX202411 與勳拼共用同一輸入框；另支援藏文與 GHC 互轉。藏文正字保存部分 GX 已合併、而傳統韻書及 GHC 仍區分的聲韻地位。',
+        language: '語言', scheme: '閱讀完整轉寫方案', ghc: '閱讀 GHC 對照簡表',
+        directionLabel: '轉換方向', toolLabel: 'GX/勳拼–藏文互轉工具',
+        dirGx: 'GX/勳拼 → 藏文', dirBoGx: '藏文 → GX', dirGhc: 'GHC → 藏文', dirBoGhc: '藏文 → GHC',
+        swap: '交換', preserve: 'R.100/R.101 在 GX 韻腹前輸出 <code>\\</code>',
+        clear: '清除', copy: '複製', copied: '已複製', gxLabel: 'GX/勳拼', tibetanLabel: '藏文',
+        gxPlaceholder: '例如：tjiw sjihx rtś\\ər¹ rts\\er¹', ghcPlaceholder: '例如：tśjɨr¹ tśjɨɨr¹', tibetanPlaceholder: '例如：རྕྀ་ འརྕྀ',
+        done: '轉換完成。',
+        emptyGx: '輸入 GX（須標 ¹、² 或 ?）或勳拼（無標記/末尾 x）後即時轉換。',
+        emptyGhc: '輸入帶聲調的 GHC 擬音後即時轉成藏文。',
+        emptyReverse: '輸入本方案藏文後即時正規化並轉回 {target}。',
+        instructionsTitle: '使用說明',
+        xunpin: 'GX → 藏文方向亦支援<a href="https://github.com/tinbreaker/rime-xunpin">勳拼</a>，無須切換模式：末尾有 <code>¹</code>、<code>²</code> 或 <code>?</code> 時按 GX 解析，否則按勳拼解析。勳拼先轉成 canonical GX，再進入同一藏文核心。',
+        rhymes: '標準 GX 無法區分 R.100/R.101，因此預設轉成不加 <span class="tibetan-inline">འ-</span> 的 R.92/R.79。若要強制帶 <span class="tibetan-inline">འ-</span>，請在韻腹前加反斜線，如 <code>rtś\\ər¹</code>、<code>rts\\er¹</code>。藏文反向轉寫預設仍輸出標準 GX；勾選 R.100/R.101 選項後，才恢復 <code>\\</code>。GHC 互轉則直接利用藏文保留的區別。',
+        punctuation: '句末標點 <code>. 。 ? ？ ! ！</code> 轉爲 <span class="tibetan-inline">༎</span>；一般標點如 <code>, ， ; ； : ：</code> 轉爲 <span class="tibetan-inline">།</span>，且標點前不加 <span class="tibetan-inline">་</span>。引號會移除，但相鄰有效音節之間仍補 <span class="tibetan-inline">་</span>。省略號與缺字方框原樣保留。尚未標調音節後的 <code>?</code> 表示聲調存疑；已有聲調後的 <code>?</code> 是疑問標點，<code>\\?</code> 永遠強制爲疑問標點。',
+        shaping: '含 <span class="tibetan-inline">༹</span> 的複雜 stack 以 shaping 穩定爲準：先連續寫完下加字母，再寫 <span class="tibetan-inline">༹</span>；反向轉換也能辨認舊次序。'
+      },
+      en: {
+        documentTitle: 'GX/GHC–Tibetan Converter',
+        description: 'A bidirectional converter between GX202411/Xunpin/GHC and the Tangut Tibetan transcription scheme.',
+        pageTitle: 'GX/GHC–Tibetan Converter',
+        lead: 'GX202411 and Xunpin share one input field; Tibetan and GHC conversion is also supported. Tibetan orthography preserves rhyme-table distinctions that GX merges but traditional categories and GHC retain.',
+        language: 'Language', scheme: 'Read the full transcription scheme', ghc: 'Read the GHC correspondence chart',
+        directionLabel: 'Conversion direction', toolLabel: 'GX/Xunpin–Tibetan converter',
+        dirGx: 'GX/Xunpin → Tibetan', dirBoGx: 'Tibetan → GX', dirGhc: 'GHC → Tibetan', dirBoGhc: 'Tibetan → GHC',
+        swap: 'Swap', preserve: 'Output <code>\\</code> before the GX vowel nucleus for R.100/R.101',
+        clear: 'Clear', copy: 'Copy', copied: 'Copied', gxLabel: 'GX/Xunpin', tibetanLabel: 'Tibetan',
+        gxPlaceholder: 'Example: tjiw sjihx rtś\\ər¹ rts\\er¹', ghcPlaceholder: 'Example: tśjɨr¹ tśjɨɨr¹', tibetanPlaceholder: 'Example: རྕྀ་ འརྕྀ',
+        done: 'Conversion complete.',
+        emptyGx: 'Enter GX (ending in ¹, ², or ?) or Xunpin (unmarked or ending in x) for instant conversion.',
+        emptyGhc: 'Enter a tone-marked GHC syllable for instant Tibetan conversion.',
+        emptyReverse: 'Enter normalized scheme Tibetan to convert it back to {target}.',
+        instructionsTitle: 'Instructions',
+        xunpin: 'The GX → Tibetan direction also accepts <a href="https://github.com/tinbreaker/rime-xunpin">Xunpin</a> without a mode switch: tokens ending in <code>¹</code>, <code>²</code>, or <code>?</code> are parsed as GX; all others are parsed strictly as Xunpin. Xunpin is converted to canonical GX before entering the shared Tibetan core.',
+        rhymes: 'Standard GX cannot distinguish R.100/R.101, so conversion defaults to unprefixed R.92/R.79. To force <span class="tibetan-inline">འ-</span>, place a backslash before the vowel nucleus, as in <code>rtś\\ər¹</code> or <code>rts\\er¹</code>. Reverse conversion defaults to standard GX and restores <code>\\</code> only when the R.100/R.101 option is selected. GHC conversion reads the distinction preserved by Tibetan spelling directly.',
+        punctuation: 'Sentence-final <code>. 。 ? ？ ! ！</code> becomes <span class="tibetan-inline">༎</span>; general punctuation such as <code>, ， ; ； : ：</code> becomes <span class="tibetan-inline">།</span>, without an extra <span class="tibetan-inline">་</span> before it. Quotation marks are removed, while adjacent valid syllables retain their separating <span class="tibetan-inline">་</span>. Ellipses and missing-character boxes are preserved. A <code>?</code> after an untoned syllable marks uncertain tone; after an explicit tone it is punctuation, and <code>\\?</code> always forces punctuation.',
+        shaping: 'For complex stacks containing <span class="tibetan-inline">༹</span>, shaping stability determines the canonical order: write all subjoined letters contiguously before <span class="tibetan-inline">༹</span>. Reverse conversion also recognizes the older semantic order.'
+      }
+    };
+    const errorTranslations = {
+      '勳拼只能使用小寫 ASCII 字母': 'Xunpin accepts lowercase ASCII letters only',
+      '勳拼的 x 只能作爲末尾上聲標記': 'Xunpin x is allowed only as a final rising-tone marker',
+      '不符合合法勳拼音節結構：無法辨認韻母': 'Invalid Xunpin syllable: unrecognized rhyme',
+      '不符合合法勳拼音節結構：無法辨認聲母或介音': 'Invalid Xunpin syllable: unrecognized initial or medial',
+      '勳拼音節有多個可能的 GX 分析': 'The Xunpin syllable has multiple possible GX analyses',
+      '音節須以 ¹、² 或 ? 標示聲調': 'The syllable must end in tone ¹, ², or ?',
+      '無法辨認元音': 'Unrecognized vowel',
+      '反斜線只可標在 R.100/R.101 的 e/ə 韻腹前': 'The backslash is valid only before the e/ə nucleus of R.100/R.101',
+      '無法辨認聲母或冠音': 'Unrecognized initial or preinitial',
+      '不是本方案可辨認的規範藏文音節': 'Not a normalized Tibetan syllable recognized by this scheme',
+      '此 GX 韻母沒有唯一的 GHC 對應': 'This GX rhyme has no unique GHC correspondence',
+      'GHC 音節須以 ¹、² 或 ? 標示聲調': 'The GHC syllable must end in tone ¹, ², or ?',
+      '不符合可辨認的 GHC 音節結構': 'Unrecognized GHC syllable structure',
+      '找不到可辨認的 GX 或勳拼音節': 'No recognizable GX or Xunpin syllable found',
+      '找不到以 ¹、² 或 ? 結尾的 GHC 音節': 'No GHC syllable ending in ¹, ², or ? found'
+    };
+    let savedLanguage = '';
+    try { savedLanguage = localStorage.getItem('converter-language') || ''; } catch (_) {}
+    const state = {
+      direction: 'gx',
+      language: savedLanguage || (navigator.language.toLowerCase().startsWith('zh') ? 'zh-Hant' : 'en')
+    };
     const input = document.querySelector('#input');
     const output = document.querySelector('#output');
     const status = document.querySelector('#status');
@@ -105,6 +186,14 @@
     const directionBoGhc = document.querySelector('#direction-bo-ghc');
     const reverseOptions = document.querySelector('#gx-reverse-options');
     const preserveRhymeMarker = document.querySelector('#preserve-rhyme-marker');
+    const languageSelect = document.querySelector('#language');
+    const t = () => translations[state.language];
+
+    function translatedError(error) {
+      if (state.language !== 'en') return error;
+      if (errorTranslations[error]) return errorTranslations[error];
+      return error.replace(/：(.+)$/u, (_, message) => ': ' + (errorTranslations[message] || message));
+    }
 
     function convert() {
       const result = state.direction === 'gx'
@@ -117,14 +206,14 @@
       output.value = result.output;
       status.classList.toggle('error', result.errors.length > 0);
       status.textContent = result.errors.length
-        ? result.errors.join('；')
+        ? result.errors.map(translatedError).join(state.language === 'en' ? '; ' : '；')
         : input.value.trim()
-          ? '轉換完成。'
+          ? t().done
           : state.direction === 'gx'
-            ? '輸入 GX（須標 ¹、² 或 ?）或勳拼（無標記／末尾 x）後即時轉換。'
+            ? t().emptyGx
             : state.direction === 'ghc'
-              ? '輸入帶聲調的 GHC 擬音後即時轉成藏文。'
-              : `輸入本方案藏文後即時正規化並轉回 ${state.direction === 'bo-gx' ? 'GX' : 'GHC'}。`;
+              ? t().emptyGhc
+              : t().emptyReverse.replace('{target}', state.direction === 'bo-gx' ? 'GX' : 'GHC');
     }
 
     function setDirection(direction, preserve = false) {
@@ -135,18 +224,46 @@
       directionBoGhc.setAttribute('aria-pressed', direction === 'bo-ghc');
       const fromTibetan = direction.startsWith('bo-');
       const toTibetan = direction === 'gx' || direction === 'ghc';
-      document.querySelector('#input-label').textContent = direction === 'gx' ? 'GX／勳拼' : direction === 'ghc' ? 'GHC' : '藏文';
-      document.querySelector('#output-label').textContent = toTibetan ? '藏文' : direction === 'bo-gx' ? 'GX' : 'GHC';
+      document.querySelector('#input-label').textContent = direction === 'gx' ? t().gxLabel : direction === 'ghc' ? 'GHC' : t().tibetanLabel;
+      document.querySelector('#output-label').textContent = toTibetan ? t().tibetanLabel : direction === 'bo-gx' ? 'GX' : 'GHC';
       input.classList.toggle('tibetan', fromTibetan);
       output.classList.toggle('tibetan', toTibetan);
       reverseOptions.hidden = direction !== 'bo-gx';
-      input.placeholder = direction === 'gx'
-        ? '例如：tjiw sjihx rtś\\ər¹ rts\\er¹'
-        : direction === 'ghc'
-          ? '例如：tśjɨr¹ tśjɨɨr¹'
-          : '例如：རྕྀ་ འརྕྀ';
+      input.placeholder = direction === 'gx' ? t().gxPlaceholder : direction === 'ghc' ? t().ghcPlaceholder : t().tibetanPlaceholder;
       if (!preserve) { input.value = ''; output.value = ''; }
       convert();
+    }
+
+    function applyLanguage() {
+      const strings = t();
+      document.documentElement.lang = state.language;
+      document.title = strings.documentTitle;
+      document.querySelector('meta[name="description"]').content = strings.description;
+      document.querySelector('#page-title').textContent = strings.pageTitle;
+      document.querySelector('#lead').textContent = strings.lead;
+      document.querySelector('#language-label').textContent = strings.language;
+      document.querySelector('#scheme-link').textContent = strings.scheme;
+      document.querySelector('#scheme-link').href = state.language === 'en' ? '../党項語藏文轉寫方案-en.html' : '../党項語藏文轉寫方案.html';
+      document.querySelector('#ghc-link').textContent = strings.ghc;
+      document.querySelector('#ghc-link').href = state.language === 'en' ? '../ghc-comparison/index-en.html' : '../ghc-comparison/';
+      document.querySelector('#tool').setAttribute('aria-label', strings.toolLabel);
+      document.querySelector('#directions').setAttribute('aria-label', strings.directionLabel);
+      directionGx.textContent = strings.dirGx;
+      directionBoGx.textContent = strings.dirBoGx;
+      directionGhc.textContent = strings.dirGhc;
+      directionBoGhc.textContent = strings.dirBoGhc;
+      document.querySelector('#swap').textContent = strings.swap;
+      document.querySelector('#preserve-label').innerHTML = strings.preserve;
+      document.querySelector('#clear').textContent = strings.clear;
+      document.querySelector('#copy').textContent = strings.copy;
+      document.querySelector('#instructions-title').textContent = strings.instructionsTitle;
+      document.querySelector('#instruction-xunpin').innerHTML = strings.xunpin;
+      document.querySelector('#instruction-rhymes').innerHTML = strings.rhymes;
+      document.querySelector('#instruction-punctuation').innerHTML = strings.punctuation;
+      document.querySelector('#instruction-shaping').innerHTML = strings.shaping;
+      document.querySelector('#license').href = 'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.' + (state.language === 'en' ? 'en' : 'zh-hant');
+      languageSelect.value = state.language;
+      setDirection(state.direction, true);
     }
 
     input.addEventListener('input', convert);
@@ -155,6 +272,11 @@
     directionGhc.addEventListener('click', () => setDirection('ghc'));
     directionBoGhc.addEventListener('click', () => setDirection('bo-ghc'));
     preserveRhymeMarker.addEventListener('change', convert);
+    languageSelect.addEventListener('change', event => {
+      state.language = event.target.value;
+      try { localStorage.setItem('converter-language', state.language); } catch (_) {}
+      applyLanguage();
+    });
     document.querySelector('#swap').addEventListener('click', () => {
       const nextInput = output.value;
       const reverse = { gx: 'bo-gx', 'bo-gx': 'gx', ghc: 'bo-ghc', 'bo-ghc': 'ghc' };
@@ -168,13 +290,14 @@
       if (!output.value) return;
       try {
         await navigator.clipboard.writeText(output.value);
-        event.currentTarget.textContent = '已複製';
-        setTimeout(() => { event.currentTarget.textContent = '複製'; }, 1200);
+        event.currentTarget.textContent = t().copied;
+        setTimeout(() => { event.currentTarget.textContent = t().copy; }, 1200);
       } catch (_) {
         output.select();
         document.execCommand('copy');
       }
     });
+    applyLanguage();
   </script>
 </body>
 </html>

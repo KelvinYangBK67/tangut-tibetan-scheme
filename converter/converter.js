@@ -277,7 +277,7 @@
       body = body.slice(0, -1);
     }
     if (markedRhyme && (!retroflex || !["e", "ə"].includes(vowel.gx))) {
-      throw new Error("反斜線只可標在 R.100／R.101 的 e／ə 韻腹前");
+      throw new Error("反斜線只可標在 R.100/R.101 的 e/ə 韻腹前");
     }
 
     if (retroflex && body.startsWith("r")) {
@@ -316,7 +316,7 @@
     }
 
     if (markedRhyme && preinitial) {
-      throw new Error("反斜線只可標在 R.100／R.101 的 e／ə 韻腹前");
+      throw new Error("反斜線只可標在 R.100/R.101 的 e/ə 韻腹前");
     }
 
     return { source, tone, retroflex, tight, coda, vowel, main, medial, preinitial, markedRhyme };
