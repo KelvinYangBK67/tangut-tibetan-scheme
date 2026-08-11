@@ -1,6 +1,7 @@
 # Generated build directory and page images
 /tex/build/
 /image/
+/temp/
 
 # Keep only the final named PDF at the repository root
 /*.pdf
