@@ -32,10 +32,11 @@ def cmap(path: Path) -> set[int]:
 
 
 def page_characters(project_root: Path) -> set[int]:
-    sources = list(project_root.glob("*.html"))
-    sources.extend((project_root / "converter").glob("*.html"))
+    # The converter is the performance-critical entry point. Long-form scheme
+    # and comparison pages remain completely covered by the ranged chunks, but
+    # do not inflate the converter's first-paint core.
+    sources = list((project_root / "converter").glob("*.html"))
     sources.extend((project_root / "converter").glob("*.js"))
-    sources.extend((project_root / "ghc-comparison").glob("*.html"))
     text = "".join(path.read_text(encoding="utf-8") for path in sources)
     # Keep all characters that can occur in the UI or converter messages. The
     # Latin glyphs cost little and make the core independently usable.
@@ -59,7 +60,7 @@ def unicode_range(
         intervals.append((start, previous))
         start = previous = codepoint
     intervals.append((start, previous))
-    return ", ".join(
+    return ",".join(
         f"U+{start:X}" if start == end else f"U+{start:X}-{end:X}"
         for start, end in intervals
     )
@@ -112,20 +113,20 @@ def build(source_root: Path, project_root: Path) -> None:
             write_subset(source, output_root / filename, points)
             css.extend(
                 (
-                    "@font-face {",
-                    '  font-family: "Shanggu Web";',
-                    f'  src: url("shanggu-web/{filename}?v={VERSION}") format("woff2");',
-                    f"  font-weight: {weight};",
-                    "  font-style: normal;",
-                    "  font-display: swap;",
-                    f"  unicode-range: {unicode_range(points, core, 0 if is_core else 255)};",
+                    "@font-face{",
+                    'font-family:"Shanggu Web";',
+                    f'src:url("shanggu-web/{filename}?v={VERSION}") format("woff2");',
+                    f"font-weight:{weight};",
+                    "font-style:normal;",
+                    "font-display: swap;",
+                    f"unicode-range:{unicode_range(points, core, 0 if is_core else 255)};",
                     "}",
                 )
             )
             generated += 1
 
     (project_root / "fonts" / "shanggu-web.css").write_text(
-        "\n".join(css) + "\n", encoding="utf-8"
+        "".join(css) + "\n", encoding="utf-8"
     )
     print(f"Generated {generated} Shanggu webfont subsets in {output_root}")
 

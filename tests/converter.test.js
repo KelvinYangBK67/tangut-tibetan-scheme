@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
 const converter = require("../converter/converter.js");
 
 const xunpinExamples = [
@@ -33,8 +34,30 @@ for (const [extendedGx, tibetan, standardGx, ghc] of markedRhymes) {
   assert.equal(converter.ghcSyllableToTibetan(ghc), tibetan);
 }
 assert.equal(converter.gxToTibetan("rtś\\ər¹ rts\\er¹").output, "འརྕྀ་འརྩེ");
-assert.throws(() => converter.gxSyllableToTibetan("tś\\ə¹"), /R\.100/u);
-assert.throws(() => converter.gxSyllableToTibetan("rtś\\i¹"), /R\.100/u);
+const gradeFourRhymes = [
+  ["s\\u¹", "སཡུ"], ["tś\\i¹", "ཅཡི"], ["t\\a¹", "ཏཡ"],
+  ["t\\ə¹", "ཏཡྀ"], ["t\\e¹", "ཏཡེ"], ["tś\\iw¹", "ཅཡིག༹"]
+];
+for (const [gx, tibetan] of gradeFourRhymes) {
+  assert.equal(converter.gxSyllableToTibetan(gx), tibetan, `${gx} Grade IV forward`);
+  assert.equal(converter.tibetanSyllableToGx(tibetan, { preserveRhymeClassMarker: true }), gx, `${gx} Grade IV reverse`);
+}
+assert.throws(() => converter.gxSyllableToTibetan("rtś\\i¹"));
+assert.equal(converter.ghcSyllableToGx("tś\\ji¹"), "tś\\i¹");
+assert.equal(converter.ghcSyllableToTibetan("tś\\ji¹"), "ཅཡི");
+assert.equal(converter.ghcSyllableToGx("\\nji¹"), "ṇi¹");
+assert.equal(converter.ghcSyllableToTibetan("\\nji¹"), "ཎི");
+
+const tangutTable = converter.parseTangutCsv(fs.readFileSync("converter/data/tangut-tibetan.csv", "utf8"));
+assert.equal(tangutTable.size, 5713);
+assert.equal(tangutTable.get("𗸈"), "དཡུ", "native R.3 must retain Grade IV");
+assert.equal(tangutTable.get("𗂴"), "འརྕྀ", "native R.100 must differ from R.92");
+assert.equal(tangutTable.get("𗎫"), "འརྩེས", "native R.101 must differ from R.79");
+assert.equal(tangutTable.get("𘆵"), "ཎི", "native Class IV must use ཎ");
+assert.deepEqual(
+  converter.tangutToTibetan("𗹦𗼻𗯨𗐯𗂥，", tangutTable),
+  { output: "མའྀ་སྡྀ༹ས་རྸུ་སྐཨེས་ནཡེས། ", errors: [] }
+);
 
 const ghcExamples = [
   ["tśja¹", "ཅ"], ["śjij²", "ཤེས"], ["tśjɨr¹", "རྕྀ"],

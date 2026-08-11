@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="GX202411/勳拼/GHC 與党項語藏文轉寫方案的雙向轉換工具。">
-  <title>GX/GHC–藏文互轉工具</title>
+  <meta name="description" content="西夏文直接轉藏文，並兼容 GX202411/勳拼/GHC 雙向轉換。">
+  <title>西夏文–藏文轉換器</title>
+  <link rel="preload" href="../fonts/NotoSerifTangut-Regular.woff2?v=full-20260810" as="font" type="font/woff2" crossorigin fetchpriority="high">
   <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v4" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v4" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v4">
@@ -12,6 +13,7 @@
     @font-face { font-family: "Libertinus"; src: url("../fonts/LibertinusSans-Regular.woff2?v=full-20260810") format("woff2"); font-weight: 400; font-display: swap; }
     @font-face { font-family: "Libertinus"; src: url("../fonts/LibertinusSans-Bold.woff2?v=full-20260810") format("woff2"); font-weight: 700; font-display: swap; }
     @font-face { font-family: "Tibetan"; src: url("../fonts/NotoSerifTibetan-Regular.woff2?v=full-20260810") format("woff2"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "Tangut"; src: url("../fonts/NotoSerifTangut-Regular.woff2?v=full-20260810") format("woff2"); font-weight: 400; font-display: swap; }
     :root { --ink: #20242a; --muted: #68717c; --line: #d6dce2; --accent: #315b7d; --soft: #f4f6f8; color: var(--ink); background: #f4f6f8; font-family: "Libertinus", "Shanggu Web", sans-serif; font-synthesis: none; }
     * { box-sizing: border-box; }
     body { min-height: 100vh; margin: 0; line-height: 1.6; }
@@ -42,6 +44,7 @@
     textarea { display: block; width: 100%; flex: 1; resize: vertical; border: 0; padding: 1.2rem; color: var(--ink); background: #fff; font: 1.15rem/1.85 "Libertinus", "Shanggu Web", sans-serif; }
     textarea[readonly] { background: #fbfcfd; }
     textarea.tibetan { font-family: "Tibetan", serif; font-size: 1.8rem; line-height: 1.9; }
+    textarea.tangut { font-family: "Tangut", serif; font-size: 1.8rem; line-height: 1.9; }
     .status { min-height: 2.5rem; margin: 0; padding: .6rem .8rem; border-top: 1px solid var(--line); color: var(--muted); background: var(--soft); font-size: .8rem; }
     .status.error { color: #8a342c; background: #fff3f1; }
     .instructions { margin-top: 1.5rem; padding: 1.2rem 1.4rem; border: 1px solid var(--line); background: #fff; }
@@ -65,8 +68,8 @@
     <header>
       <div>
         <p class="eyebrow">Tangut · Tibetan transcription</p>
-        <h1 id="page-title">GX/GHC–藏文互轉</h1>
-        <p class="lead" id="lead">GX202411 與勳拼共用同一輸入框；另支援藏文與 GHC 互轉。藏文正字保存部分 GX 已合併、而傳統韻書及 GHC 仍區分的聲韻地位。</p>
+        <h1 id="page-title">西夏文–藏文轉換器</h1>
+        <p class="lead" id="lead">直接將西夏文轉成本方案藏文；每個字按 native 韻書的 R.xx、聲調與《同音》聲母類查表。GX、勳拼與 GHC 互轉保留爲兼容功能。</p>
       </div>
       <div class="header-actions">
         <label class="language"><span id="language-label">語言</span><select id="language"><option value="zh-Hant">繁體中文</option><option value="en">English</option></select></label>
@@ -74,10 +77,11 @@
       </div>
     </header>
 
-    <section class="tool" id="tool" aria-label="GX/勳拼–藏文互轉工具">
+    <section class="tool" id="tool" aria-label="西夏文–藏文轉換工具">
       <div class="toolbar">
         <div class="directions" id="directions" role="group" aria-label="轉換方向">
-          <button id="direction-gx" type="button" aria-pressed="true">GX/勳拼 → 藏文</button>
+          <button id="direction-tangut" type="button" aria-pressed="true">西夏文 → 藏文</button>
+          <button id="direction-gx" type="button" aria-pressed="false">GX/勳拼 → 藏文</button>
           <button id="direction-bo-gx" type="button" aria-pressed="false">藏文 → GX</button>
           <button id="direction-ghc" type="button" aria-pressed="false">GHC → 藏文</button>
           <button id="direction-bo-ghc" type="button" aria-pressed="false">藏文 → GHC</button>
@@ -87,19 +91,20 @@
       <div class="options" id="gx-reverse-options" hidden><label><input id="preserve-rhyme-marker" type="checkbox"> <span id="preserve-label">R.100/R.101 在 GX 韻腹前輸出 <code>\</code></span></label></div>
       <div class="editors">
         <div class="pane">
-          <div class="pane-head"><label id="input-label" for="input">GX/勳拼</label><button id="clear" type="button">清除</button></div>
-          <textarea id="input" spellcheck="false" autocomplete="off" placeholder="例如：tjiw sjihx tśiw¹ śih²"></textarea>
+          <div class="pane-head"><label id="input-label" for="input">西夏文</label><button id="clear" type="button">清除</button></div>
+          <textarea id="input" class="tangut" spellcheck="false" autocomplete="off" placeholder="例如：𗹦𗼻𗯨𗐯𗂥"></textarea>
         </div>
         <div class="pane">
           <div class="pane-head"><label id="output-label" for="output">藏文</label><button id="copy" type="button">複製</button></div>
           <textarea id="output" class="tibetan" readonly aria-live="polite"></textarea>
         </div>
       </div>
-      <p class="status" id="status">輸入 GX（須標 ¹、² 或 ?）或勳拼（無標記/末尾 x）後即時轉換。</p>
+      <p class="status" id="status">正在載入西夏文轉寫表……</p>
     </section>
 
     <section class="instructions" aria-labelledby="instructions-title">
       <h2 id="instructions-title">使用說明</h2>
+      <p id="instruction-tangut"></p>
       <p id="instruction-xunpin"></p>
       <p id="instruction-rhymes"></p>
       <p id="instruction-punctuation"></p>
@@ -108,48 +113,52 @@
     <footer>© 2026 Kelvin Yang · <a id="license" rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant">CC BY-NC-SA 4.0</a></footer>
   </main>
 
-  <script src="converter.js?v=ghc-rhyme-classes-20260811"></script>
+  <script src="converter.js?v=tangut-direct-20260811"></script>
   <script>
     const translations = {
       'zh-Hant': {
-        documentTitle: 'GX/GHC–藏文互轉工具',
-        description: 'GX202411/勳拼/GHC 與党項語藏文轉寫方案的雙向轉換工具。',
-        pageTitle: 'GX/GHC–藏文互轉',
-        lead: 'GX202411 與勳拼共用同一輸入框；另支援藏文與 GHC 互轉。藏文正字保存部分 GX 已合併、而傳統韻書及 GHC 仍區分的聲韻地位。',
+        documentTitle: '西夏文–藏文轉換器',
+        description: '西夏文直接轉藏文，並兼容 GX202411/勳拼/GHC 雙向轉換。',
+        pageTitle: '西夏文–藏文轉換器',
+        lead: '直接將西夏文轉成本方案藏文；每個字按 native 韻書的 R.xx、聲調與《同音》聲母類查表。GX、勳拼與 GHC 互轉保留爲兼容功能。',
         language: '語言', scheme: '閱讀完整轉寫方案', ghc: '閱讀 GHC 對照簡表',
-        directionLabel: '轉換方向', toolLabel: 'GX/勳拼–藏文互轉工具',
-        dirGx: 'GX/勳拼 → 藏文', dirBoGx: '藏文 → GX', dirGhc: 'GHC → 藏文', dirBoGhc: '藏文 → GHC',
-        swap: '交換', preserve: 'R.100/R.101 在 GX 韻腹前輸出 <code>\\</code>',
-        clear: '清除', copy: '複製', copied: '已複製', gxLabel: 'GX/勳拼', tibetanLabel: '藏文',
-        gxPlaceholder: '例如：tjiw sjihx rtś\\ər¹ rts\\er¹', ghcPlaceholder: '例如：tśjɨr¹ tśjɨɨr¹', tibetanPlaceholder: '例如：རྕྀ་ འརྕྀ',
+        directionLabel: '轉換方向', toolLabel: '西夏文–藏文轉換工具',
+        dirTangut: '西夏文 → 藏文', dirGx: 'GX/勳拼 → 藏文', dirBoGx: '藏文 → GX', dirGhc: 'GHC → 藏文', dirBoGhc: '藏文 → GHC',
+        swap: '交換', preserve: '合流韻類在 GX 韻腹前輸出 <code>\\</code>',
+        clear: '清除', copy: '複製', copied: '已複製', tangutLabel: '西夏文', gxLabel: 'GX/勳拼', tibetanLabel: '藏文',
+        tangutPlaceholder: '例如：𗹦𗼻𗯨𗐯𗂥', gxPlaceholder: '例如：tjiw sjihx tś\\i¹ rtś\\ər¹', ghcPlaceholder: '例如：tśjɨr¹ tśjɨɨr¹', tibetanPlaceholder: '例如：རྕྀ་ འརྕྀ',
         done: '轉換完成。',
+        loadingTangut: '正在載入西夏文轉寫表……', loadTangutError: '無法載入西夏文轉寫表。', emptyTangut: '輸入西夏文後即時查表轉成藏文。',
         emptyGx: '輸入 GX（須標 ¹、² 或 ?）或勳拼（無標記/末尾 x）後即時轉換。',
         emptyGhc: '輸入帶聲調的 GHC 擬音後即時轉成藏文。',
         emptyReverse: '輸入本方案藏文後即時正規化並轉回 {target}。',
         instructionsTitle: '使用說明',
+        tangut: '主入口直接讀取靜態 <code>tangut,tibetan</code> 表，不在瀏覽器內經 GX 或 GHC 繞轉。韻類與聲調取自 native《文海》R.1–R.105；四等韻及 GX 已合流的歷史類別因此可按字保留。未有可靠聲母資料的字不作猜測，會原樣保留並報錯。',
         xunpin: 'GX → 藏文方向亦支援<a href="https://github.com/tinbreaker/rime-xunpin">勳拼</a>，無須切換模式：末尾有 <code>¹</code>、<code>²</code> 或 <code>?</code> 時按 GX 解析，否則按勳拼解析。勳拼先轉成 canonical GX，再進入同一藏文核心。',
-        rhymes: '標準 GX 無法區分 R.100/R.101，因此預設轉成不加 <span class="tibetan-inline">འ-</span> 的 R.92/R.79。若要強制帶 <span class="tibetan-inline">འ-</span>，請在韻腹前加反斜線，如 <code>rtś\\ər¹</code>、<code>rts\\er¹</code>。藏文反向轉寫預設仍輸出標準 GX；勾選 R.100/R.101 選項後，才恢復 <code>\\</code>。GHC 互轉則直接利用藏文保留的區別。',
+        rhymes: '標準 GX/GHC 不區分四等韻；要強制四等，請在整個韻腹前加反斜線，如 <code>tś\\i¹</code>、<code>tś\\iw¹</code>。同一標記也用於 R.100/R.101，如 <code>rtś\\ər¹</code>、<code>rts\\er¹</code>。GHC 的 <code>\\n</code> 強制表示 native Class IV 的 <code>ṇ</code>。藏文反向轉寫只有勾選合流韻類選項後才恢復 <code>\\</code>。',
         punctuation: '句末標點 <code>. 。 ? ？ ! ！</code> 轉爲 <span class="tibetan-inline">༎</span>；一般標點如 <code>, ， ; ； : ：</code> 轉爲 <span class="tibetan-inline">།</span>，且標點前不加 <span class="tibetan-inline">་</span>。引號會移除，但相鄰有效音節之間仍補 <span class="tibetan-inline">་</span>。省略號與缺字方框原樣保留。尚未標調音節後的 <code>?</code> 表示聲調存疑；已有聲調後的 <code>?</code> 是疑問標點，<code>\\?</code> 永遠強制爲疑問標點。',
         shaping: '含 <span class="tibetan-inline">༹</span> 的複雜 stack 以 shaping 穩定爲準：先連續寫完下加字母，再寫 <span class="tibetan-inline">༹</span>；反向轉換也能辨認舊次序。'
       },
       en: {
-        documentTitle: 'GX/GHC–Tibetan Converter',
-        description: 'A bidirectional converter between GX202411/Xunpin/GHC and the Tangut Tibetan transcription scheme.',
-        pageTitle: 'GX/GHC–Tibetan Converter',
-        lead: 'GX202411 and Xunpin share one input field; Tibetan and GHC conversion is also supported. Tibetan orthography preserves rhyme-table distinctions that GX merges but traditional categories and GHC retain.',
+        documentTitle: 'Tangut–Tibetan Converter',
+        description: 'Direct Tangut-to-Tibetan conversion with GX202411, Xunpin, and GHC compatibility modes.',
+        pageTitle: 'Tangut–Tibetan Converter',
+        lead: 'Convert Tangut characters directly into this Tibetan orthography. Each lookup follows the native R.xx class, tone, and Homophones initial class; GX, Xunpin, and GHC remain available as compatibility modes.',
         language: 'Language', scheme: 'Read the full transcription scheme', ghc: 'Read the GHC correspondence chart',
-        directionLabel: 'Conversion direction', toolLabel: 'GX/Xunpin–Tibetan converter',
-        dirGx: 'GX/Xunpin → Tibetan', dirBoGx: 'Tibetan → GX', dirGhc: 'GHC → Tibetan', dirBoGhc: 'Tibetan → GHC',
-        swap: 'Swap', preserve: 'Output <code>\\</code> before the GX vowel nucleus for R.100/R.101',
-        clear: 'Clear', copy: 'Copy', copied: 'Copied', gxLabel: 'GX/Xunpin', tibetanLabel: 'Tibetan',
-        gxPlaceholder: 'Example: tjiw sjihx rtś\\ər¹ rts\\er¹', ghcPlaceholder: 'Example: tśjɨr¹ tśjɨɨr¹', tibetanPlaceholder: 'Example: རྕྀ་ འརྕྀ',
+        directionLabel: 'Conversion direction', toolLabel: 'Tangut–Tibetan converter',
+        dirTangut: 'Tangut → Tibetan', dirGx: 'GX/Xunpin → Tibetan', dirBoGx: 'Tibetan → GX', dirGhc: 'GHC → Tibetan', dirBoGhc: 'Tibetan → GHC',
+        swap: 'Swap', preserve: 'Output <code>\\</code> before merged GX rhyme nuclei',
+        clear: 'Clear', copy: 'Copy', copied: 'Copied', tangutLabel: 'Tangut', gxLabel: 'GX/Xunpin', tibetanLabel: 'Tibetan',
+        tangutPlaceholder: 'Example: 𗹦𗼻𗯨𗐯𗂥', gxPlaceholder: 'Example: tjiw sjihx tś\\i¹ rtś\\ər¹', ghcPlaceholder: 'Example: tśjɨr¹ tśjɨɨr¹', tibetanPlaceholder: 'Example: རྕྀ་ འརྕྀ',
         done: 'Conversion complete.',
+        loadingTangut: 'Loading the Tangut lookup table…', loadTangutError: 'The Tangut lookup table could not be loaded.', emptyTangut: 'Enter Tangut text for immediate table-based Tibetan conversion.',
         emptyGx: 'Enter GX (ending in ¹, ², or ?) or Xunpin (unmarked or ending in x) for instant conversion.',
         emptyGhc: 'Enter a tone-marked GHC syllable for instant Tibetan conversion.',
         emptyReverse: 'Enter normalized scheme Tibetan to convert it back to {target}.',
         instructionsTitle: 'Instructions',
+        tangut: 'The primary mode reads a static <code>tangut,tibetan</code> table; the browser does not route Tangut input through GX or GHC. Rhyme class and tone come from the native <cite>Sea of Characters</cite> R.1–R.105, so Grade IV and historical categories merged in GX remain recoverable by character. Characters lacking a reliable onset are preserved and reported instead of guessed.',
         xunpin: 'The GX → Tibetan direction also accepts <a href="https://github.com/tinbreaker/rime-xunpin">Xunpin</a> without a mode switch: tokens ending in <code>¹</code>, <code>²</code>, or <code>?</code> are parsed as GX; all others are parsed strictly as Xunpin. Xunpin is converted to canonical GX before entering the shared Tibetan core.',
-        rhymes: 'Standard GX cannot distinguish R.100/R.101, so conversion defaults to unprefixed R.92/R.79. To force <span class="tibetan-inline">འ-</span>, place a backslash before the vowel nucleus, as in <code>rtś\\ər¹</code> or <code>rts\\er¹</code>. Reverse conversion defaults to standard GX and restores <code>\\</code> only when the R.100/R.101 option is selected. GHC conversion reads the distinction preserved by Tibetan spelling directly.',
+        rhymes: 'Standard GX/GHC does not distinguish Grade IV. To force it, put a backslash before the whole vowel nucleus, as in <code>tś\\i¹</code> or <code>tś\\iw¹</code>. The same marker selects R.100/R.101, as in <code>rtś\\ər¹</code> or <code>rts\\er¹</code>. In GHC, <code>\\n</code> forces the native Class-IV initial <code>ṇ</code>. Tibetan-to-GX restores <code>\\</code> only when the merged-rhyme option is selected.',
         punctuation: 'Sentence-final <code>. 。 ? ？ ! ！</code> becomes <span class="tibetan-inline">༎</span>; general punctuation such as <code>, ， ; ； : ：</code> becomes <span class="tibetan-inline">།</span>, without an extra <span class="tibetan-inline">་</span> before it. Quotation marks are removed, while adjacent valid syllables retain their separating <span class="tibetan-inline">་</span>. Ellipses and missing-character boxes are preserved. A <code>?</code> after an untoned syllable marks uncertain tone; after an explicit tone it is punctuation, and <code>\\?</code> always forces punctuation.',
         shaping: 'For complex stacks containing <span class="tibetan-inline">༹</span>, shaping stability determines the canonical order: write all subjoined letters contiguously before <span class="tibetan-inline">༹</span>. Reverse conversion also recognizes the older semantic order.'
       }
@@ -162,24 +171,30 @@
       '勳拼音節有多個可能的 GX 分析': 'The Xunpin syllable has multiple possible GX analyses',
       '音節須以 ¹、² 或 ? 標示聲調': 'The syllable must end in tone ¹, ², or ?',
       '無法辨認元音': 'Unrecognized vowel',
-      '反斜線只可標在 R.100/R.101 的 e/ə 韻腹前': 'The backslash is valid only before the e/ə nucleus of R.100/R.101',
+      '反斜線只可標記四等韻或 R.100/R.101': 'The backslash may mark only Grade IV or R.100/R.101',
+      '反斜線標記不可與鼻冠音並用': 'The backslash marker cannot be combined with a nasal preinitial',
       '無法辨認聲母或冠音': 'Unrecognized initial or preinitial',
       '不是本方案可辨認的規範藏文音節': 'Not a normalized Tibetan syllable recognized by this scheme',
       '此 GX 韻母沒有唯一的 GHC 對應': 'This GX rhyme has no unique GHC correspondence',
       'GHC 音節須以 ¹、² 或 ? 標示聲調': 'The GHC syllable must end in tone ¹, ², or ?',
       '不符合可辨認的 GHC 音節結構': 'Unrecognized GHC syllable structure',
       '找不到可辨認的 GX 或勳拼音節': 'No recognizable GX or Xunpin syllable found',
-      '找不到以 ¹、² 或 ? 結尾的 GHC 音節': 'No GHC syllable ending in ¹, ², or ? found'
+      '找不到以 ¹、² 或 ? 結尾的 GHC 音節': 'No GHC syllable ending in ¹, ², or ? found',
+      '轉寫表未收錄此字': 'Character absent from the lookup table',
+      '找不到可辨認的西夏字': 'No recognizable Tangut character found'
     };
     let savedLanguage = '';
     try { savedLanguage = localStorage.getItem('converter-language') || ''; } catch (_) {}
     const state = {
-      direction: 'gx',
+      direction: 'tangut',
+      tangutTable: null,
+      tangutTableFailed: false,
       language: savedLanguage || (navigator.language.toLowerCase().startsWith('zh') ? 'zh-Hant' : 'en')
     };
     const input = document.querySelector('#input');
     const output = document.querySelector('#output');
     const status = document.querySelector('#status');
+    const directionTangut = document.querySelector('#direction-tangut');
     const directionGx = document.querySelector('#direction-gx');
     const directionBoGx = document.querySelector('#direction-bo-gx');
     const directionGhc = document.querySelector('#direction-ghc');
@@ -196,7 +211,15 @@
     }
 
     function convert() {
-      const result = state.direction === 'gx'
+      if (state.direction === 'tangut' && !state.tangutTable) {
+        output.value = '';
+        status.classList.toggle('error', state.tangutTableFailed);
+        status.textContent = state.tangutTableFailed ? t().loadTangutError : t().loadingTangut;
+        return;
+      }
+      const result = state.direction === 'tangut'
+        ? GxTibetan.tangutToTibetan(input.value, state.tangutTable)
+        : state.direction === 'gx'
         ? GxTibetan.gxToTibetan(input.value)
         : state.direction === 'bo-gx'
           ? GxTibetan.tibetanToGx(input.value, { preserveRhymeClassMarker: preserveRhymeMarker.checked })
@@ -209,7 +232,9 @@
         ? result.errors.map(translatedError).join(state.language === 'en' ? '; ' : '；')
         : input.value.trim()
           ? t().done
-          : state.direction === 'gx'
+          : state.direction === 'tangut'
+            ? t().emptyTangut
+            : state.direction === 'gx'
             ? t().emptyGx
             : state.direction === 'ghc'
               ? t().emptyGhc
@@ -218,18 +243,21 @@
 
     function setDirection(direction, preserve = false) {
       state.direction = direction;
+      directionTangut.setAttribute('aria-pressed', direction === 'tangut');
       directionGx.setAttribute('aria-pressed', direction === 'gx');
       directionBoGx.setAttribute('aria-pressed', direction === 'bo-gx');
       directionGhc.setAttribute('aria-pressed', direction === 'ghc');
       directionBoGhc.setAttribute('aria-pressed', direction === 'bo-ghc');
       const fromTibetan = direction.startsWith('bo-');
-      const toTibetan = direction === 'gx' || direction === 'ghc';
-      document.querySelector('#input-label').textContent = direction === 'gx' ? t().gxLabel : direction === 'ghc' ? 'GHC' : t().tibetanLabel;
+      const toTibetan = direction === 'tangut' || direction === 'gx' || direction === 'ghc';
+      document.querySelector('#input-label').textContent = direction === 'tangut' ? t().tangutLabel : direction === 'gx' ? t().gxLabel : direction === 'ghc' ? 'GHC' : t().tibetanLabel;
       document.querySelector('#output-label').textContent = toTibetan ? t().tibetanLabel : direction === 'bo-gx' ? 'GX' : 'GHC';
       input.classList.toggle('tibetan', fromTibetan);
+      input.classList.toggle('tangut', direction === 'tangut');
       output.classList.toggle('tibetan', toTibetan);
       reverseOptions.hidden = direction !== 'bo-gx';
-      input.placeholder = direction === 'gx' ? t().gxPlaceholder : direction === 'ghc' ? t().ghcPlaceholder : t().tibetanPlaceholder;
+      document.querySelector('#swap').hidden = direction === 'tangut';
+      input.placeholder = direction === 'tangut' ? t().tangutPlaceholder : direction === 'gx' ? t().gxPlaceholder : direction === 'ghc' ? t().ghcPlaceholder : t().tibetanPlaceholder;
       if (!preserve) { input.value = ''; output.value = ''; }
       convert();
     }
@@ -248,6 +276,7 @@
       document.querySelector('#ghc-link').href = state.language === 'en' ? '../ghc-comparison/index-en.html' : '../ghc-comparison/';
       document.querySelector('#tool').setAttribute('aria-label', strings.toolLabel);
       document.querySelector('#directions').setAttribute('aria-label', strings.directionLabel);
+      directionTangut.textContent = strings.dirTangut;
       directionGx.textContent = strings.dirGx;
       directionBoGx.textContent = strings.dirBoGx;
       directionGhc.textContent = strings.dirGhc;
@@ -257,6 +286,7 @@
       document.querySelector('#clear').textContent = strings.clear;
       document.querySelector('#copy').textContent = strings.copy;
       document.querySelector('#instructions-title').textContent = strings.instructionsTitle;
+      document.querySelector('#instruction-tangut').innerHTML = strings.tangut;
       document.querySelector('#instruction-xunpin').innerHTML = strings.xunpin;
       document.querySelector('#instruction-rhymes').innerHTML = strings.rhymes;
       document.querySelector('#instruction-punctuation').innerHTML = strings.punctuation;
@@ -267,6 +297,7 @@
     }
 
     input.addEventListener('input', convert);
+    directionTangut.addEventListener('click', () => setDirection('tangut'));
     directionGx.addEventListener('click', () => setDirection('gx'));
     directionBoGx.addEventListener('click', () => setDirection('bo-gx'));
     directionGhc.addEventListener('click', () => setDirection('ghc'));
@@ -298,6 +329,21 @@
       }
     });
     applyLanguage();
+    if (typeof fetch === 'function') {
+      fetch('data/tangut-tibetan.csv?v=20260811')
+        .then(response => {
+          if (!response.ok) throw new Error(String(response.status));
+          return response.text();
+        })
+        .then(text => {
+          state.tangutTable = GxTibetan.parseTangutCsv(text);
+          convert();
+        })
+        .catch(() => {
+          state.tangutTableFailed = true;
+          convert();
+        });
+    }
   </script>
 </body>
 </html>

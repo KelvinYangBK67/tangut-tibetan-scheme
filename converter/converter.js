@@ -14,6 +14,10 @@
   const SUB_YA = "ྱ";
   const SUB_A = "ྸ";
   const SUPER_SA = "ས";
+  const GRADE_FOUR_MARK = "ཡ";
+  const GRADE_FOUR_RHYMES = new Map([
+    ["u", 3], ["i", 11], ["a", 20], ["ə", 31], ["e", 37], ["iw", 47]
+  ]);
   const QUOTES = new Set(['"', "“", "”", "'", "‘", "’", "「", "」", "『", "』"]);
   const BOX_MARKS = new Set([
     "□", "■", "▢", "▣", "▤", "▥", "▦", "▧", "▨", "▩", "▪", "▫",
@@ -55,6 +59,35 @@
     ["i", "ི", 3], ["o", "ོ", 3], ["u", "ུ", 3], ["ə", "ྀ", 3]
   ].map(([gx, tibetan, grade]) => ({ gx, tibetan, grade }));
   const vowelByGx = new Map(vowels.map(item => [item.gx, item]));
+
+  // Native rhyme-book classes are the authority for Tangut-character input.
+  // Each value is "vowel+coda:flags"; N adds preposed འ, T superscribed ས,
+  // R the rhotic stack, and 4 the postposed Grade-IV marker ཡ.
+  const rhymeClassData = `
+1|u̱ 2|u 3|u:4 4|u̱ 5|u̱:N 6|au̱:N 7|u:N
+8|i̱ 9|ai̱ 10|i 11|i:4 12|i̱:N 13|ai̱:N 14|i:N 15|i̱ṃ 16|iṃ
+17|a̱ 18|aa̱ 19|a 20|a:4 21|aw 22|a̱:N 23|aa̱:N 24|a:N 25|a̱ṃ 26|aa̱ṃ 27|aṃ
+28|ə̱ 29|aə̱ 30|ə 31|ə:4 32|ə̱:N 33|ə:N
+34|e̱ 35|ae̱ 36|e 37|e:4 38|e̱:N 39|ae̱:N 40|e:N 41|e̱ṃ 42|ae̱ṃ 43|eṃ
+44|i̱w 45|ai̱w 46|iw 47|iw:4 48|i̱w:N 49|iw:N 50|ow
+51|o̱ 52|ao̱ 53|o 54|o̱:N 55|ao̱:N;o:N 56|o̱ṃ 57|ao̱ṃ;oṃ 58|oṃ 59|uo 60|uo
+61|u̱:T 62|au̱:T;u:T 63|e̱:T;ae̱:T 64|e:T 65|eṃ:T 66|a̱:T 67|aa̱:T;a:T
+68|i̱:T 69|ai̱:T 70|i:T 71|ə̱:T 72|aə̱:T;ə:T 73|o̱ṃ:T 74|o̱:T 75|o:T 76|ae̱ṃ:T
+77|e̱:R 78|ae̱:R 79|e:R 80|u̱:R 81|u:R 82|i̱:R 83|ai̱:R 84|i:R
+85|a̱:R 86|aa̱:R 87|a:R 88|a̱:NR 89|aw:R 90|ə̱:R 91|aə̱:R 92|ə:R
+93|i̱w:R 94|iw:R 95|o̱:R 96|ao̱:R;o:R 97|o̱ṃ:R 98|oṃ:R
+99|e̱:NR 100|ə:NR 101|e:NR 102|o:R 103|o:R 104|u̱ṃ 105|a:R`;
+  const rhymeClasses = new Map();
+  for (const entry of rhymeClassData.trim().split(/\s+/u)) {
+    const [number, encodedCandidates] = entry.split("|");
+    const candidates = encodedCandidates.split(";").map(encoded => {
+      const [body, flags = ""] = encoded.split(":");
+      const vowel = vowels.find(item => body.startsWith(item.gx));
+      if (!vowel) throw new Error(`Internal rhyme mapping error: R.${number}`);
+      return { vowel, coda: body.slice(vowel.gx.length), flags };
+    });
+    rhymeClasses.set(Number(number), candidates);
+  }
 
   const xunpinInitials = new Map([
     ["tśh", "tjh"], ["tṣh", "trh"], ["dź", "dj"], ["dẓ", "dr"],
@@ -276,8 +309,16 @@
       markedRhyme = true;
       body = body.slice(0, -1);
     }
-    if (markedRhyme && (!retroflex || !["e", "ə"].includes(vowel.gx))) {
-      throw new Error("反斜線只可標在 R.100/R.101 的 e/ə 韻腹前");
+    const rhymeKey = vowel.gx + coda;
+    const markedRhymeKind = markedRhyme
+      ? retroflex && ["e", "ə"].includes(vowel.gx) && !coda
+        ? "preposed-a"
+        : !retroflex && GRADE_FOUR_RHYMES.has(rhymeKey)
+          ? "grade-four"
+          : "invalid"
+      : "";
+    if (markedRhymeKind === "invalid") {
+      throw new Error("反斜線只可標記四等韻或 R.100/R.101");
     }
 
     if (retroflex && body.startsWith("r")) {
@@ -316,16 +357,16 @@
     }
 
     if (markedRhyme && preinitial) {
-      throw new Error("反斜線只可標在 R.100/R.101 的 e/ə 韻腹前");
+      throw new Error("反斜線標記不可與鼻冠音並用");
     }
 
-    return { source, tone, retroflex, tight, coda, vowel, main, medial, preinitial, markedRhyme };
+    return { source, tone, retroflex, tight, coda, vowel, main, medial, preinitial, markedRhyme, markedRhymeKind };
   }
 
   function encodeOnset(parsed) {
     const base = chooseBaseInitial(parsed.main.gx);
     const spec = initialByGx.get(base === "" ? "Ø" : base);
-    let onset = parsed.preinitial || parsed.markedRhyme ? "འ" : "";
+    let onset = parsed.preinitial || parsed.markedRhymeKind === "preposed-a" ? "འ" : "";
     if (parsed.retroflex) onset += "ར";
     if (parsed.tight) onset += SUPER_SA;
     if (parsed.retroflex || parsed.tight) {
@@ -344,11 +385,45 @@
 
   function gxSyllableToTibetan(raw) {
     const parsed = parseGxSyllable(raw);
-    let result = encodeOnset(parsed) + parsed.vowel.tibetan;
+    let result = encodeOnset(parsed)
+      + (parsed.markedRhymeKind === "grade-four" ? GRADE_FOUR_MARK : "")
+      + parsed.vowel.tibetan;
     if (parsed.coda === "w") result += "ག༹";
     if (parsed.coda === "ṃ") result += "མ";
     if (parsed.tone === "²") result += "ས";
     if (parsed.tone === "?") result += "?";
+    return normalizeTibetan(result);
+  }
+
+  function rhymeClassToTibetan(rhymeClass, onsetSource, tone, options = {}) {
+    const number = Number(String(rhymeClass).replace(/^R\./iu, ""));
+    const candidates = rhymeClasses.get(number);
+    if (!candidates) throw new Error(`無法辨認韻類 R.${rhymeClass}`);
+    if (!/^(?:1|2|\?)$/u.test(String(tone))) throw new Error("聲調須爲 1、2 或 ?");
+    const toneMark = String(tone) === "1" ? "¹" : String(tone) === "2" ? "²" : "?";
+    const source = /[¹²?]$/u.test(String(onsetSource)) ? String(onsetSource) : String(onsetSource) + toneMark;
+    const bootstrap = parseGxSyllable(source);
+    const sourceRhyme = bootstrap.vowel.gx + bootstrap.coda;
+    const rhyme = candidates.find(candidate => candidate.vowel.gx + candidate.coda === sourceRhyme) || candidates[0];
+    const nativeClass = String(options.initialClass || "").toUpperCase();
+    const main = ["4", "IV", "Ⅳ"].includes(nativeClass) ? initialByGx.get("ṇ") : bootstrap.main;
+    const parsed = {
+      ...bootstrap,
+      main,
+      tone: toneMark,
+      vowel: rhyme.vowel,
+      coda: rhyme.coda,
+      preinitial: rhyme.flags.includes("N"),
+      tight: rhyme.flags.includes("T"),
+      retroflex: rhyme.flags.includes("R"),
+      markedRhyme: false,
+      markedRhymeKind: ""
+    };
+    let result = encodeOnset(parsed) + (rhyme.flags.includes("4") ? GRADE_FOUR_MARK : "") + rhyme.vowel.tibetan;
+    if (rhyme.coda === "w") result += "ག༹";
+    if (rhyme.coda === "ṃ") result += "མ";
+    if (toneMark === "²") result += "ས";
+    if (toneMark === "?") result += "?";
     return normalizeTibetan(result);
   }
 
@@ -362,7 +437,7 @@
             for (const preinitial of [false, true]) {
               const fake = {
                 main: initialByGx.get(baseSpec.gx), medial, tight, retroflex, preinitial,
-                markedRhyme: false, vowel, coda: "", tone: "¹"
+                markedRhyme: false, markedRhymeKind: "", vowel, coda: "", tone: "¹"
               };
               const tibetan = encodeOnset(fake);
               let gxInitial = initialForGrade(baseSpec.gx, vowel.grade);
@@ -419,7 +494,15 @@
           if (!codaOption.body.endsWith(vowel.tibetan)) continue;
           const onset = codaOption.body.slice(0, codaOption.body.length - vowel.tibetan.length);
           const candidate = reverseOnsetsByGrade.get(vowel.grade).get(onset);
-          if (candidate) matches.push({ vowel, candidate, coda: codaOption.coda, tone: toneOption.tone });
+          if (candidate) matches.push({ vowel, candidate, coda: codaOption.coda, tone: toneOption.tone, gradeFour: false });
+          const rhymeKey = vowel.gx + codaOption.coda;
+          if (onset.endsWith(GRADE_FOUR_MARK) && GRADE_FOUR_RHYMES.has(rhymeKey)) {
+            const gradeFourOnset = onset.slice(0, -GRADE_FOUR_MARK.length);
+            const gradeFourCandidate = reverseOnsetsByGrade.get(3).get(gradeFourOnset);
+            if (gradeFourCandidate) {
+              matches.push({ vowel, candidate: gradeFourCandidate, coda: codaOption.coda, tone: toneOption.tone, gradeFour: true });
+            }
+          }
         }
       }
     }
@@ -429,8 +512,8 @@
       if (a.coda !== b.coda) return a.coda ? -1 : 1;
       return b.vowel.tibetan.length - a.vowel.tibetan.length;
     });
-    const { vowel, candidate, coda, tone } = matches[0];
-    const markedRhyme = candidate.preinitial && candidate.retroflex && ["e", "ə"].includes(vowel.gx);
+    const { vowel, candidate, coda, tone, gradeFour } = matches[0];
+    const markedRhyme = gradeFour || candidate.preinitial && candidate.retroflex && ["e", "ə"].includes(vowel.gx);
     const gxOnset = markedRhyme ? candidate.bareGx : candidate.gx;
     const marker = markedRhyme && options.preserveRhymeClassMarker ? "\\" : "";
     return gxOnset + marker + vowel.gx + coda + (candidate.tight ? "h" : "") + (candidate.retroflex ? "r" : "") + tone;
@@ -482,6 +565,9 @@
   function ghcRhymeFor(parsed) {
     const vowel = parsed.vowel.gx;
     const withCoda = vowel + parsed.coda;
+    if (parsed.markedRhymeKind === "grade-four") {
+      return ghcBaseRhymes.get(withCoda) || ghcCodaRhymes.get(withCoda) || null;
+    }
     if (parsed.markedRhyme) return vowel === "e" ? "jiir" : vowel === "ə" ? "jɨɨr" : null;
     if (parsed.preinitial && parsed.retroflex) {
       if (vowel === "e̱") return "eer";
@@ -516,7 +602,7 @@
       for (const tight of [false, true]) {
         for (const retroflex of [false, true]) {
           for (const preinitial of [false, true]) {
-            const candidate = { vowel, coda, tight, retroflex, preinitial, markedRhyme: false };
+            const candidate = { vowel, coda, tight, retroflex, preinitial, markedRhyme: false, markedRhymeKind: "" };
             const ghc = ghcRhymeFor(candidate);
             if (ghc) ghcRhymeAnalyses.push({ ghc, ...candidate });
           }
@@ -527,7 +613,7 @@
   for (const vowel of vowels.filter(item => ["e", "ə"].includes(item.gx))) {
     ghcRhymeAnalyses.push({
       ghc: vowel.gx === "e" ? "jiir" : "jɨɨr",
-      vowel, coda: "", tight: false, retroflex: true, preinitial: false, markedRhyme: true
+      vowel, coda: "", tight: false, retroflex: true, preinitial: false, markedRhyme: true, markedRhymeKind: "preposed-a"
     });
   }
   ghcRhymeAnalyses.sort((a, b) => b.ghc.length - a.ghc.length);
@@ -547,21 +633,37 @@
     const toneMatch = source.match(/([¹²?])$/u);
     if (!toneMatch) throw new Error("GHC 音節須以 ¹、² 或 ? 標示聲調");
     const tone = toneMatch[1];
-    const body = source.slice(0, -1);
+    let body = source.slice(0, -1);
+    let forceClassFourInitial = false;
+    if (body.startsWith("\\n")) {
+      forceClassFourInitial = true;
+      body = "n" + body.slice(2);
+    }
+    const markerIndex = body.indexOf("\\");
+    const markedGradeFour = markerIndex >= 0;
+    if (markedGradeFour) {
+      if (body.indexOf("\\", markerIndex + 1) >= 0) throw new Error("GHC 音節含有多個反斜線標記");
+      body = body.slice(0, markerIndex) + body.slice(markerIndex + 1);
+    }
     const canonicalCandidates = [];
     for (const analysis of ghcRhymeAnalyses) {
       if (!body.endsWith(analysis.ghc)) continue;
       const onset = body.slice(0, -analysis.ghc.length);
       for (const onsetCandidate of ghcOnsetCandidates(onset)) {
-        let gxInitial = initialForGrade(onsetCandidate.base, analysis.vowel.grade);
+        if (forceClassFourInitial && onset !== "n") continue;
+        const onsetBase = forceClassFourInitial ? "ṇ" : onsetCandidate.base;
+        let gxInitial = initialForGrade(onsetBase, analysis.vowel.grade);
         let medial = onsetCandidate.medial;
         if (gxInitial === "vw") {
           gxInitial = "v";
           medial = medial || "w";
         }
-        let gxOnset = (analysis.preinitial ? nasalPrefixFor(onsetCandidate.base) : "") + gxInitial + medial;
-        if (analysis.retroflex && onsetCandidate.base !== "r") gxOnset = "r" + gxOnset;
-        const marker = analysis.markedRhyme ? "\\" : "";
+        let gxOnset = (analysis.preinitial ? nasalPrefixFor(onsetBase) : "") + gxInitial + medial;
+        if (analysis.retroflex && onsetBase !== "r") gxOnset = "r" + gxOnset;
+        if (markedGradeFour && markerIndex !== onset.length) continue;
+        const rhymeKey = analysis.vowel.gx + analysis.coda;
+        if (markedGradeFour && (analysis.preinitial || analysis.tight || analysis.retroflex || !GRADE_FOUR_RHYMES.has(rhymeKey))) continue;
+        const marker = analysis.markedRhyme || markedGradeFour ? "\\" : "";
         const canonical = gxOnset + marker + analysis.vowel.gx + analysis.coda
           + (analysis.tight ? "h" : "") + (analysis.retroflex ? "r" : "") + tone;
         try {
@@ -583,6 +685,53 @@
 
   function tibetanSyllableToGhc(raw) {
     return gxSyllableToGhc(tibetanSyllableToGx(raw, { preserveRhymeClassMarker: true }));
+  }
+
+  function parseTangutCsv(text) {
+    const table = new Map();
+    const lines = String(text).replace(/^\uFEFF/u, "").split(/\r?\n/u);
+    if ((lines.shift() || "").trim() !== "tangut,tibetan") throw new Error("西夏文轉寫表缺少 tangut,tibetan 表頭");
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      const separator = line.indexOf(",");
+      if (separator < 1) throw new Error("西夏文轉寫表含有無效資料列");
+      const tangut = line.slice(0, separator);
+      const tibetan = line.slice(separator + 1);
+      if ([...tangut].length !== 1 || !tibetan) throw new Error("西夏文轉寫表含有無效字元映射");
+      if (table.has(tangut) && table.get(tangut) !== tibetan) throw new Error(`西夏字 ${tangut} 有衝突映射`);
+      table.set(tangut, tibetan);
+    }
+    return table;
+  }
+
+  function tangutToTibetan(input, table) {
+    if (!(table instanceof Map)) throw new Error("西夏文轉寫表尚未載入");
+    const source = String(input);
+    const token = /[\u{17000}-\u{187FF}\u{18D00}-\u{18D8F}]/gu;
+    let output = "";
+    let cursor = 0;
+    let converted = 0;
+    let previousWasSyllable = false;
+    const errors = [];
+    for (const match of source.matchAll(token)) {
+      const gap = source.slice(cursor, match.index);
+      const tibetan = table.get(match[0]);
+      const currentIsSyllable = Boolean(tibetan);
+      if (previousWasSyllable && currentIsSyllable && isSyllableSeparator(gap)) output += TSHEG;
+      else output += punctuationToTibetan(gap);
+      if (tibetan) {
+        output += tibetan;
+        converted += 1;
+      } else {
+        output += match[0];
+        errors.push(`${match[0]}：轉寫表未收錄此字`);
+      }
+      previousWasSyllable = currentIsSyllable;
+      cursor = match.index + match[0].length;
+    }
+    output += punctuationToTibetan(source.slice(cursor));
+    if (!converted && source.trim() && !errors.length) errors.push("找不到可辨認的西夏字");
+    return { output, errors };
   }
 
   function gxToTibetan(input) {
@@ -618,7 +767,7 @@
 
   function ghcToTibetan(input) {
     const source = String(input).normalize("NFC");
-    const token = /[\p{L}\p{M}·]+[¹²?]/gu;
+    const token = /[\p{L}\p{M}·\\]+[¹²?]/gu;
     let output = "";
     let cursor = 0;
     let converted = 0;
@@ -726,10 +875,13 @@
     parseXunpin,
     ghcSyllableToGx,
     gxSyllableToTibetan,
+    rhymeClassToTibetan,
     gxSyllableToGhc,
     ghcSyllableToTibetan,
     tibetanSyllableToGx,
     tibetanSyllableToGhc,
+    parseTangutCsv,
+    tangutToTibetan,
     gxToTibetan,
     ghcToTibetan,
     tibetanToGx,

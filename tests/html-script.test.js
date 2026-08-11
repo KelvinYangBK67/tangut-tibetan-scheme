@@ -14,7 +14,9 @@ for (const file of ["converter/index.html", "党項語藏文轉寫方案.html", 
 }
 const home = fs.readFileSync("converter/index.html", "utf8");
 assert.doesNotMatch(home, /http-equiv="refresh"|location\.replace/u);
-assert.match(home, /<script src="converter\.js\?v=ghc-rhyme-classes-20260811"><\/script>/u);
+assert.match(home, /<script src="converter\.js\?v=tangut-direct-20260811"><\/script>/u);
+assert.match(home, /id="direction-tangut"[^>]*aria-pressed="true"/u);
+assert.match(home, /西夏文 → 藏文/u);
 assert.match(home, /GX\/勳拼 → 藏文/u);
 assert.match(home, /GHC → 藏文/u);
 assert.match(home, /id="preserve-rhyme-marker"/u);
@@ -22,6 +24,8 @@ assert.match(home, /id="language"/u);
 assert.match(home, /'zh-Hant': \{/u);
 assert.match(home, /instructionsTitle: 'Instructions'/u);
 assert.match(home, /instruction-punctuation/u);
+assert.match(home, /instruction-tangut/u);
+assert.match(home, /data\/tangut-tibetan\.csv/u);
 assert.match(home, /The GX → Tibetan direction also accepts/u);
 assert.match(home, /Sentence-final <code>/u);
 assert.match(home, /For complex stacks containing/u);
@@ -30,6 +34,7 @@ assert.match(home, /shanggu-web\.css\?v=shanggu-web-v4/u);
 assert.doesNotMatch(home, /shanggu-web-manifest|webfont-loader|data-font-warmup/u);
 assert.doesNotMatch(home, /ShangguSans-(?:Regular|Bold)\.woff2/u);
 assert.match(home, /NotoSerifTibetan-Regular\.woff2\?v=full-20260810/u);
+assert.match(home, /NotoSerifTangut-Regular\.woff2\?v=full-20260810/u);
 assert.match(home, /id="input"/u);
 assert.match(home, /id="output"/u);
 
@@ -51,10 +56,11 @@ const converterContext = {
 };
 const converterInline = [...home.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/giu)].at(-1)[1];
 new vm.Script(converterInline).runInNewContext(converterContext);
-assert.equal(elements.get("page-title").textContent, "GX/GHC–Tibetan Converter");
+assert.equal(elements.get("page-title").textContent, "Tangut–Tibetan Converter");
+assert.match(elements.get("instruction-tangut").innerHTML, /static <code>tangut,tibetan/u);
 assert.match(elements.get("instruction-punctuation").innerHTML, /Sentence-final/u);
 elements.get("language").listeners.change({ target: { value: "zh-Hant" } });
-assert.equal(elements.get("page-title").textContent, "GX/GHC–藏文互轉");
+assert.equal(elements.get("page-title").textContent, "西夏文–藏文轉換器");
 assert.match(elements.get("instruction-xunpin").innerHTML, /勳拼/u);
 
 const scheme = fs.readFileSync("党項語藏文轉寫方案.html", "utf8");
@@ -86,6 +92,16 @@ assert.doesNotMatch(schemeEn, /<style>/u);
 assert.deepEqual(sectionIds(schemeEn), sectionIds(scheme), "Chinese and English scheme sections must match");
 assert.deepEqual(rhymeRows(schemeEn), rhymeRows(scheme), "Chinese and English R.1–105 data must match");
 assert.equal(rhymeRows(schemeEn).length, 105, "English scheme must contain the complete rhyme inventory");
+for (const row of [
+  "R.3|1.03 𗔠|2.03 𘆶|-u|ཨཡུ",
+  "R.11|1.11 𗣣|2.10 𘒇|-i|ཨཡི",
+  "R.20|1.20 𘅄|2.17 𗾥|-a|ཨཡ",
+  "R.31|1.30 𗝚|2.28 𗸹|-ə|ཨཡྀ",
+  "R.37|1.36 𘒋|2.33 𗆎|-e|ཨཡེ",
+  "R.47|1.46 𗪲||-iw|ཨཡིག༹"
+]) {
+  assert.ok(rhymeRows(scheme).includes(row), `${row.split("|")[0]} must retain the Grade-IV spelling`);
+}
 assert.equal(scriptCharacters(testAndInventory(schemeEn)), scriptCharacters(testAndInventory(scheme)), "Chinese and English tests and rhyme data must match");
 assert.equal(constantBody(schemeEn, "words"), constantBody(scheme, "words"), "word tests must match exactly");
 assert.equal(constantBody(schemeEn, "sentences"), constantBody(scheme, "sentences"), "sentence tests must match exactly");
@@ -113,6 +129,8 @@ for (const html of [ghcZh, ghcEn]) {
 }
 assert.match(ghcZh, /<td class="tibetan">ཨེ<\/td>/u);
 assert.match(ghcZh, /<td class="tibetan">འརྸྀ<\/td>/u);
+assert.match(ghcZh, /後置 <span class="tibetan">ཡ<\/span><\/td><td>四等/u);
+assert.match(ghcEn, /postposed <span class="tibetan">ཡ<\/span><\/td><td>Grade IV/u);
 assert.doesNotMatch(ghcZh, /GX 輸入|-\\e|-\\ə/u);
 assert.doesNotMatch(ghcEn, /GX input|-\\e|-\\ə/u);
 assert.equal((ghcEn.match(/<tr>/gu) || []).length, (ghcZh.match(/<tr>/gu) || []).length, "GHC table rows must match");

@@ -68,10 +68,8 @@ core_bytes = sum(
 )
 if core_bytes >= 150_000:
     raise AssertionError(f"Shanggu core exceeds its 150 KB budget: {core_bytes}")
-page_sources = list(ROOT.glob("*.html"))
-page_sources.extend((ROOT / "converter").glob("*.html"))
+page_sources = list((ROOT / "converter").glob("*.html"))
 page_sources.extend((ROOT / "converter").glob("*.js"))
-page_sources.extend((ROOT / "ghc-comparison").glob("*.html"))
 page_text = "".join(path.read_text(encoding="utf-8") for path in page_sources)
 
 for style, weight in (("Regular", 400), ("Bold", 700)):
