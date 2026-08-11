@@ -1,0 +1,26 @@
+\documentclass[12pt]{nextart_zh}
+\UseFont{tibetan}\UseFont{tangut}\UseFont{libertinus}\UseFeature{hyperlinks}\UseFeature{tables}
+\title{Tangut Tibetan Transcription Scheme}\author{Kelvin Yang}\date{August 2026}
+\begin{document}\maketitle
+This recreational scheme spells Tangut in Tibetan script. It is based on \href{https://semakosa.github.io/tangut-pronunciation-db/docs/GX202411-zh.html}{GX202411} and aims at a compact, natural Tibetan orthography.
+
+\section{Initials}
+Each GX initial is assigned a Tibetan nominal letter. Conditioned pairs such as \emph{tś/tṣ} and \emph{k/q} share one spelling because their distribution is recoverable from the rhyme grade. Derived \emph{f, lh, ll, gh} use ༹. Complex stacks place all subjoined letters before ༹ for shaping stability.
+
+\begin{center}\begin{tabular}{llllll}\toprule GX&Tibetan&GX&Tibetan&GX&Tibetan\\\midrule
+p/ph/b/m&པ ཕ བ མ&t/th/d/n&ཏ ཐ ད ན&k/kh/g/ŋ&ཀ ཁ ག ང\\
+ts/tsh/dz/s/z&ཙ ཚ ཛ ས ཟ&tś/tśh/dź/ś/ź&ཅ ཆ ཇ ཤ ཞ&v/l/y/r/h&ཝ ལ ཡ ར ཧ\\
+f/lh/ll/gh&ཕ༹ ཐ༹ ད༹ ག༹&w/hw&ཨྭ ཧྭ&zero&ཨ\\\bottomrule\end{tabular}\end{center}
+
+\section{Vowels and grades}
+\begin{center}\begin{tabular}{lllllll}\toprule Grade&a&e&i&o&u&ə\\\midrule
+III&ཨ&ཨེ&ཨི&ཨོ&ཨུ&ཨྀ\\ I&ཨའ&ཨའེ&ཨའི&ཨའོ&ཨའུ&ཨའྀ\\ II&ཨཨ&ཨཨེ&ཨཨི&ཨཨོ&ཨཨུ&ཨཨྀ\\\bottomrule\end{tabular}\end{center}
+
+\section{Segmental and pan-syllabic features}
+\begin{center}\begin{tabular}{lll}\toprule GX&Tibetan&Function\\\midrule
+n-/m-/ŋ-&འ-&nasal preinitial / marked series\\ -w- / -y-&ྭ / ྱ&medials\\ -w / -ṃ&-ག༹ / -མ&codas\\ -h&ས-&tense rhyme\\ r-…-r&ར-&retroflex rhyme\\ ¹ / ² / ?&zero / -ས / ?&tone\\\bottomrule\end{tabular}\end{center}
+
+Although the scheme is based on GX, it also aims to preserve traditional rhyme-table categories. GX merges R.92 with R.100 and R.79 with R.101; the orthography therefore adds preposed འ- to R.100 and R.101. Automatic GX conversion defaults to R.92/R.79. Prefix the vowel with a backslash, as in \emph{rtś\textbackslash ər¹} or \emph{rts\textbackslash er¹}, to request the marked spelling.
+
+The Chinese edition supplies the complete R.1--105 inventory and the word, sentence, and paragraph tests. Question marks in that inventory indicate uncertain GX reconstructions; they are not copied into the Tibetan column.
+\end{document}

@@ -1,0 +1,24 @@
+\documentclass[12pt]{nextart_zh}
+\UseFont{tibetan}\UseFont{libertinus}\UseFeature{hyperlinks}\UseFeature{tables}
+\title{Tibetan Transcription and GHC Correspondence}\author{Kelvin Yang}\date{August 2026}
+\begin{document}\maketitle
+This chart compares the orthographic structures of the Tibetan scheme with Gong Hwang-cherng's reconstruction (GHC). Tibetan spelling preserves rhyme-table categories, while GX and GHC give different phonological readings of the same orthographic features.
+
+\section{Vowels and grades}
+\begin{center}\begin{tabular}{lll}\toprule Tibetan & GX & GHC \\\midrule
+C & \emph{Ca} & \emph{Cja} \\ Cེ & \emph{Ce} & \emph{Cjij} \\ Cི & \emph{Ci} & \emph{Cji} \\ Cོ & \emph{Co} & \emph{Cjo} \\ Cུ & \emph{Cu} & \emph{Cju} \\ Cྀ & \emph{Cə} & \emph{Cjɨ} \\
+Cའ & \emph{Ca̱} & \emph{Ca} \\ Cའེ & \emph{Ce̱} & \emph{Cej} \\ Cའི & \emph{Ci̱} & \emph{Ce} \\ Cའོ & \emph{Co̱} & \emph{Co} \\ Cའུ & \emph{Cu̱} & \emph{Cu} \\ Cའྀ & \emph{Cə̱} & \emph{Cə} \\\bottomrule
+\end{tabular}\end{center}
+
+\section{Structural devices}
+\begin{center}\begin{tabular}{lll}\toprule Tibetan device & category & GHC result \\\midrule
+postposed འ & Grade I & vowel series without \emph{j-} \\ preposed འ- & marked／column-2 & corresponding long vowel \\ ར- & retroflex rhyme & final \emph{-r} \\ superscribed ས- & tense rhyme & underdotted vowel \\ -མ／-ག༹ & GX \emph{-ṃ／-w} & nasal, \emph{-j／-w} rhyme \\\bottomrule
+\end{tabular}\end{center}
+
+\section{R.79/101 and R.92/100}
+\begin{center}\begin{tabular}{llll}\toprule Rhyme & Tibetan & extended GX & GHC \\\midrule
+R.79 & …ར…ེ & \emph{-er} & \emph{-jijr} \\ R.101 & འ…ར…ེ & \emph{-\textbackslash er} & \emph{-jiir} \\ R.92 & …ར…ྀ & \emph{-ər} & \emph{-jɨr} \\ R.100 & འ…ར…ྀ & \emph{-\textbackslash ər} & \emph{-jɨɨr} \\\bottomrule
+\end{tabular}\end{center}
+
+Standard GX merges each pair, so automatic conversion defaults to R.79/R.92. The backslash is a converter-only extension that explicitly requests R.101/R.100. Sources: \href{https://homepage.univie.ac.at/xun.gong/tangut/phonology-202409.html}{Gong Xun, Tangut phonology} and \href{https://semakosa.github.io/tangut-pronunciation-db/docs/GX202411-zh.html}{GX202411}.
+\end{document}

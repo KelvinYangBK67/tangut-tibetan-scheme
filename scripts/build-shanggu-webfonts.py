@@ -9,7 +9,7 @@ from fontTools import subset
 from fontTools.ttLib import TTFont
 
 
-VERSION = "shanggu-web-v3"
+VERSION = "shanggu-web-v4"
 WEIGHTS = (("Regular", 400), ("Bold", 700))
 CHUNK_RANGES = (
     ("symbols", 0x0000, 0x33FF),
@@ -32,9 +32,10 @@ def cmap(path: Path) -> set[int]:
 
 
 def page_characters(project_root: Path) -> set[int]:
-    sources = [project_root / "党項語藏文轉寫方案.html"]
+    sources = list(project_root.glob("*.html"))
     sources.extend((project_root / "converter").glob("*.html"))
     sources.extend((project_root / "converter").glob("*.js"))
+    sources.extend((project_root / "ghc-comparison").glob("*.html"))
     text = "".join(path.read_text(encoding="utf-8") for path in sources)
     # Keep all characters that can occur in the UI or converter messages. The
     # Latin glyphs cost little and make the core independently usable.

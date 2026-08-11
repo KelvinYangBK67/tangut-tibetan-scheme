@@ -14,10 +14,12 @@ for (const file of ["converter/index.html", "党項語藏文轉寫方案.html"])
 }
 const home = fs.readFileSync("converter/index.html", "utf8");
 assert.doesNotMatch(home, /http-equiv="refresh"|location\.replace/u);
-assert.match(home, /<script src="converter\.js\?v=punctuation-parser-20260811"><\/script>/u);
+assert.match(home, /<script src="converter\.js\?v=ghc-rhyme-classes-20260811"><\/script>/u);
 assert.match(home, /GX／勳拼 → 藏文/u);
-assert.match(home, /ShangguSans-Bold-core\.woff2\?v=shanggu-web-v3/u);
-assert.match(home, /shanggu-web\.css\?v=shanggu-web-v3/u);
+assert.match(home, /GHC → 藏文/u);
+assert.match(home, /id="preserve-rhyme-marker"/u);
+assert.match(home, /ShangguSans-Bold-core\.woff2\?v=shanggu-web-v4/u);
+assert.match(home, /shanggu-web\.css\?v=shanggu-web-v4/u);
 assert.doesNotMatch(home, /shanggu-web-manifest|webfont-loader|data-font-warmup/u);
 assert.doesNotMatch(home, /ShangguSans-(?:Regular|Bold)\.woff2/u);
 assert.match(home, /NotoSerifTibetan-Regular\.woff2\?v=full-20260810/u);
@@ -29,13 +31,23 @@ assert.match(scheme, /\["w","ཨྭ"\]/u);
 assert.doesNotMatch(scheme, /\["w","ཧྭ"\]/u);
 assert.match(scheme, /-h<\/td><td>上加<span class="tibetan">ས<\/span><\/td><td>緊元音/u);
 assert.doesNotMatch(scheme, /下加<span class="tibetan">ཧ<\/span><\/td><td>緊元音/u);
-assert.match(scheme, /shanggu-web\.css\?v=shanggu-web-v3/u);
+assert.match(scheme, /R\.100\|1\.92 𗂴\|2\.85 𗉕\|\(r- -ər\?\)\|འརྸྀ/u);
+assert.match(scheme, /R\.101\|1\.93 𗹙\|2\.86 𗎫\|\(r- -er\?\)\|འརྸེ/u);
+assert.doesNotMatch(scheme, /\|རྸ[ྀེ]\?/u);
+assert.match(scheme, /<h3>段落測試<\/h3>/u);
+assert.match(scheme, /shanggu-web\.css\?v=shanggu-web-v4/u);
 assert.doesNotMatch(scheme, /shanggu-web-manifest|webfont-loader|data-font-warmup/u);
-assert.match(scheme, /rel="preload" href="fonts\/NotoSerifTangut-Page\.woff2\?v=tangut-page-20260810"[^>]*fetchpriority="high"/u);
+assert.match(scheme, /rel="preload" href="fonts\/NotoSerifTangut-Page\.woff2\?v=tangut-page-20260811"[^>]*fetchpriority="high"/u);
 assert.match(scheme, /font-family: "Noto Serif Tangut Page", "Noto Serif Tangut Full"/u);
 assert.doesNotMatch(scheme, /ShangguSans-(?:Regular|Bold)\.woff2/u);
 
 const root = fs.readFileSync("index.html", "utf8");
 assert.match(root, /url=converter\//u);
+
+for (const file of ["党項語藏文轉寫方案-en.html", "ghc-comparison/index.html", "ghc-comparison/index-en.html"]) {
+  assert.ok(fs.existsSync(file), `${file} should exist`);
+  const html = fs.readFileSync(file, "utf8");
+  assert.match(html, /converter\//u, `${file} should link the converter`);
+}
 
 console.log("ok - both HTML application scripts compiled");

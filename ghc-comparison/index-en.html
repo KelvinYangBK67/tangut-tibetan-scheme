@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tibetan Transcription and GHC Correspondence</title><link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v4">
+<style>@font-face{font-family:Tibetan;src:url("../fonts/NotoSerifTibetan-Regular.woff2")}body{max-width:64rem;margin:auto;padding:3rem 1rem;font:17px/1.7 sans-serif;color:#20242a}a{color:#315b7d}nav a{margin-right:1rem}table{width:100%;border-collapse:collapse;margin:1rem 0 3rem}th,td{padding:.6rem;border-bottom:1px solid #d6dce2;text-align:left}.bo{font:1.3em Tibetan,serif}code{white-space:nowrap}</style></head>
+<body><nav><a href="index.html">中文</a><a href="../converter/">Converter</a><a href="../党項語藏文轉寫方案-en.html">Tibetan scheme</a></nav>
+<h1>Tibetan Transcription and GHC Correspondence</h1><p>This chart compares the orthographic structures used by the Tibetan scheme with Gong Hwang-cherng’s reconstruction (GHC). The Tibetan spelling preserves rhyme-table categories; GX and GHC supply different phonological readings of those categories.</p>
+<h2>Vowels and grades</h2><table><thead><tr><th>Tibetan</th><th>GX</th><th>GHC</th></tr></thead><tbody>
+<tr><td class="bo">C / Cེ / Cི / Cོ / Cུ / Cྀ</td><td>Ca / Ce / Ci / Co / Cu / Cə</td><td>Cja / Cjij / Cji / Cjo / Cju / Cjɨ</td></tr>
+<tr><td class="bo">Cའ / Cའེ / Cའི / Cའོ / Cའུ / Cའྀ</td><td>Ca̱ / Ce̱ / Ci̱ / Co̱ / Cu̱ / Cə̱</td><td>Ca / Cej / Ce / Co / Cu / Cə</td></tr></tbody></table>
+<h2>Structural devices</h2><table><thead><tr><th>Tibetan device</th><th>Category</th><th>GHC result</th></tr></thead><tbody>
+<tr><td class="bo">postposed འ</td><td>Grade I</td><td>vowels without Grade-III <code>j-</code></td></tr><tr><td class="bo">preposed འ-</td><td>marked / column-2</td><td>long-vowel series</td></tr>
+<tr><td class="bo">ར-</td><td>retroflex rhyme</td><td><code>-r</code></td></tr><tr><td class="bo">ས-</td><td>tense rhyme</td><td>underdotted vowel</td></tr><tr><td class="bo">-མ / -ག༹</td><td>GX <code>-ṃ / -w</code></td><td>the corresponding nasal, <code>-j</code>, or <code>-w</code> rhyme</td></tr></tbody></table>
+<h2>R.79/101 and R.92/100</h2><table><thead><tr><th>Rhyme</th><th>Tibetan</th><th>extended GX input</th><th>GHC</th></tr></thead><tbody>
+<tr><td>R.79</td><td class="bo">…ར…ེ</td><td><code>-er</code></td><td><code>-jijr</code></td></tr><tr><td>R.101</td><td class="bo">འ…ར…ེ</td><td><code>-\er</code></td><td><code>-jiir</code></td></tr>
+<tr><td>R.92</td><td class="bo">…ར…ྀ</td><td><code>-ər</code></td><td><code>-jɨr</code></td></tr><tr><td>R.100</td><td class="bo">འ…ར…ྀ</td><td><code>-\ər</code></td><td><code>-jɨɨr</code></td></tr></tbody></table>
+<p>Because standard GX merges each pair, automatic GX-to-Tibetan conversion defaults to R.79/R.92. The backslash is a converter-only input extension that explicitly requests R.101/R.100. Tibetan-to-GX still returns standard GX unless the preservation option is enabled.</p>
+<p>Sources: <a href="https://homepage.univie.ac.at/xun.gong/tangut/phonology-202409.html">Gong Xun, <cite>Tangut phonology</cite></a>; <a href="https://semakosa.github.io/tangut-pronunciation-db/docs/GX202411-zh.html">GX202411</a>.</p></body></html>

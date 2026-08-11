@@ -72,6 +72,24 @@
     ["o", "o"], ["u", "u"], ["y", "ə"]
   ];
 
+  const ghcInitialFromBase = new Map([
+    ["tśh", "tśh"], ["tsh", "tsh"], ["dź", "dź"], ["gh", "ɣ"],
+    ["ph", "ph"], ["th", "th"], ["kh", "kh"], ["lh", "lh"],
+    ["ll", "l"], ["ts", "ts"], ["dz", "dz"], ["tś", "tś"],
+    ["ś", "ś"], ["ź", "z"], ["f", "w"], ["v", "w"],
+    ["ṇ", "n"], ["ŋ", "ŋ"], ["y", "j"], ["h", "x"],
+    ["w", "w"], ["Ø", ""]
+  ]);
+  const ghcBaseFromInitial = [
+    ["tśh", "tśh"], ["tsh", "tsh"], ["dź", "dź"], ["ph", "ph"],
+    ["th", "th"], ["kh", "kh"], ["lh", "lh"], ["ts", "ts"],
+    ["dz", "dz"], ["tś", "tś"], ["ś", "ś"], ["ɣ", "gh"],
+    ["p", "p"], ["t", "t"], ["b", "b"], ["d", "d"],
+    ["m", "m"], ["n", "n"], ["k", "k"], ["g", "g"],
+    ["ŋ", "ŋ"], ["s", "s"], ["z", "z"], ["l", "l"],
+    ["r", "r"], ["x", "h"], ["j", "y"], ["w", "v"], ["", "Ø"]
+  ];
+
   const conditioned = {
     k: ["k", "q"], kh: ["kh", "qh"], g: ["g", "ġ"], gh: ["gh", "ġh"],
     "tś": ["tś", "tṣ"], "tśh": ["tśh", "tṣh"], "ś": ["ś", "ṣ"],
@@ -253,6 +271,14 @@
       }
     }
     if (!vowel) throw new Error("無法辨認元音");
+    let markedRhyme = false;
+    if (body.endsWith("\\")) {
+      markedRhyme = true;
+      body = body.slice(0, -1);
+    }
+    if (markedRhyme && (!retroflex || !["e", "ə"].includes(vowel.gx))) {
+      throw new Error("反斜線只可標在 R.100／R.101 的 e／ə 韻腹前");
+    }
 
     if (retroflex && body.startsWith("r")) {
       const afterMarker = body.slice(1);
@@ -289,13 +315,17 @@
       preinitial = true;
     }
 
-    return { source, tone, retroflex, tight, coda, vowel, main, medial, preinitial };
+    if (markedRhyme && preinitial) {
+      throw new Error("反斜線只可標在 R.100／R.101 的 e／ə 韻腹前");
+    }
+
+    return { source, tone, retroflex, tight, coda, vowel, main, medial, preinitial, markedRhyme };
   }
 
   function encodeOnset(parsed) {
     const base = chooseBaseInitial(parsed.main.gx);
     const spec = initialByGx.get(base === "" ? "Ø" : base);
-    let onset = parsed.preinitial ? "འ" : "";
+    let onset = parsed.preinitial || parsed.markedRhyme ? "འ" : "";
     if (parsed.retroflex) onset += "ར";
     if (parsed.tight) onset += SUPER_SA;
     if (parsed.retroflex || parsed.tight) {
@@ -332,7 +362,7 @@
             for (const preinitial of [false, true]) {
               const fake = {
                 main: initialByGx.get(baseSpec.gx), medial, tight, retroflex, preinitial,
-                vowel, coda: "", tone: "¹"
+                markedRhyme: false, vowel, coda: "", tone: "¹"
               };
               const tibetan = encodeOnset(fake);
               let gxInitial = initialForGrade(baseSpec.gx, vowel.grade);
@@ -341,10 +371,12 @@
                 gxInitial = "v";
                 gxMedial = gxMedial || "w";
               }
+              let bareGx = gxInitial + gxMedial;
+              if (retroflex && baseSpec.gx !== "r") bareGx = "r" + bareGx;
               const prefix = preinitial ? nasalPrefixFor(baseSpec.gx) : "";
               let gx = prefix + gxInitial + gxMedial;
               if (retroflex && baseSpec.gx !== "r") gx = "r" + gx;
-              candidates.push({ tibetan, gx, base: baseSpec.gx, medial, tight, retroflex, preinitial });
+              candidates.push({ tibetan, gx, bareGx, base: baseSpec.gx, medial, tight, retroflex, preinitial });
             }
           }
         }
@@ -369,7 +401,7 @@
     reverseOnsetsByGrade.set(grade, map);
   }
 
-  function tibetanSyllableToGx(raw) {
+  function tibetanSyllableToGx(raw, options = {}) {
     const source = normalizeTibetan(raw).replace(/^་|་$/gu, "").trim();
     if (!source) return "";
     const matches = [];
@@ -398,12 +430,164 @@
       return b.vowel.tibetan.length - a.vowel.tibetan.length;
     });
     const { vowel, candidate, coda, tone } = matches[0];
-    return candidate.gx + vowel.gx + coda + (candidate.tight ? "h" : "") + (candidate.retroflex ? "r" : "") + tone;
+    const markedRhyme = candidate.preinitial && candidate.retroflex && ["e", "ə"].includes(vowel.gx);
+    const gxOnset = markedRhyme ? candidate.bareGx : candidate.gx;
+    const marker = markedRhyme && options.preserveRhymeClassMarker ? "\\" : "";
+    return gxOnset + marker + vowel.gx + coda + (candidate.tight ? "h" : "") + (candidate.retroflex ? "r" : "") + tone;
+  }
+
+  const ghcBaseRhymes = new Map([
+    ["a̱", "a"], ["aa̱", "ia"], ["a", "ja"],
+    ["e̱", "ej"], ["ae̱", "iej"], ["e", "jij"],
+    ["i̱", "e"], ["ai̱", "ie"], ["i", "ji"],
+    ["o̱", "o"], ["ao̱", "io"], ["o", "jo"],
+    ["u̱", "u"], ["au̱", "iu"], ["u", "ju"],
+    ["ə̱", "ə"], ["aə̱", "iə"], ["ə", "jɨ"], ["uo", "ioow"]
+  ]);
+  const ghcPreinitialRhymes = new Map([
+    ["u̱", "uu"], ["au̱", "juu"], ["u", "juu"],
+    ["i̱", "ee"], ["ai̱", "iee"], ["i", "jii"],
+    ["a̱", "aa"], ["aa̱", "iaa"], ["a", "jaa"],
+    ["ə̱", "əə"], ["ə", "jɨɨ"],
+    ["e̱", "eej"], ["ae̱", "ieej"], ["e", "jiij"],
+    ["i̱w", "eew"], ["iw", "jiiw"],
+    ["o̱", "oo"], ["ao̱", "ioo"], ["o", "joo"]
+  ]);
+  const ghcCodaRhymes = new Map([
+    ["i̱ṃ", "ẽ"], ["ai̱ṃ", "iẽ"], ["iṃ", "jĩ"],
+    ["a̱ṃ", "ã"], ["aa̱ṃ", "iã"], ["aṃ", "jã"],
+    ["e̱ṃ", "əj"], ["ae̱ṃ", "iəj"], ["eṃ", "jɨj"],
+    ["o̱ṃ", "ow"], ["ao̱ṃ", "iow"], ["oṃ", "jow"], ["u̱ṃ", "ũ"],
+    ["i̱w", "ew"], ["ai̱w", "iew"], ["iw", "jiw"], ["ow", "jwo"]
+  ]);
+  const ghcTightRhymes = new Map([
+    ["u̱", "ụ"], ["au̱", "jụ"], ["u", "jụ"],
+    ["e̱", "iẹj"], ["ae̱", "iẹj"], ["e", "jịj"], ["eṃ", "jɨ̣j"],
+    ["a̱", "ạ"], ["aa̱", "jạ"], ["a", "jạ"],
+    ["i̱", "ẹ"], ["ai̱", "iẹ"], ["i", "jị"],
+    ["ə̱", "ə̣"], ["aə̱", "jɨ̣"], ["ə", "jɨ̣"],
+    ["o̱ṃ", "ọ"], ["o̱", "iọ"], ["o", "jọ"], ["ae̱ṃ", "iə̣j"]
+  ]);
+  const ghcRetroflexRhymes = new Map([
+    ["e̱", "ejr"], ["ae̱", "iejr"], ["e", "jijr"],
+    ["u̱", "ur"], ["u", "jur"],
+    ["i̱", "er"], ["ai̱", "ier"], ["i", "jir"],
+    ["a̱", "ar"], ["aa̱", "iar"], ["a", "jar"], ["aw", "jaar"],
+    ["ə̱", "ər"], ["aə̱", "iər"], ["ə", "jɨr"],
+    ["i̱w", "ewr"], ["iw", "jiwr"],
+    ["o̱", "or"], ["ao̱", "ior"], ["o", "jor"],
+    ["o̱ṃ", "owr"], ["oṃ", "jowr"]
+  ]);
+
+  function ghcRhymeFor(parsed) {
+    const vowel = parsed.vowel.gx;
+    const withCoda = vowel + parsed.coda;
+    if (parsed.markedRhyme) return vowel === "e" ? "jiir" : vowel === "ə" ? "jɨɨr" : null;
+    if (parsed.preinitial && parsed.retroflex) {
+      if (vowel === "e̱") return "eer";
+      if (vowel === "a̱") return "aar";
+      return null;
+    }
+    if (parsed.preinitial) return ghcPreinitialRhymes.get(withCoda) || null;
+    if (parsed.tight) return ghcTightRhymes.get(withCoda) || null;
+    if (parsed.retroflex) return ghcRetroflexRhymes.get(withCoda) || null;
+    if (parsed.coda) return ghcCodaRhymes.get(withCoda) || null;
+    return ghcBaseRhymes.get(vowel) || null;
+  }
+
+  function ghcInitialFor(parsed) {
+    const base = chooseBaseInitial(parsed.main.gx);
+    let initial = ghcInitialFromBase.get(base) ?? base;
+    let medial = parsed.medial === "y" ? "j" : parsed.medial;
+    if (base === "v" && medial === "w" && parsed.vowel.grade !== 3) medial = "";
+    return initial + medial;
+  }
+
+  function gxSyllableToGhc(raw) {
+    const parsed = parseGxSyllable(raw);
+    const rhyme = ghcRhymeFor(parsed);
+    if (!rhyme) throw new Error("此 GX 韻母沒有唯一的 GHC 對應");
+    return (ghcInitialFor(parsed) + rhyme + parsed.tone).normalize("NFC");
+  }
+
+  const ghcRhymeAnalyses = [];
+  for (const vowel of vowels) {
+    for (const coda of ["", "w", "ṃ"]) {
+      for (const tight of [false, true]) {
+        for (const retroflex of [false, true]) {
+          for (const preinitial of [false, true]) {
+            const candidate = { vowel, coda, tight, retroflex, preinitial, markedRhyme: false };
+            const ghc = ghcRhymeFor(candidate);
+            if (ghc) ghcRhymeAnalyses.push({ ghc, ...candidate });
+          }
+        }
+      }
+    }
+  }
+  for (const vowel of vowels.filter(item => ["e", "ə"].includes(item.gx))) {
+    ghcRhymeAnalyses.push({
+      ghc: vowel.gx === "e" ? "jiir" : "jɨɨr",
+      vowel, coda: "", tight: false, retroflex: true, preinitial: false, markedRhyme: true
+    });
+  }
+  ghcRhymeAnalyses.sort((a, b) => b.ghc.length - a.ghc.length);
+
+  function ghcOnsetCandidates(value) {
+    const candidates = [];
+    for (const [spelling, base] of ghcBaseFromInitial) {
+      for (const [suffix, medial] of [["", ""], ["w", "w"], ["j", "y"]]) {
+        if (spelling + suffix === value) candidates.push({ base, medial, explicitInitial: spelling !== "" });
+      }
+    }
+    return candidates.sort((a, b) => Number(b.explicitInitial) - Number(a.explicitInitial));
+  }
+
+  function ghcSyllableToGx(raw) {
+    const source = String(raw).normalize("NFC").trim();
+    const toneMatch = source.match(/([¹²?])$/u);
+    if (!toneMatch) throw new Error("GHC 音節須以 ¹、² 或 ? 標示聲調");
+    const tone = toneMatch[1];
+    const body = source.slice(0, -1);
+    const canonicalCandidates = [];
+    for (const analysis of ghcRhymeAnalyses) {
+      if (!body.endsWith(analysis.ghc)) continue;
+      const onset = body.slice(0, -analysis.ghc.length);
+      for (const onsetCandidate of ghcOnsetCandidates(onset)) {
+        let gxInitial = initialForGrade(onsetCandidate.base, analysis.vowel.grade);
+        let medial = onsetCandidate.medial;
+        if (gxInitial === "vw") {
+          gxInitial = "v";
+          medial = medial || "w";
+        }
+        let gxOnset = (analysis.preinitial ? nasalPrefixFor(onsetCandidate.base) : "") + gxInitial + medial;
+        if (analysis.retroflex && onsetCandidate.base !== "r") gxOnset = "r" + gxOnset;
+        const marker = analysis.markedRhyme ? "\\" : "";
+        const canonical = gxOnset + marker + analysis.vowel.gx + analysis.coda
+          + (analysis.tight ? "h" : "") + (analysis.retroflex ? "r" : "") + tone;
+        try {
+          parseGxSyllable(canonical);
+          if (!canonicalCandidates.includes(canonical)) canonicalCandidates.push(canonical);
+        } catch (_) {
+          // Only canonical GX structures are admitted.
+        }
+      }
+      if (canonicalCandidates.length) break;
+    }
+    if (!canonicalCandidates.length) throw new Error("不符合可辨認的 GHC 音節結構");
+    return canonicalCandidates[0];
+  }
+
+  function ghcSyllableToTibetan(raw) {
+    return gxSyllableToTibetan(ghcSyllableToGx(raw));
+  }
+
+  function tibetanSyllableToGhc(raw) {
+    return gxSyllableToGhc(tibetanSyllableToGx(raw, { preserveRhymeClassMarker: true }));
   }
 
   function gxToTibetan(input) {
     const source = normalizeGx(input);
-    const token = /[\p{L}\p{M}Ø]+[¹²?]?/gu;
+    const token = /(?:[\p{L}\p{M}Ø]|\\(?=[\p{L}\p{M}]))+[¹²?]?/gu;
     let output = "";
     let cursor = 0;
     let converted = 0;
@@ -429,6 +613,36 @@
     }
     output += punctuationToTibetan(source.slice(cursor));
     if (!converted && source.trim()) errors.push("找不到可辨認的 GX 或勳拼音節");
+    return { output, errors };
+  }
+
+  function ghcToTibetan(input) {
+    const source = String(input).normalize("NFC");
+    const token = /[\p{L}\p{M}·]+[¹²?]/gu;
+    let output = "";
+    let cursor = 0;
+    let converted = 0;
+    let previousWasSyllable = false;
+    const errors = [];
+    for (const match of source.matchAll(token)) {
+      const gap = source.slice(cursor, match.index);
+      let tokenOutput = match[0];
+      let currentIsSyllable = false;
+      try {
+        tokenOutput = ghcSyllableToTibetan(match[0]);
+        currentIsSyllable = true;
+      } catch (error) {
+        errors.push(`${match[0]}：${error.message}`);
+      }
+      if (previousWasSyllable && currentIsSyllable && isSyllableSeparator(gap)) output += TSHEG;
+      else output += punctuationToTibetan(gap);
+      output += tokenOutput;
+      converted += 1;
+      previousWasSyllable = currentIsSyllable;
+      cursor = match.index + match[0].length;
+    }
+    output += punctuationToTibetan(source.slice(cursor));
+    if (!converted && source.trim()) errors.push("找不到以 ¹、² 或 ? 結尾的 GHC 音節");
     return { output, errors };
   }
 
@@ -467,7 +681,7 @@
     return output;
   }
 
-  function tibetanToGx(input) {
+  function tibetanToTranscription(input, convertSyllable) {
     const source = normalizeTibetan(input);
     const parts = source.split(/(༎|།།|།|་|\s+)/u);
     const errors = [];
@@ -487,7 +701,7 @@
       }
       if (needSpace && output.length && output[output.length - 1] !== " ") output.push(" ");
       try {
-        output.push(tibetanSyllableToGx(part));
+        output.push(convertSyllable(part));
       } catch (error) {
         errors.push(`${part}：${error.message}`);
         output.push(part);
@@ -497,14 +711,28 @@
     return { output: output.join("").trim(), errors };
   }
 
+  function tibetanToGx(input, options = {}) {
+    return tibetanToTranscription(input, part => tibetanSyllableToGx(part, options));
+  }
+
+  function tibetanToGhc(input) {
+    return tibetanToTranscription(input, tibetanSyllableToGhc);
+  }
+
   return {
     normalizeGx,
     normalizeTibetan,
     parseGxSyllable,
     parseXunpin,
+    ghcSyllableToGx,
     gxSyllableToTibetan,
+    gxSyllableToGhc,
+    ghcSyllableToTibetan,
     tibetanSyllableToGx,
+    tibetanSyllableToGhc,
     gxToTibetan,
-    tibetanToGx
+    ghcToTibetan,
+    tibetanToGx,
+    tibetanToGhc
   };
 });

@@ -1,8 +1,10 @@
 # Generated build directory and page images
 /tex/build/
+/ghc-comparison/tex/build/
 /image/
 /temp/
 
 # Keep only the final named PDF at the repository root
 /*.pdf
 !/党項語藏文轉寫方案.pdf
+!/Tangut-Tibetan-Transcription-Scheme.pdf

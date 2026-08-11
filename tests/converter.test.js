@@ -21,6 +21,33 @@ for (const invalid of ["hello", "tśiw", "tjiw¹", "tjiw?", "abxc"]) {
 }
 assert.throws(() => converter.parseXunpin("tśiw"), /ASCII/u);
 
+const markedRhymes = [
+  ["rtś\\ər¹", "འརྕྀ", "rtśər¹", "tśjɨɨr¹"],
+  ["rts\\er¹", "འརྩེ", "rtser¹", "tsjiir¹"]
+];
+for (const [extendedGx, tibetan, standardGx, ghc] of markedRhymes) {
+  assert.equal(converter.gxSyllableToTibetan(extendedGx), tibetan);
+  assert.equal(converter.tibetanSyllableToGx(tibetan), standardGx);
+  assert.equal(converter.tibetanSyllableToGx(tibetan, { preserveRhymeClassMarker: true }), extendedGx);
+  assert.equal(converter.tibetanSyllableToGhc(tibetan), ghc);
+  assert.equal(converter.ghcSyllableToTibetan(ghc), tibetan);
+}
+assert.equal(converter.gxToTibetan("rtś\\ər¹ rts\\er¹").output, "འརྕྀ་འརྩེ");
+assert.throws(() => converter.gxSyllableToTibetan("tś\\ə¹"), /R\.100/u);
+assert.throws(() => converter.gxSyllableToTibetan("rtś\\i¹"), /R\.100/u);
+
+const ghcExamples = [
+  ["tśja¹", "ཅ"], ["śjij²", "ཤེས"], ["tśjɨr¹", "རྕྀ"],
+  ["muu¹", "འམའུ"], ["ɣjij¹", "གེ༹"]
+];
+for (const [ghc, tibetan] of ghcExamples) {
+  assert.equal(converter.ghcSyllableToTibetan(ghc), tibetan, `${ghc} GHC forward`);
+  assert.equal(converter.tibetanSyllableToGhc(tibetan), ghc, `${ghc} GHC reverse`);
+}
+assert.equal(converter.ghcToTibetan("tśjɨr¹ tśjɨɨr¹").output, "རྕྀ་འརྕྀ");
+assert.equal(converter.tibetanToGhc("རྕྀ་ འརྕྀ").output, "tśjɨr¹ tśjɨɨr¹");
+assert.ok(converter.ghcToTibetan("hello").errors.length);
+
 const examples = [
   ["nye¹", "ནྱེ"], ["phu²", "ཕུས"], ["dźə?", "ཇྀ?"],
   ["świ¹", "ཤྭི"], ["baa̱¹", "བཨ"], ["śeṃ¹", "ཤེམ"],
@@ -143,4 +170,4 @@ for (const gx of roundTrips) {
   }, `${gx} should parse and round-trip`);
 }
 
-console.log(`ok - ${36 + examples.length + shapingPairs.length + 14 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);
+console.log(`ok - ${64 + examples.length + shapingPairs.length + 14 + wVowels.length * 4 + wDerivedForms.length * 2 + sentences.length * 2 + roundTrips.length} converter checks`);

@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="GX202411／勳拼輸入與党項語藏文轉寫方案的雙向轉換工具。">
-  <title>GX–藏文互轉工具</title>
-  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v3" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v3" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v3">
+  <meta name="description" content="GX202411／勳拼／GHC 與党項語藏文轉寫方案的雙向轉換工具。">
+  <title>GX／GHC–藏文互轉工具</title>
+  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v4" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v4" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v4">
   <style>
     @font-face { font-family: "Libertinus"; src: url("../fonts/LibertinusSans-Regular.woff2?v=full-20260810") format("woff2"); font-weight: 400; font-display: swap; }
     @font-face { font-family: "Libertinus"; src: url("../fonts/LibertinusSans-Bold.woff2?v=full-20260810") format("woff2"); font-weight: 700; font-display: swap; }
@@ -21,10 +21,12 @@
     h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.6rem); font-weight: 700; line-height: 1.12; letter-spacing: -.025em; }
     .lead { max-width: 42rem; margin: .8rem 0 0; color: #4f5964; }
     a { color: var(--accent); text-underline-offset: .18em; }
-    .scheme-link { flex: 0 0 auto; padding-bottom: .5rem; font-size: .9rem; }
+    .scheme-links { display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; padding-bottom: .5rem; font-size: .9rem; }
     .tool { overflow: hidden; border: 1px solid var(--line); background: #fff; box-shadow: 0 1rem 3rem rgba(29, 43, 56, .08); }
     .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem; border-bottom: 1px solid var(--line); background: var(--soft); }
-    .directions { display: flex; gap: .25rem; }
+    .directions { display: flex; flex-wrap: wrap; gap: .25rem; }
+    .options { padding: .45rem .8rem; border-bottom: 1px solid var(--line); color: var(--muted); background: #fbfcfd; font-size: .8rem; }
+    .options label { display: inline-flex; align-items: center; gap: .45rem; }
     button { border: 1px solid #b9c1c9; padding: .5rem .8rem; color: var(--ink); background: #fff; font: inherit; font-size: .86rem; cursor: pointer; }
     button:hover { border-color: var(--accent); color: var(--accent); }
     button[aria-pressed="true"] { border-color: var(--accent); color: #fff; background: var(--accent); }
@@ -45,7 +47,7 @@
     @media (max-width: 720px) {
       .page { width: min(100% - 1rem, 72rem); padding-top: 1.5rem; }
       header { display: block; }
-      .scheme-link { display: inline-block; margin-top: .8rem; }
+      .scheme-links { align-items: flex-start; margin-top: .8rem; }
       .editors { grid-template-columns: 1fr; }
       .pane + .pane { border-left: 0; border-top: 1px solid var(--line); }
       textarea { min-height: 12rem; }
@@ -57,20 +59,23 @@
     <header>
       <div>
         <p class="eyebrow">Tangut · Tibetan transcription</p>
-        <h1>GX–藏文互轉</h1>
-        <p class="lead">GX202411 與勳拼共用同一輸入框，自動判別並轉成規範藏文。藏文反向輸入會先正規化，再轉回 GX。</p>
+        <h1>GX／GHC–藏文互轉</h1>
+        <p class="lead">GX202411 與勳拼共用同一輸入框；另支援藏文與 GHC 互轉。藏文正字保存部分 GX 已合併、而傳統韻書及 GHC 仍區分的聲韻地位。</p>
       </div>
-      <a class="scheme-link" href="../党項語藏文轉寫方案.html">閱讀完整轉寫方案</a>
+      <div class="scheme-links"><a href="../党項語藏文轉寫方案.html">閱讀完整轉寫方案</a><a href="../ghc-comparison/">閱讀 GHC 對照簡表</a></div>
     </header>
 
     <section class="tool" aria-label="GX／勳拼–藏文互轉工具">
       <div class="toolbar">
         <div class="directions" role="group" aria-label="轉換方向">
           <button id="direction-gx" type="button" aria-pressed="true">GX／勳拼 → 藏文</button>
-          <button id="direction-bo" type="button" aria-pressed="false">藏文 → GX</button>
+          <button id="direction-bo-gx" type="button" aria-pressed="false">藏文 → GX</button>
+          <button id="direction-ghc" type="button" aria-pressed="false">GHC → 藏文</button>
+          <button id="direction-bo-ghc" type="button" aria-pressed="false">藏文 → GHC</button>
         </div>
         <button id="swap" type="button">交換</button>
       </div>
+      <div class="options" id="gx-reverse-options" hidden><label><input id="preserve-rhyme-marker" type="checkbox"> R.100／R.101 在 GX 韻腹前輸出 <code>\</code></label></div>
       <div class="editors">
         <div class="pane">
           <div class="pane-head"><label id="input-label" for="input">GX／勳拼</label><button id="clear" type="button">清除</button></div>
@@ -84,21 +89,31 @@
       <p class="status" id="status">輸入 GX（須標 ¹、² 或 ?）或勳拼（無標記／末尾 x）後即時轉換。</p>
     </section>
 
-    <p class="note">含 <span class="tibetan-inline">༹</span> 的複雜 stack 以 shaping 穩定爲準：先連續寫完下加字母，再寫 <span class="tibetan-inline">༹</span>；反向轉換也能辨認舊次序。</p>
+    <p class="note">GX 的 R.100／R.101 可在韻腹前加 <code>\</code>，如 <code>rtś\ər¹</code>、<code>rts\er¹</code>，強制保留前加 <span class="tibetan-inline">འ</span>。含 <span class="tibetan-inline">༹</span> 的複雜 stack 以 shaping 穩定爲準：先連續寫完下加字母，再寫 <span class="tibetan-inline">༹</span>；反向轉換也能辨認舊次序。</p>
     <footer>© 2026 Kelvin Yang · <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant">CC BY-NC-SA 4.0</a></footer>
   </main>
 
-  <script src="converter.js?v=punctuation-parser-20260811"></script>
+  <script src="converter.js?v=ghc-rhyme-classes-20260811"></script>
   <script>
     const state = { direction: 'gx' };
     const input = document.querySelector('#input');
     const output = document.querySelector('#output');
     const status = document.querySelector('#status');
     const directionGx = document.querySelector('#direction-gx');
-    const directionBo = document.querySelector('#direction-bo');
+    const directionBoGx = document.querySelector('#direction-bo-gx');
+    const directionGhc = document.querySelector('#direction-ghc');
+    const directionBoGhc = document.querySelector('#direction-bo-ghc');
+    const reverseOptions = document.querySelector('#gx-reverse-options');
+    const preserveRhymeMarker = document.querySelector('#preserve-rhyme-marker');
 
     function convert() {
-      const result = state.direction === 'gx' ? GxTibetan.gxToTibetan(input.value) : GxTibetan.tibetanToGx(input.value);
+      const result = state.direction === 'gx'
+        ? GxTibetan.gxToTibetan(input.value)
+        : state.direction === 'bo-gx'
+          ? GxTibetan.tibetanToGx(input.value, { preserveRhymeClassMarker: preserveRhymeMarker.checked })
+          : state.direction === 'ghc'
+            ? GxTibetan.ghcToTibetan(input.value)
+            : GxTibetan.tibetanToGhc(input.value);
       output.value = result.output;
       status.classList.toggle('error', result.errors.length > 0);
       status.textContent = result.errors.length
@@ -107,28 +122,43 @@
           ? '轉換完成。'
           : state.direction === 'gx'
             ? '輸入 GX（須標 ¹、² 或 ?）或勳拼（無標記／末尾 x）後即時轉換。'
-            : '輸入本方案藏文後即時正規化並轉回 GX。';
+            : state.direction === 'ghc'
+              ? '輸入帶聲調的 GHC 擬音後即時轉成藏文。'
+              : `輸入本方案藏文後即時正規化並轉回 ${state.direction === 'bo-gx' ? 'GX' : 'GHC'}。`;
     }
 
     function setDirection(direction, preserve = false) {
       state.direction = direction;
       directionGx.setAttribute('aria-pressed', direction === 'gx');
-      directionBo.setAttribute('aria-pressed', direction === 'bo');
-      document.querySelector('#input-label').textContent = direction === 'gx' ? 'GX／勳拼' : '藏文';
-      document.querySelector('#output-label').textContent = direction === 'gx' ? '藏文' : 'GX';
-      input.classList.toggle('tibetan', direction === 'bo');
-      output.classList.toggle('tibetan', direction === 'gx');
-      input.placeholder = direction === 'gx' ? '例如：tjiw sjihx tśiw¹ śih²' : '例如：ནྱེ་ ཕུས་ ཇྀ?';
+      directionBoGx.setAttribute('aria-pressed', direction === 'bo-gx');
+      directionGhc.setAttribute('aria-pressed', direction === 'ghc');
+      directionBoGhc.setAttribute('aria-pressed', direction === 'bo-ghc');
+      const fromTibetan = direction.startsWith('bo-');
+      const toTibetan = direction === 'gx' || direction === 'ghc';
+      document.querySelector('#input-label').textContent = direction === 'gx' ? 'GX／勳拼' : direction === 'ghc' ? 'GHC' : '藏文';
+      document.querySelector('#output-label').textContent = toTibetan ? '藏文' : direction === 'bo-gx' ? 'GX' : 'GHC';
+      input.classList.toggle('tibetan', fromTibetan);
+      output.classList.toggle('tibetan', toTibetan);
+      reverseOptions.hidden = direction !== 'bo-gx';
+      input.placeholder = direction === 'gx'
+        ? '例如：tjiw sjihx rtś\\ər¹ rts\\er¹'
+        : direction === 'ghc'
+          ? '例如：tśjɨr¹ tśjɨɨr¹'
+          : '例如：རྕྀ་ འརྕྀ';
       if (!preserve) { input.value = ''; output.value = ''; }
       convert();
     }
 
     input.addEventListener('input', convert);
     directionGx.addEventListener('click', () => setDirection('gx'));
-    directionBo.addEventListener('click', () => setDirection('bo'));
+    directionBoGx.addEventListener('click', () => setDirection('bo-gx'));
+    directionGhc.addEventListener('click', () => setDirection('ghc'));
+    directionBoGhc.addEventListener('click', () => setDirection('bo-ghc'));
+    preserveRhymeMarker.addEventListener('change', convert);
     document.querySelector('#swap').addEventListener('click', () => {
       const nextInput = output.value;
-      setDirection(state.direction === 'gx' ? 'bo' : 'gx', true);
+      const reverse = { gx: 'bo-gx', 'bo-gx': 'gx', ghc: 'bo-ghc', 'bo-ghc': 'ghc' };
+      setDirection(reverse[state.direction], true);
       input.value = nextInput;
       convert();
       input.focus();
