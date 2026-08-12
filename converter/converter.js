@@ -11,6 +11,7 @@
   const SHAD = "།";
   const NYIS_SHAD = "༎";
   const SUB_WA = "ྭ";
+  const SUB_FIXED_WA = "ྺ";
   const SUB_YA = "ྱ";
   const SUB_A = "ྸ";
   const SUPER_SA = "ས";
@@ -374,7 +375,9 @@
     if (parsed.retroflex || parsed.tight) {
       onset += base === "Ø" || (parsed.retroflex && base === "r")
         ? SUB_A
-        : subjoined.get(spec.letter);
+        : base === "v"
+          ? SUB_FIXED_WA
+          : subjoined.get(spec.letter);
     } else {
       onset += spec.letter;
     }
@@ -727,6 +730,7 @@
       if (tibetan) {
         output += tibetan;
         converted += 1;
+        if (tibetan === "☐") errors.push(`${match[0]}：此字讀音尚未解決`);
       } else {
         output += match[0];
         errors.push(`${match[0]}：轉寫表未收錄此字`);

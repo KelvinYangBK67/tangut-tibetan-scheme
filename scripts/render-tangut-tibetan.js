@@ -13,6 +13,13 @@ const ghcInitials = [
   ["m", "m"], ["n", "n"], ["k", "k"], ["g", "g"], ["ŋ", "ŋ"], ["s", "s"],
   ["z", "z"], ["l", "l"], ["r", "r"], ["x", "h"], ["j", "y"], ["w", "w"], ["·", "Ø"]
 ];
+const gradeFourRhymeKeys = new Set(["u", "i", "a", "ə", "e", "iw"]);
+
+function gradeFourRemainsPossible(canonicalGx) {
+  const parsed = converter.parseGxSyllable(canonicalGx);
+  return !parsed.preinitial && !parsed.tight && !parsed.retroflex
+    && gradeFourRhymeKeys.has(parsed.vowel.gx + parsed.coda);
+}
 
 function fallbackGxOnset(ghc, tone) {
   const initial = ghcInitials.find(([spelling]) => ghc.startsWith(spelling));
@@ -31,16 +38,21 @@ for (const entry of entries) {
     const tone = entry.tone === "1" ? "¹" : entry.tone === "2" ? "²" : "?";
     const candidates = new Set();
     let fallbackError = null;
+    let fallbackUncertain = null;
     for (const reading of entry.fallbackReadings || []) {
       try {
+        let canonicalGx;
         if (reading.kind === "gx") {
           const syllable = /[¹²?]$/u.test(reading.reading) ? reading.reading : reading.reading + "?";
+          canonicalGx = syllable;
           candidates.add(converter.gxSyllableToTibetan(syllable));
         } else {
           const ghcTone = reading.tone === "1" ? "¹" : reading.tone === "2" ? "²" : "?";
           const syllable = /[¹²?]$/u.test(reading.reading) ? reading.reading : reading.reading + ghcTone;
+          canonicalGx = converter.ghcSyllableToGx(syllable);
           candidates.add(converter.ghcSyllableToTibetan(syllable));
         }
+        fallbackUncertain = Boolean(reading.uncertain) || gradeFourRemainsPossible(canonicalGx);
         break; // Readings are ordered by source priority; later fallbacks run only after parse failure.
       } catch (error) {
         fallbackError = error;
@@ -65,7 +77,8 @@ for (const entry of entries) {
       throw new Error("Onset evidence conflicts");
     }
     let tibetan = [...candidates][0];
-    if (entry.uncertain && !tibetan.endsWith("†")) tibetan += "†";
+    const uncertain = fallbackUncertain === null ? entry.uncertain : fallbackUncertain;
+    if (uncertain && !tibetan.endsWith("†")) tibetan += "†";
     rows.push([entry.tangut, tibetan]);
   } catch (error) {
     errors.push({ tangut: entry.tangut, rhyme: entry.rhyme, message: error.message });

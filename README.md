@@ -22,25 +22,25 @@ Although based on GX, the orthography preserves selected traditional rhyme-table
 
 [Open the Tangut–Tibetan converter (with GX/Xunpin/GHC compatibility modes)](https://kelvinyangbk67.github.io/tangut-tibetan-scheme/converter/).
 
-主入口直接以 `tangut,tibetan` 靜態表把西夏文轉爲藏文；runtime 不依賴 GX/GHC。表內韻類與聲調取自 native《文海》R.1–R.105，《同音》Class IV 統一輸出 `ཎ`。無可靠聲母資料者不作猜測。
+主入口直接以 `tangut,tibetan` 靜態表把西夏文轉爲藏文。表內韻類與聲調取自 native《文海》R.1–R.105，《同音》第四類聲母統一輸出 `ཎ`。無可靠讀音資料者以 `☐` 顯示，不作猜測。
 
-若 native R.x 無法唯一確定，但 GX 或 GHC 至少有一個完整可解析擬音，則按普通三等形式生成並加 `†`；GX 優先於 GHC。若擬音本身連聲調亦存疑，結果可同時帶 `?†`。
+若 native R.x 無法唯一確定，但 GX 或 GHC 至少有一個完整可解析擬音，則按普通三等形式生成；只有存疑因素可能影響拼寫時才加 `†`，例如 `o` 無四等韻，便不因等第不明而加 `†`。GX 優先於 GHC。若擬音本身連聲調亦存疑，結果可同時帶 `?†`。
 
-體系外標記中，`?` 專表示聲調存疑；`†` 表示讀音證據、聲母等其他存疑。GX 的 `vw` 是一、二等韻在 `v` 後的條件變體，藏文只寫一個 `ཝ`，或在 stack 中使用一個下加 `ྭ`，不把該 `w` 另行拼出。
+體系外標記中，`?` 專表示聲調存疑；`†` 表示讀音證據、聲母等其他存疑。GX 的 `vw` 是一、二等韻在 `v` 後的條件變體，藏文只寫一個 `ཝ`。GX `v` 有上加字時使用 `ྺ`，`ྭ` 僅表示合口 `w`。
 
-The primary mode converts Tangut characters through a static `tangut,tibetan` table; runtime lookup does not depend on GX/GHC. Rhyme class and tone follow the native *Sea of Characters* R.1–R.105, and native *Homophones* Class IV consistently outputs `ཎ`. Entries without a reliable onset are not guessed.
+The primary mode converts Tangut characters through a static `tangut,tibetan` table. Rhyme class and tone follow the native *Sea of Characters* R.1–R.105, and fourth-class initials in the native *Homophones* are consistently written `ཎ`. Entries without a reliable reading are shown as `☐`, not guessed.
 
-If native R.x cannot be uniquely determined but GX or GHC supplies at least one complete, parseable reading, the table uses the ordinary Grade-III spelling and appends `†`; GX takes priority over GHC. If tone is independently uncertain, the result may carry both `?†`.
+If native R.x cannot be uniquely determined but GX or GHC supplies at least one complete, parseable reading, the table uses the ordinary Grade-III spelling. It appends `†` only where the uncertainty could affect spelling; since `o` has no Grade-IV rhyme, unknown grade alone does not add `†` there. GX takes priority over GHC. If tone is independently uncertain, the result may carry both `?†`.
 
-Among non-systemic marks, `?` is reserved for uncertain tone; `†` marks other uncertainty such as incomplete reading or onset evidence. GX `vw` is the conditioned Grade-I/II realization after `v`, so Tibetan writes only one `ཝ`/subjoined `ྭ` rather than spelling that `w` separately.
+Among non-systemic marks, `?` is reserved for uncertain tone; `†` marks other uncertainty such as incomplete reading or onset evidence. GX `vw` is the conditioned Grade-I/II realization after `v`, so Tibetan writes only one `ཝ`. When GX `v` carries a superscript, it is written with `ྺ`; `ྭ` is reserved for labial `w`.
 
 GX → 藏文方向亦支援[勳拼](https://github.com/tinbreaker/rime-xunpin)，無須切換模式：末尾有 `¹`、`²` 或 `?` 時按 GX 解析，否則按勳拼解析。勳拼先轉成 canonical GX，再進入同一藏文核心。
 
 The GX-to-Tibetan direction also accepts [Xunpin](https://github.com/tinbreaker/rime-xunpin) without a mode switch: tokens ending in `¹`, `²`, or `?` are GX; all others are parsed strictly as Xunpin. Xunpin is converted to canonical GX before entering the shared Tibetan core.
 
-標準 GX/GHC 不區分四等韻。要強制四等，請在整個韻腹前加反斜線，如 `tś\i¹`、`tś\iw¹`；同一標記也用於 R.100/R.101，如 `rtś\ər¹`、`rts\er¹`。GHC 的 `\n` 強制表示 native Class IV 的 `ṇ`。藏文反向轉寫只有勾選合流韻類選項後才恢復 `\`。
+標準 GX/GHC 不區分四等韻。要強制四等，請在整個韻腹前加反斜線，如 `tś\i¹`、`tś\iw¹`；同一標記也用於 R.100/R.101，如 `rtś\ər¹`、`rts\er¹`。GHC 的 `\n` 強制表示《同音》第四類聲母 `ṇ`。藏文反向轉寫只有勾選合流韻類選項後才恢復 `\`。
 
-Standard GX/GHC does not distinguish Grade IV. To force it, place a backslash before the whole vowel nucleus, as in `tś\i¹` or `tś\iw¹`. The same marker selects R.100/R.101, as in `rtś\ər¹` or `rts\er¹`. In GHC, `\n` forces native Class-IV `ṇ`. Tibetan-to-GX restores `\` only when the merged-rhyme option is selected.
+Standard GX/GHC does not distinguish Grade IV. To force it, place a backslash before the whole vowel nucleus, as in `tś\i¹` or `tś\iw¹`. The same marker selects R.100/R.101, as in `rtś\ər¹` or `rts\er¹`. In GHC, `\n` forces a fourth-class *Homophones* initial `ṇ`. Tibetan-to-GX restores `\` only when the merged-rhyme option is selected.
 
 ### 標點 / Punctuation
 

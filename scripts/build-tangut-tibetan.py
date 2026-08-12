@@ -283,8 +283,12 @@ def main() -> None:
                             "kind": "gx",
                             "reading": mapped_gx,
                             "source": "gx-direct-mapped-fallback",
+                            "uncertain": False,
                         })
-                    fallback_readings.append({"kind": "gx", "reading": gx[character], "source": "gx-direct-fallback"})
+                    fallback_readings.append({
+                        "kind": "gx", "reading": gx[character],
+                        "source": "gx-direct-fallback", "uncertain": False,
+                    })
                 direct_ghc = [record for record in ghc.get(character, []) if record["reading"]]
                 for record in direct_ghc:
                     ghc_tone = str(record["rhyme_class"])[0] if re.fullmatch(r"[12]\.\d+", str(record["rhyme_class"])) else "?"
@@ -294,6 +298,7 @@ def main() -> None:
                             "kind": "gx",
                             "reading": ghc_to_gx[normalized_ghc] + ({"1": "¹", "2": "²"}.get(ghc_tone, "?")),
                             "source": "ghc-direct-mapped-fallback",
+                            "uncertain": bool(record["dubious"]),
                         })
                     fallback_readings.append(
                         {
@@ -301,6 +306,7 @@ def main() -> None:
                             "reading": str(record["reading"]),
                             "tone": ghc_tone,
                             "source": "ghc-direct-fallback",
+                            "uncertain": bool(record["dubious"]),
                         }
                     )
                 if not fallback_readings:
@@ -366,6 +372,16 @@ def main() -> None:
 
     renderer_errors = [(item["tangut"], "renderer", item["message"]) for item in result["errors"]]
     unresolved = unresolved_seed + renderer_errors
+    unresolved_characters = {character for character, _, _ in unresolved}
+    if unresolved_characters:
+        rendered_rows = dict(result["rows"])
+        for character in unresolved_characters:
+            rendered_rows[character] = "☐"
+        result["rows"] = sorted(rendered_rows.items(), key=lambda item: ord(item[0]))
+        with args.output_csv.open("w", encoding="utf-8", newline="") as target:
+            writer = csv.writer(target, lineterminator="\n")
+            writer.writerow(["tangut", "tibetan"])
+            writer.writerows(result["rows"])
     if args.unresolved:
         args.unresolved.parent.mkdir(parents=True, exist_ok=True)
         with args.unresolved.open("w", encoding="utf-8-sig", newline="") as target:

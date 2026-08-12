@@ -23,7 +23,7 @@ Sources and roles:
 - [`saxxie.dev/tangut-data`](https://tangled.org/saxxie.dev/tangut-data): BabelStone/XHZD GHC reading, used only to bootstrap the basic onset analysis when available.
 - [`semakosa/tangut-pronunciation-db`](https://github.com/semakosa/tangut-pronunciation-db): GX202411, used only as the preferred temporary onset/medial analysis and for QA. Its surface rhyme and tone do not select the output rhyme class.
 
-Native Class IV is always rendered with this scheme's `ཎ`, irrespective of
+Fourth-class initials in the native *Homophones* are always rendered with this scheme's `ཎ`, irrespective of
 the bootstrap reading. Grade IV is selected only by native R.3, R.11, R.20,
 R.31, R.37, and R.47, never by GX or GHC surface spelling.
 
@@ -41,11 +41,18 @@ being guessed.
 
 If native R.x cannot be uniquely recovered but the character has a direct GX
 or GHC reading, the generator retains that reading using its ordinary
-Grade-III spelling and appends `†`. GX takes priority over GHC. An independently
+Grade-III spelling. It appends `†` only when a native distinction could affect
+that spelling or the direct reading is itself uncertain; for example, an
+o-rhyme receives no grade uncertainty because the inventory has no Grade-IV
+o-rhyme. GX takes priority over GHC. An independently
 uncertain tone remains `?`, so an entry may end in `?†` when both uncertainties
 apply.
 Duplicate direct records retain the established *Sea of Characters*, then
 *Precious Rhymes of the Sea of Characters*, source priority.
+
+Characters retained in the unresolved report are committed to the runtime table
+as `☐`; the converter preserves their syllable position and reports them as
+unresolved.
 
 `local-data/` is deliberately ignored by Git: it contains third-party database
 checkouts and reproducible audit reports, not project source. The committed

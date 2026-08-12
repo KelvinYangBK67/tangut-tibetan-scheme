@@ -6,9 +6,9 @@
   <meta name="description" content="西夏文直接轉藏文，並兼容 GX202411/勳拼/GHC 雙向轉換。">
   <title>西夏文–藏文轉換器</title>
   <link rel="preload" href="../fonts/NotoSerifTangut-Regular.woff2?v=full-20260810" as="font" type="font/woff2" crossorigin fetchpriority="high">
-  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v6" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v6" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v6">
+  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Regular-core.woff2?v=shanggu-web-v7" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/shanggu-web/ShangguSans-Bold-core.woff2?v=shanggu-web-v7" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../fonts/shanggu-web.css?v=shanggu-web-v7">
   <style>
     @font-face { font-family: "Libertinus"; src: url("../fonts/LibertinusSans-Regular.woff2?v=full-20260810") format("woff2"); font-weight: 400; font-display: swap; }
     @font-face { font-family: "Libertinus"; src: url("../fonts/LibertinusSans-Bold.woff2?v=full-20260810") format("woff2"); font-weight: 700; font-display: swap; }
@@ -113,7 +113,7 @@
     <footer>© 2026 Kelvin Yang · <a id="license" rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant">CC BY-NC-SA 4.0</a></footer>
   </main>
 
-  <script src="converter.js?v=reverse-20260812"></script>
+  <script src="converter.js?v=revise-20260812"></script>
   <script>
     const translations = {
       'zh-Hant': {
@@ -133,9 +133,9 @@
         emptyGhc: '輸入帶聲調的 GHC 擬音後即時轉成藏文。',
         emptyReverse: '輸入本方案藏文後即時正規化並轉回 {target}。',
         instructionsTitle: '使用說明',
-        tangut: '主入口直接讀取靜態 <code>tangut,tibetan</code> 表，不在瀏覽器內經 GX 或 GHC 繞轉。韻類與聲調優先取自 native《文海》R.1–R.105；native R.x 無法唯一確定而 GX/GHC 有完整擬音時，按普通三等形式生成並加 <code>†</code>。<code>?</code> 專標聲調存疑；兩者可合寫爲 <code>?†</code>。未能作出有據推定的字會原樣保留並報錯。',
+        tangut: '主入口直接讀取靜態 <code>tangut,tibetan</code> 表。韻類與聲調優先取自 native《文海》R.1–R.105；native R.x 無法唯一確定而 GX/GHC 有完整擬音時，按普通三等形式生成，僅在可能影響拼寫時加 <code>†</code>。<code>?</code> 專標聲調存疑；兩者可合寫爲 <code>?†</code>。未能作出有據推定的字以 <code>☐</code> 顯示並報錯。',
         xunpin: 'GX → 藏文方向亦支援<a href="https://github.com/tinbreaker/rime-xunpin">勳拼</a>，無須切換模式：末尾有 <code>¹</code>、<code>²</code> 或 <code>?</code> 時按 GX 解析，否則按勳拼解析。勳拼先轉成 canonical GX，再進入同一藏文核心。',
-        rhymes: 'GX 的 <code>vw</code> 是一、二等韻在 <code>v</code> 後的條件變體，藏文只寫一個 wa：<span class="tibetan-inline">ཝ</span> 或 stack 中的 <span class="tibetan-inline">ྭ</span>。標準 GX/GHC 不區分四等韻；要強制四等，請在整個韻腹前加反斜線，如 <code>tś\\i¹</code>、<code>tś\\iw¹</code>。同一標記也用於 R.100/R.101，如 <code>rtś\\ər¹</code>、<code>rts\\er¹</code>。GHC 的 <code>\\n</code> 強制表示 native Class IV 的 <code>ṇ</code>。',
+        rhymes: 'GX 的 <code>vw</code> 是一、二等韻在 <code>v</code> 後的條件變體，藏文只寫一個 <span class="tibetan-inline">ཝ</span>；GX <code>v</code> 有上加字時使用 <span class="tibetan-inline">ྺ</span>，<span class="tibetan-inline">ྭ</span> 僅表示合口 <code>w</code>。標準 GX/GHC 不區分四等韻；要強制四等，請在整個韻腹前加反斜線，如 <code>tś\\i¹</code>、<code>tś\\iw¹</code>。同一標記也用於 R.100/R.101，如 <code>rtś\\ər¹</code>、<code>rts\\er¹</code>。GHC 的 <code>\\n</code> 強制表示《同音》第四類聲母 <code>ṇ</code>。',
         punctuation: '句末標點 <code>. 。 ? ？ ! ！</code> 轉爲 <span class="tibetan-inline">༎</span>；一般標點如 <code>, ， ; ； : ：</code> 轉爲 <span class="tibetan-inline">།</span>，且標點前不加 <span class="tibetan-inline">་</span>。引號會移除，但相鄰有效音節之間仍補 <span class="tibetan-inline">་</span>。省略號與缺字方框原樣保留。尚未標調音節後的 <code>?</code> 表示聲調存疑；已有聲調後的 <code>?</code> 是疑問標點，<code>\\?</code> 永遠強制爲疑問標點。',
         shaping: '含 <span class="tibetan-inline">༹</span> 的複雜 stack 以 shaping 穩定爲準：先連續寫完下加字母，再寫 <span class="tibetan-inline">༹</span>；反向轉換也能辨認舊次序。'
       },
@@ -156,9 +156,9 @@
         emptyGhc: 'Enter a tone-marked GHC syllable for instant Tibetan conversion.',
         emptyReverse: 'Enter normalized scheme Tibetan to convert it back to {target}.',
         instructionsTitle: 'Instructions',
-        tangut: 'The primary mode reads a static <code>tangut,tibetan</code> table; the browser does not route Tangut input through GX or GHC. Native <cite>Sea of Characters</cite> R.1–R.105 has priority; when native R.x is indeterminate but GX/GHC supplies a complete reading, ordinary Grade III is used with <code>†</code>. <code>?</code> is reserved for uncertain tone, and both may appear as <code>?†</code>. Unsupported characters are preserved and reported instead of guessed.',
+        tangut: 'The primary mode reads a static <code>tangut,tibetan</code> table. Native <cite>Sea of Characters</cite> R.1–R.105 has priority; when native R.x is indeterminate but GX/GHC supplies a complete reading, ordinary Grade III is used, with <code>†</code> only where the uncertainty could affect spelling. <code>?</code> is reserved for uncertain tone, and both may appear as <code>?†</code>. Unresolved characters are shown as <code>☐</code> and reported instead of guessed.',
         xunpin: 'The GX → Tibetan direction also accepts <a href="https://github.com/tinbreaker/rime-xunpin">Xunpin</a> without a mode switch: tokens ending in <code>¹</code>, <code>²</code>, or <code>?</code> are parsed as GX; all others are parsed strictly as Xunpin. Xunpin is converted to canonical GX before entering the shared Tibetan core.',
-        rhymes: 'GX <code>vw</code> is the conditioned Grade-I/II realization after <code>v</code>; Tibetan writes only one wa, <span class="tibetan-inline">ཝ</span> or subjoined <span class="tibetan-inline">ྭ</span> in a stack. Standard GX/GHC does not distinguish Grade IV. To force it, put a backslash before the whole vowel nucleus, as in <code>tś\\i¹</code> or <code>tś\\iw¹</code>. The same marker selects R.100/R.101. In GHC, <code>\\n</code> forces native Class-IV <code>ṇ</code>.',
+        rhymes: 'GX <code>vw</code> is the conditioned Grade-I/II realization after <code>v</code>, so Tibetan writes only one <span class="tibetan-inline">ཝ</span>. When GX <code>v</code> carries a superscript, it is written with <span class="tibetan-inline">ྺ</span>; <span class="tibetan-inline">ྭ</span> is reserved for labial <code>w</code>. Standard GX/GHC does not distinguish Grade IV. To force it, put a backslash before the whole vowel nucleus, as in <code>tś\\i¹</code> or <code>tś\\iw¹</code>. The same marker selects R.100/R.101. In GHC, <code>\\n</code> forces a fourth-class <cite>Homophones</cite> initial <code>ṇ</code>.',
         punctuation: 'Sentence-final <code>. 。 ? ？ ! ！</code> becomes <span class="tibetan-inline">༎</span>; general punctuation such as <code>, ， ; ； : ：</code> becomes <span class="tibetan-inline">།</span>, without an extra <span class="tibetan-inline">་</span> before it. Quotation marks are removed, while adjacent valid syllables retain their separating <span class="tibetan-inline">་</span>. Ellipses and missing-character boxes are preserved. A <code>?</code> after an untoned syllable marks uncertain tone; after an explicit tone it is punctuation, and <code>\\?</code> always forces punctuation.',
         shaping: 'For complex stacks containing <span class="tibetan-inline">༹</span>, shaping stability determines the canonical order: write all subjoined letters contiguously before <span class="tibetan-inline">༹</span>. Reverse conversion also recognizes the older semantic order.'
       }
@@ -181,6 +181,7 @@
       '找不到可辨認的 GX 或勳拼音節': 'No recognizable GX or Xunpin syllable found',
       '找不到以 ¹、² 或 ? 結尾的 GHC 音節': 'No GHC syllable ending in ¹, ², or ? found',
       '轉寫表未收錄此字': 'Character absent from the lookup table',
+      '此字讀音尚未解決': 'Character reading remains unresolved',
       '找不到可辨認的西夏字': 'No recognizable Tangut character found'
     };
     let savedLanguage = '';
@@ -330,7 +331,7 @@
     });
     applyLanguage();
     if (typeof fetch === 'function') {
-      fetch('data/tangut-tibetan.csv?v=fallback-20260812')
+      fetch('data/tangut-tibetan.csv?v=revise-20260812')
         .then(response => {
           if (!response.ok) throw new Error(String(response.status));
           return response.text();

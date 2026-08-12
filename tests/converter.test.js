@@ -49,9 +49,9 @@ assert.equal(converter.ghcSyllableToGx("\\nji¹"), "ṇi¹");
 assert.equal(converter.ghcSyllableToTibetan("\\nji¹"), "ཎི");
 
 const tangutTable = converter.parseTangutCsv(fs.readFileSync("converter/data/tangut-tibetan.csv", "utf8"));
-assert.equal(tangutTable.size, 5960);
-assert.equal([...tangutTable.values()].filter(value => value.endsWith("†")).length, 68);
-assert.equal([...tangutTable.values()].filter(value => value.endsWith("?")).length, 0);
+assert.equal(tangutTable.size, 6175);
+assert.equal([...tangutTable.values()].filter(value => value.endsWith("†")).length, 43);
+assert.equal([...tangutTable.values()].filter(value => value === "☐").length, 215);
 assert.ok([...tangutTable.values()].every(value => !/ཝྭ|ྭྭ/u.test(value)));
 for (const character of tangutTable.keys()) {
   const codepoint = character.codePointAt(0);
@@ -63,11 +63,15 @@ for (const character of tangutTable.keys()) {
 assert.equal(tangutTable.get(String.fromCodePoint(0x1700f)), "རྤའས", "canonical relation should add a reliable mapping");
 assert.equal(tangutTable.get(String.fromCodePoint(0x1705a)), "འརྐྀས†", "GHC-assisted rhyme inference should be marked uncertain");
 assert.equal(tangutTable.get(String.fromCodePoint(0x1722a)), "ཨ†", "GX fallback should default an indeterminate Grade III/IV reading to Grade III");
-assert.equal(tangutTable.get(String.fromCodePoint(0x18602)), "ཇོ?†", "GX fallback should preserve tone uncertainty separately from rhyme uncertainty");
+assert.equal(tangutTable.get(String.fromCodePoint(0x18602)), "ཇོ?", "o-rhyme fallback should not add impossible Grade-IV uncertainty");
 assert.equal(converter.gxSyllableToTibetan("vwo̱²"), "ཝའོས");
 assert.equal(converter.tibetanSyllableToGx("ཝའོས"), "vwo̱²");
-assert.equal(converter.gxSyllableToTibetan("rvwe̱r¹"), "རྭའེ");
-assert.equal(converter.tibetanSyllableToGx("རྭའེ"), "rvwe̱r¹");
+assert.equal(converter.gxSyllableToTibetan("rvwe̱r¹"), "རྺའེ");
+assert.equal(converter.tibetanSyllableToGx("རྺའེ"), "rvwe̱r¹");
+assert.equal(converter.gxSyllableToTibetan("vah¹"), "སྺ");
+assert.equal(converter.tibetanSyllableToGx("སྺ"), "vah¹");
+assert.equal(converter.gxSyllableToTibetan("rvar¹"), "རྺ");
+assert.equal(converter.tibetanSyllableToGx("རྺ"), "rvar¹");
 assert.equal(converter.tibetanSyllableToGx("ཝྭའོས"), "vwo̱²", "legacy duplicate wa should normalize on reverse input");
 assert.equal(converter.tibetanToGx("འརྐྀས†").output, "rkər²†");
 assert.equal(converter.ghcSyllableToTibetan("we²"), "ཝའིས");
@@ -79,6 +83,10 @@ assert.equal(tangutTable.get("𘆵"), "ཎི", "native Class IV must use ཎ");
 assert.deepEqual(
   converter.tangutToTibetan("𗹦𗼻𗯨𗐯𗂥，", tangutTable),
   { output: "མའྀ་སྡྀ༹ས་རྸུ་སྐཨེས་ནཡེས། ", errors: [] }
+);
+assert.deepEqual(
+  converter.tangutToTibetan("𗹦𗀦𗼻", tangutTable),
+  { output: "མའྀ་☐་སྡྀ༹ས", errors: ["𗀦：此字讀音尚未解決"] }
 );
 
 const ghcExamples = [
