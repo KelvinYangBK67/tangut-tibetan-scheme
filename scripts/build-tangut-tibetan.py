@@ -297,7 +297,7 @@ def main() -> None:
             writer.writerow(["tangut", "stage", "reason"])
             writer.writerows(unresolved)
 
-    uncertain_count = sum(tibetan.endswith("?") for _, tibetan in result["rows"])
+    uncertain_count = sum(tibetan.endswith("†") for _, tibetan in result["rows"])
     print(f"generated={len(result['rows'])} uncertain={uncertain_count} unresolved={len(unresolved)} renderer_errors={len(result['errors'])}")
 
 

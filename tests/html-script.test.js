@@ -14,7 +14,7 @@ for (const file of ["converter/index.html", "党項語藏文轉寫方案.html", 
 }
 const home = fs.readFileSync("converter/index.html", "utf8");
 assert.doesNotMatch(home, /http-equiv="refresh"|location\.replace/u);
-assert.match(home, /<script src="converter\.js\?v=tangut-direct-20260811"><\/script>/u);
+assert.match(home, /<script src="converter\.js\?v=reverse-20260812"><\/script>/u);
 assert.match(home, /id="direction-tangut"[^>]*aria-pressed="true"/u);
 assert.match(home, /西夏文 → 藏文/u);
 assert.match(home, /GX\/勳拼 → 藏文/u);
@@ -25,12 +25,12 @@ assert.match(home, /'zh-Hant': \{/u);
 assert.match(home, /instructionsTitle: 'Instructions'/u);
 assert.match(home, /instruction-punctuation/u);
 assert.match(home, /instruction-tangut/u);
-assert.match(home, /data\/tangut-tibetan\.csv\?v=20260812/u);
+assert.match(home, /data\/tangut-tibetan\.csv\?v=reverse-20260812/u);
 assert.match(home, /The GX → Tibetan direction also accepts/u);
 assert.match(home, /Sentence-final <code>/u);
 assert.match(home, /For complex stacks containing/u);
-assert.match(home, /ShangguSans-Bold-core\.woff2\?v=shanggu-web-v4/u);
-assert.match(home, /shanggu-web\.css\?v=shanggu-web-v4/u);
+assert.match(home, /ShangguSans-Bold-core\.woff2\?v=shanggu-web-v5/u);
+assert.match(home, /shanggu-web\.css\?v=shanggu-web-v5/u);
 assert.doesNotMatch(home, /shanggu-web-manifest|webfont-loader|data-font-warmup/u);
 assert.doesNotMatch(home, /ShangguSans-(?:Regular|Bold)\.woff2/u);
 assert.match(home, /NotoSerifTibetan-Regular\.woff2\?v=full-20260810/u);
@@ -70,11 +70,17 @@ assert.match(scheme, /\["w","ཨྭ"\]/u);
 assert.doesNotMatch(scheme, /\["w","ཧྭ"\]/u);
 assert.match(scheme, /-h<\/td><td>上加<span class="tibetan">ས<\/span><\/td><td>緊元音/u);
 assert.doesNotMatch(scheme, /下加<span class="tibetan">ཧ<\/span><\/td><td>緊元音/u);
-assert.match(scheme, /R\.100\|1\.92 𗂴\|2\.85 𗉕\|\(r- -ər\?\)\|འརྸྀ/u);
-assert.match(scheme, /R\.101\|1\.93 𗹙\|2\.86 𗎫\|\(r- -er\?\)\|འརྸེ/u);
+assert.match(scheme, /R\.100\|1\.92 𗂴\|2\.85 𗉕\|\(r- -ər†\)\|འརྸྀ/u);
+assert.match(scheme, /R\.101\|1\.93 𗹙\|2\.86 𗎫\|\(r- -er†\)\|འརྸེ/u);
 assert.doesNotMatch(scheme, /\|རྸ[ྀེ]\?/u);
+const schemeExamples = scheme.slice(scheme.indexOf('<section id="tests">'), scheme.indexOf('<section id="rhymes">'));
+assert.doesNotMatch(schemeExamples, /ཝྭ|ྭྭ/u);
+assert.match(scheme, /聲調存疑/u);
+assert.match(scheme, /其他存疑/u);
+assert.match(schemeEn, /uncertain tone/u);
+assert.match(schemeEn, /other uncertainty/u);
 assert.match(scheme, /<h3>段落測試<\/h3>/u);
-assert.match(scheme, /shanggu-web\.css\?v=shanggu-web-v4/u);
+assert.match(scheme, /shanggu-web\.css\?v=shanggu-web-v5/u);
 assert.doesNotMatch(scheme, /shanggu-web-manifest|webfont-loader|data-font-warmup/u);
 assert.match(scheme, /rel="preload" href="fonts\/NotoSerifTangut-Page\.woff2\?v=tangut-page-20260811"[^>]*fetchpriority="high"/u);
 assert.match(scheme, /scheme\.css\?v=20260811/u);
@@ -86,6 +92,8 @@ const rhymeRows = html => html.match(/^R\.\d+\|.*$/gmu) || [];
 const scriptCharacters = html => (html.match(/[\u0F00-\u0FFF\u{17000}-\u{18DFF}]/gu) || []).join("");
 const testAndInventory = html => html.slice(html.indexOf('<section id="tests">'));
 const constantBody = (html, name) => html.match(new RegExp(`const ${name} = ([\\s\\S]*?);\\n`, "u"))?.[1];
+const conversionCore = require("../converter/converter.js");
+const parseConstant = (html, name) => vm.runInNewContext(`(${constantBody(html, name)})`);
 assert.match(schemeEn, /scheme\.css\?v=20260811/u);
 assert.doesNotMatch(scheme, /<style>/u);
 assert.doesNotMatch(schemeEn, /<style>/u);
@@ -105,6 +113,12 @@ for (const row of [
 assert.equal(scriptCharacters(testAndInventory(schemeEn)), scriptCharacters(testAndInventory(scheme)), "Chinese and English tests and rhyme data must match");
 assert.equal(constantBody(schemeEn, "words"), constantBody(scheme, "words"), "word tests must match exactly");
 assert.equal(constantBody(schemeEn, "sentences"), constantBody(scheme, "sentences"), "sentence tests must match exactly");
+for (const [, gx, tibetan] of [...parseConstant(scheme, "words"), ...parseConstant(scheme, "sentences")]) {
+  assert.equal(conversionCore.gxToTibetan(gx).output.trimEnd(), tibetan, `${gx} example must match the current converter`);
+}
+const paragraph = schemeExamples.match(/<tr><th>GX<\/th><td class="phonetic">([\s\S]*?)<\/td><\/tr>\s*<tr><th>藏文<\/th><td class="tibetan">([\s\S]*?)<\/td><\/tr>/u);
+assert.ok(paragraph, "paragraph example must be present");
+assert.equal(conversionCore.gxToTibetan(paragraph[1]).output.trimEnd(), paragraph[2], "paragraph example must match the current converter");
 assert.match(schemeEn, /<h3>Paragraph test<\/h3>/u);
 assert.doesNotMatch(schemeEn, /automatic GX conversion|rtś\\ər¹/u);
 

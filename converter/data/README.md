@@ -33,7 +33,8 @@ lower character, or a GHC rhyme identifier that maps uniquely back to the
 native tone/rhyme inventory. Missing direct GX/GHC onset data may likewise use
 a canonical form, a consistent *Homophones* subgroup, or a fanqie upper
 character. Forms relying on auxiliary GHC rhyme classification or fanqie
-inference end in `?`; a unique canonical-form relation or consistent
+inference end in `†`; `?` is reserved for uncertain tone. A unique
+canonical-form relation or consistent
 *Homophones* subgroup is accepted without the uncertainty mark. Conflicting
 or unsupported evidence remains in the local unresolved report rather than
 being guessed.

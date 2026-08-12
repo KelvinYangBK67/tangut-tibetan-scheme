@@ -157,7 +157,9 @@
     // order deliberately used by this orthography.
     let value = String(input)
       .replace(/([\u0F40-\u0FBC])[\s"“”'‘’「」『』]+(?=[\u0F40-\u0FBC])/gu, `$1${TSHEG}`)
-      .replace(/["“”'‘’「」『』]/gu, "");
+      .replace(/["“”'‘’「」『』]/gu, "")
+      .replace(/ཝྭ/gu, "ཝ")
+      .replace(/ྭྭ/gu, "ྭ");
     // U+0F39 interrupts a Tibetan stack.  Move it behind all following
     // subjoined consonants: shaping stability is the canonical rule here.
     let previous;
@@ -377,7 +379,10 @@
       onset += spec.letter;
     }
     if (spec.builtInWa) onset += SUB_WA;
-    if (parsed.medial === "w") onset += SUB_WA;
+    // GX vw is the Grade-I/II conditioned realization of v, not a separate
+    // w medial. The Tibetan ཝ / subjoined ྭ already expresses it.
+    const conditionedVw = base === "v" && parsed.medial === "w" && [1, 2].includes(parsed.vowel.grade);
+    if (parsed.medial === "w" && !conditionedVw) onset += SUB_WA;
     if (parsed.medial === "y") onset += SUB_YA;
     if (spec.tsaPhru) onset += TSA_PHRU;
     return onset;
@@ -850,7 +855,9 @@
       }
       if (needSpace && output.length && output[output.length - 1] !== " ") output.push(" ");
       try {
-        output.push(convertSyllable(part));
+        const uncertain = part.endsWith("†");
+        const syllable = uncertain ? part.slice(0, -1) : part;
+        output.push(convertSyllable(syllable) + (uncertain ? "†" : ""));
       } catch (error) {
         errors.push(`${part}：${error.message}`);
         output.push(part);

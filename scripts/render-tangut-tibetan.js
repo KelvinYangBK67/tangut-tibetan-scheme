@@ -46,7 +46,7 @@ for (const entry of entries) {
     }
     if (candidates.size !== 1) throw new Error("Onset evidence conflicts");
     let tibetan = [...candidates][0];
-    if (entry.uncertain && !tibetan.endsWith("?")) tibetan += "?";
+    if (entry.uncertain && !tibetan.endsWith("†")) tibetan += "†";
     rows.push([entry.tangut, tibetan]);
   } catch (error) {
     errors.push({ tangut: entry.tangut, rhyme: entry.rhyme, message: error.message });
