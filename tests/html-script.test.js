@@ -93,6 +93,7 @@ const scriptCharacters = html => (html.match(/[\u0F00-\u0FFF\u{17000}-\u{18DFF}]
 const testAndInventory = html => html.slice(html.indexOf('<section id="tests">'));
 const constantBody = (html, name) => html.match(new RegExp(`const ${name} = ([\\s\\S]*?);\\n`, "u"))?.[1];
 const conversionCore = require("../converter/converter.js");
+const tangutTable = conversionCore.parseTangutCsv(fs.readFileSync("converter/data/tangut-tibetan.csv", "utf8"));
 const parseConstant = (html, name) => vm.runInNewContext(`(${constantBody(html, name)})`);
 assert.match(schemeEn, /scheme\.css\?v=20260811/u);
 assert.doesNotMatch(scheme, /<style>/u);
@@ -113,12 +114,12 @@ for (const row of [
 assert.equal(scriptCharacters(testAndInventory(schemeEn)), scriptCharacters(testAndInventory(scheme)), "Chinese and English tests and rhyme data must match");
 assert.equal(constantBody(schemeEn, "words"), constantBody(scheme, "words"), "word tests must match exactly");
 assert.equal(constantBody(schemeEn, "sentences"), constantBody(scheme, "sentences"), "sentence tests must match exactly");
-for (const [, gx, tibetan] of [...parseConstant(scheme, "words"), ...parseConstant(scheme, "sentences")]) {
-  assert.equal(conversionCore.gxToTibetan(gx).output.trimEnd(), tibetan, `${gx} example must match the current converter`);
+for (const [tangut, , tibetan] of [...parseConstant(scheme, "words"), ...parseConstant(scheme, "sentences")]) {
+  assert.equal(conversionCore.tangutToTibetan(tangut, tangutTable).output.trimEnd(), tibetan, `${tangut} example must match the Tangut converter`);
 }
-const paragraph = schemeExamples.match(/<tr><th>GX<\/th><td class="phonetic">([\s\S]*?)<\/td><\/tr>\s*<tr><th>藏文<\/th><td class="tibetan">([\s\S]*?)<\/td><\/tr>/u);
+const paragraph = schemeExamples.match(/<tr><th>西夏文<\/th><td class="tangut">([\s\S]*?)<\/td><\/tr>\s*<tr><th>GX<\/th><td class="phonetic">[\s\S]*?<\/td><\/tr>\s*<tr><th>藏文<\/th><td class="tibetan">([\s\S]*?)<\/td><\/tr>/u);
 assert.ok(paragraph, "paragraph example must be present");
-assert.equal(conversionCore.gxToTibetan(paragraph[1]).output.trimEnd(), paragraph[2], "paragraph example must match the current converter");
+assert.equal(conversionCore.tangutToTibetan(paragraph[1], tangutTable).output.trimEnd(), paragraph[2], "paragraph example must match the Tangut converter");
 assert.match(schemeEn, /<h3>Paragraph test<\/h3>/u);
 assert.doesNotMatch(schemeEn, /automatic GX conversion|rtś\\ər¹/u);
 
