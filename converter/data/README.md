@@ -38,6 +38,12 @@ canonical-form relation or consistent
 *Homophones* subgroup is accepted without the uncertainty mark. Conflicting
 or unsupported evidence remains in the local unresolved report rather than
 being guessed.
+
+If native R.x cannot be uniquely recovered but the character has a direct GX
+or GHC reading, the generator retains that reading using its ordinary
+Grade-III spelling and appends `†`. GX takes priority over GHC. An independently
+uncertain tone remains `?`, so an entry may end in `?†` when both uncertainties
+apply.
 Duplicate direct records retain the established *Sea of Characters*, then
 *Precious Rhymes of the Sea of Characters*, source priority.
 

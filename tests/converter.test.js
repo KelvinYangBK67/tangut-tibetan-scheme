@@ -49,8 +49,8 @@ assert.equal(converter.ghcSyllableToGx("\\nji¹"), "ṇi¹");
 assert.equal(converter.ghcSyllableToTibetan("\\nji¹"), "ཎི");
 
 const tangutTable = converter.parseTangutCsv(fs.readFileSync("converter/data/tangut-tibetan.csv", "utf8"));
-assert.equal(tangutTable.size, 5908);
-assert.equal([...tangutTable.values()].filter(value => value.endsWith("†")).length, 16);
+assert.equal(tangutTable.size, 5960);
+assert.equal([...tangutTable.values()].filter(value => value.endsWith("†")).length, 68);
 assert.equal([...tangutTable.values()].filter(value => value.endsWith("?")).length, 0);
 assert.ok([...tangutTable.values()].every(value => !/ཝྭ|ྭྭ/u.test(value)));
 for (const character of tangutTable.keys()) {
@@ -62,6 +62,8 @@ for (const character of tangutTable.keys()) {
 }
 assert.equal(tangutTable.get(String.fromCodePoint(0x1700f)), "རྤའས", "canonical relation should add a reliable mapping");
 assert.equal(tangutTable.get(String.fromCodePoint(0x1705a)), "འརྐྀས†", "GHC-assisted rhyme inference should be marked uncertain");
+assert.equal(tangutTable.get(String.fromCodePoint(0x1722a)), "ཨ†", "GX fallback should default an indeterminate Grade III/IV reading to Grade III");
+assert.equal(tangutTable.get(String.fromCodePoint(0x18602)), "ཇོ?†", "GX fallback should preserve tone uncertainty separately from rhyme uncertainty");
 assert.equal(converter.gxSyllableToTibetan("vwo̱²"), "ཝའོས");
 assert.equal(converter.tibetanSyllableToGx("ཝའོས"), "vwo̱²");
 assert.equal(converter.gxSyllableToTibetan("rvwe̱r¹"), "རྭའེ");

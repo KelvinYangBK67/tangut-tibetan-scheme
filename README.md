@@ -24,9 +24,13 @@ Although based on GX, the orthography preserves selected traditional rhyme-table
 
 主入口直接以 `tangut,tibetan` 靜態表把西夏文轉爲藏文；runtime 不依賴 GX/GHC。表內韻類與聲調取自 native《文海》R.1–R.105，《同音》Class IV 統一輸出 `ཎ`。無可靠聲母資料者不作猜測。
 
+若 native R.x 無法唯一確定，但 GX 或 GHC 至少有一個完整可解析擬音，則按普通三等形式生成並加 `†`；GX 優先於 GHC。若擬音本身連聲調亦存疑，結果可同時帶 `?†`。
+
 體系外標記中，`?` 專表示聲調存疑；`†` 表示讀音證據、聲母等其他存疑。GX 的 `vw` 是一、二等韻在 `v` 後的條件變體，藏文只寫一個 `ཝ`，或在 stack 中使用一個下加 `ྭ`，不把該 `w` 另行拼出。
 
 The primary mode converts Tangut characters through a static `tangut,tibetan` table; runtime lookup does not depend on GX/GHC. Rhyme class and tone follow the native *Sea of Characters* R.1–R.105, and native *Homophones* Class IV consistently outputs `ཎ`. Entries without a reliable onset are not guessed.
+
+If native R.x cannot be uniquely determined but GX or GHC supplies at least one complete, parseable reading, the table uses the ordinary Grade-III spelling and appends `†`; GX takes priority over GHC. If tone is independently uncertain, the result may carry both `?†`.
 
 Among non-systemic marks, `?` is reserved for uncertain tone; `†` marks other uncertainty such as incomplete reading or onset evidence. GX `vw` is the conditioned Grade-I/II realization after `v`, so Tibetan writes only one `ཝ`/subjoined `ྭ` rather than spelling that `w` separately.
 

@@ -16,6 +16,7 @@ import re
 import sqlite3
 import subprocess
 import sys
+import unicodedata
 from collections import defaultdict
 from pathlib import Path
 
@@ -105,6 +106,29 @@ def read_gx(path: Path) -> dict[str, str]:
         return {row["unicode"]: row["GX202411"] for row in rows if row["unicode"] and row["GX202411"]}
 
 
+def read_ghc_to_gx(path: Path) -> dict[str, str]:
+    candidates: dict[str, set[str]] = defaultdict(set)
+    with path.open("r", encoding="utf-8-sig", newline="") as source:
+        for row in csv.DictReader(source, delimiter="\t"):
+            ghc_body = unicodedata.normalize("NFC", re.sub(r"[¹²?]$", "", row.get("GHC", "")))
+            gx_body = unicodedata.normalize("NFC", re.sub(r"[¹²?]$", "", row.get("GX202411", "")))
+            if ghc_body and gx_body:
+                candidates[ghc_body].add(gx_body)
+    return {reading: next(iter(values)) for reading, values in candidates.items() if len(values) == 1}
+
+
+def canonicalize_legacy_gx(reading: str, ghc_to_gx: dict[str, str]) -> str:
+    """Map a complete legacy GX/GHC-form reading to GX202411 when unambiguous."""
+    tone_match = re.search(r"[¹²?]$", reading)
+    tone = tone_match.group(0) if tone_match else "?"
+    body = unicodedata.normalize("NFC", re.sub(r"[¹²?]$", "", reading))
+    if body.endswith("uə"):
+        return body[:-2] + "wə̱" + tone
+    if body in ghc_to_gx and ghc_to_gx[body] != body:
+        return ghc_to_gx[body] + tone
+    return ""
+
+
 def main() -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
@@ -126,6 +150,21 @@ def main() -> None:
     gx = read_gx(args.gx_tsv)
     ghc = read_ghc(args.babelstone_sqlite)
 
+    # Learn conservative GHC -> canonical GX spellings from characters for
+    # which both databases provide a direct reading. This admits older GHC
+    # strings such as khiwə without expanding the public parser grammar.
+    ghc_to_gx_candidates: dict[str, set[str]] = defaultdict(set)
+    for character, gx_reading in gx.items():
+        gx_body = re.sub(r"[¹²?]$", "", gx_reading)
+        for record in ghc.get(character, []):
+            if record["reading"]:
+                ghc_to_gx_candidates[unicodedata.normalize("NFC", str(record["reading"]))].add(gx_body)
+    ghc_to_gx = {
+        reading: next(iter(candidates))
+        for reading, candidates in ghc_to_gx_candidates.items()
+        if len(candidates) == 1
+    }
+    ghc_to_gx.update(read_ghc_to_gx(args.gx_tsv))
     # GHC tone.rhyme identifiers are mapped back to native R.x only where the
     # native table gives one unique answer.
     ghc_rhyme_map: dict[str, set[int]] = defaultdict(set)
@@ -227,18 +266,54 @@ def main() -> None:
     for character in sorted(all_characters, key=ord):
         native = direct_native.get(character)
         rhyme_evidence = []
+        fallback_readings = []
         if native:
             rhyme, tone, _ = native
             rhyme_evidence = [("native-direct", character, (rhyme, tone), False)]
         else:
             rhyme_evidence = related_native(character) or ghc_rhyme(character)
             if not rhyme_evidence:
-                unresolved_seed.append((character, "rhyme-tone", "no unique native or GHC-supported R.x and tone"))
-                continue
-            rhyme, tone = rhyme_evidence[0][2]
+                # A complete GX/GHC reading is still usable when native R.x
+                # cannot be recovered. Render its ordinary (Grade-III)
+                # spelling and mark the lost native distinction as uncertain.
+                if character in gx:
+                    mapped_gx = canonicalize_legacy_gx(gx[character], ghc_to_gx)
+                    if mapped_gx:
+                        fallback_readings.append({
+                            "kind": "gx",
+                            "reading": mapped_gx,
+                            "source": "gx-direct-mapped-fallback",
+                        })
+                    fallback_readings.append({"kind": "gx", "reading": gx[character], "source": "gx-direct-fallback"})
+                direct_ghc = [record for record in ghc.get(character, []) if record["reading"]]
+                for record in direct_ghc:
+                    ghc_tone = str(record["rhyme_class"])[0] if re.fullmatch(r"[12]\.\d+", str(record["rhyme_class"])) else "?"
+                    normalized_ghc = unicodedata.normalize("NFC", str(record["reading"]))
+                    if normalized_ghc in ghc_to_gx:
+                        fallback_readings.append({
+                            "kind": "gx",
+                            "reading": ghc_to_gx[normalized_ghc] + ({"1": "¹", "2": "²"}.get(ghc_tone, "?")),
+                            "source": "ghc-direct-mapped-fallback",
+                        })
+                    fallback_readings.append(
+                        {
+                            "kind": "ghc",
+                            "reading": str(record["reading"]),
+                            "tone": ghc_tone,
+                            "source": "ghc-direct-fallback",
+                        }
+                    )
+                if not fallback_readings:
+                    unresolved_seed.append((character, "rhyme-tone", "no unique native R.x and no direct GX/GHC reading"))
+                    continue
+                rhyme = None
+                tone = "?"
+                rhyme_evidence = [(fallback_readings[0]["source"], character, ("grade-III-default", tone), True)]
+            else:
+                rhyme, tone = rhyme_evidence[0][2]
 
-        onsets = onset_evidence(character)
-        if not onsets:
+        onsets = [] if fallback_readings else onset_evidence(character)
+        if not fallback_readings and not onsets:
             unresolved_seed.append((character, "onset", "no direct or relational GX/GHC onset evidence"))
             continue
         initial_classes = {r[INITIAL_CLASS] for r in by_character.get(character, []) if r.get(INITIAL_CLASS) not in {"", "?"}}
@@ -254,6 +329,7 @@ def main() -> None:
             "initialClass": initial_class,
             "uncertain": uncertain,
             "onsets": [{"kind": item[2], "reading": item[3], "source": item[0], "character": item[1]} for item in onsets],
+            "fallbackReadings": fallback_readings,
         })
         audit_seed[character] = {
             "rhyme_source": ";".join(f"{item[0]}:{item[1]}" for item in rhyme_evidence),

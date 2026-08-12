@@ -9,7 +9,7 @@ const errors = [];
 const ghcInitials = [
   ["tśh", "tśh"], ["tsh", "tsh"], ["dź", "dź"], ["ph", "ph"], ["th", "th"],
   ["kh", "kh"], ["lh", "lh"], ["ts", "ts"], ["dz", "dz"], ["tś", "tś"],
-  ["ś", "ś"], ["ɣ", "gh"], ["p", "p"], ["t", "t"], ["b", "b"], ["d", "d"],
+  ["ś", "ś"], ["ź", "ź"], ["ɣ", "gh"], ["p", "p"], ["t", "t"], ["b", "b"], ["d", "d"],
   ["m", "m"], ["n", "n"], ["k", "k"], ["g", "g"], ["ŋ", "ŋ"], ["s", "s"],
   ["z", "z"], ["l", "l"], ["r", "r"], ["x", "h"], ["j", "y"], ["w", "w"], ["·", "Ø"]
 ];
@@ -30,6 +30,22 @@ for (const entry of entries) {
   try {
     const tone = entry.tone === "1" ? "¹" : entry.tone === "2" ? "²" : "?";
     const candidates = new Set();
+    let fallbackError = null;
+    for (const reading of entry.fallbackReadings || []) {
+      try {
+        if (reading.kind === "gx") {
+          const syllable = /[¹²?]$/u.test(reading.reading) ? reading.reading : reading.reading + "?";
+          candidates.add(converter.gxSyllableToTibetan(syllable));
+        } else {
+          const ghcTone = reading.tone === "1" ? "¹" : reading.tone === "2" ? "²" : "?";
+          const syllable = /[¹²?]$/u.test(reading.reading) ? reading.reading : reading.reading + ghcTone;
+          candidates.add(converter.ghcSyllableToTibetan(syllable));
+        }
+        break; // Readings are ordered by source priority; later fallbacks run only after parse failure.
+      } catch (error) {
+        fallbackError = error;
+      }
+    }
     for (const onset of entry.onsets) {
       let canonicalGx = onset.reading;
       if (onset.kind === "ghc") {
@@ -44,7 +60,10 @@ for (const entry of entries) {
         initialClass: entry.initialClass
       }));
     }
-    if (candidates.size !== 1) throw new Error("Onset evidence conflicts");
+    if (candidates.size !== 1) {
+      if (!candidates.size && fallbackError) throw fallbackError;
+      throw new Error("Onset evidence conflicts");
+    }
     let tibetan = [...candidates][0];
     if (entry.uncertain && !tibetan.endsWith("†")) tibetan += "†";
     rows.push([entry.tangut, tibetan]);
