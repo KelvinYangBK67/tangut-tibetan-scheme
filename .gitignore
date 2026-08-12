@@ -3,6 +3,7 @@
 /ghc-comparison/tex/build/
 /image/
 /temp/
+/local-data/
 
 # Keep only the final named PDF at the repository root
 /*.pdf

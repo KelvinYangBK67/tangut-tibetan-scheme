@@ -49,7 +49,17 @@ assert.equal(converter.ghcSyllableToGx("\\nji¹"), "ṇi¹");
 assert.equal(converter.ghcSyllableToTibetan("\\nji¹"), "ཎི");
 
 const tangutTable = converter.parseTangutCsv(fs.readFileSync("converter/data/tangut-tibetan.csv", "utf8"));
-assert.equal(tangutTable.size, 5713);
+assert.equal(tangutTable.size, 5907);
+assert.equal([...tangutTable.values()].filter(value => value.endsWith("?")).length, 16);
+for (const character of tangutTable.keys()) {
+  const codepoint = character.codePointAt(0);
+  assert.ok(
+    character.length === 2 && (codepoint >= 0x17000 && codepoint <= 0x187ff || codepoint >= 0x18d00 && codepoint <= 0x18d1e),
+    `${character} must be an assigned Unicode 17.0 Tangut ideograph`
+  );
+}
+assert.equal(tangutTable.get(String.fromCodePoint(0x1700f)), "རྤའས", "canonical relation should add a reliable mapping");
+assert.equal(tangutTable.get(String.fromCodePoint(0x1705a)), "འརྐྀས?", "GHC-assisted rhyme inference should be marked uncertain");
 assert.equal(tangutTable.get("𗸈"), "དཡུ", "native R.3 must retain Grade IV");
 assert.equal(tangutTable.get("𗂴"), "འརྕྀ", "native R.100 must differ from R.92");
 assert.equal(tangutTable.get("𗎫"), "འརྩེས", "native R.101 must differ from R.79");

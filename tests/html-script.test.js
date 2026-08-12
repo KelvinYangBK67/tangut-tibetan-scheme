@@ -25,7 +25,7 @@ assert.match(home, /'zh-Hant': \{/u);
 assert.match(home, /instructionsTitle: 'Instructions'/u);
 assert.match(home, /instruction-punctuation/u);
 assert.match(home, /instruction-tangut/u);
-assert.match(home, /data\/tangut-tibetan\.csv/u);
+assert.match(home, /data\/tangut-tibetan\.csv\?v=20260812/u);
 assert.match(home, /The GX → Tibetan direction also accepts/u);
 assert.match(home, /Sentence-final <code>/u);
 assert.match(home, /For complex stacks containing/u);
