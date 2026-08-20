@@ -26,7 +26,7 @@ Although based on GX, the orthography preserves selected traditional rhyme-table
 
 若 native R.x 無法唯一確定，但 GX 或 GHC 至少有一個完整可解析擬音，則按普通三等形式生成；只有存疑因素可能影響拼寫時才加 `†`，例如 `o` 無四等韻，便不因等第不明而加 `†`。GX 優先於 GHC。若擬音本身連聲調亦存疑，結果可同時帶 `?†`。
 
-體系外標記中，`?` 專表示聲調存疑；`†` 表示讀音證據、聲母等其他存疑。GX 的 `vw` 是一、二等韻在 `v` 後的條件變體，藏文只寫一個 `ཝ`。實際聲母 `v`、`y`、`r` 因 stack 被迫下加時分別使用 fixed-form `ྺ`、`ྻ`、`ྼ`；真正的合口 `w` 與細音 `y` 附加成分仍寫作 `ྭ`、`ྱ`。
+體系外標記中，`?` 專表示聲調存疑；`†` 表示讀音證據、聲母等其他存疑。GX 的 `vw` 是一、二等韻在 `v` 後的條件變體，藏文只寫一個 `ཝ`。
 
 GX 的 `rVr` 類中，首尾 `r` 是同一個只與捲舌韻同現的 `r` 聲母，故 `rur¹`、`rer¹`、`rir¹`、`rar¹` 分別寫作 `རུ`、`རེ`、`རི`、`ར`。韻類總表中的零聲母藏文形式只是展示韻母的佔位符，不按此規則改作 `r` 聲母。
 
@@ -34,7 +34,7 @@ The primary mode converts Tangut characters through a static `tangut,tibetan` ta
 
 If native R.x cannot be uniquely determined but GX or GHC supplies at least one complete, parseable reading, the table uses the ordinary Grade-III spelling. It appends `†` only where the uncertainty could affect spelling; since `o` has no Grade-IV rhyme, unknown grade alone does not add `†` there. GX takes priority over GHC. If tone is independently uncertain, the result may carry both `?†`.
 
-Among non-systemic marks, `?` is reserved for uncertain tone; `†` marks other uncertainty such as incomplete reading or onset evidence. GX `vw` is the conditioned Grade-I/II realization after `v`, so Tibetan writes only one `ཝ`. When actual initials `v`, `y`, or `r` are forced below a superscript in a stack, they use fixed forms `ྺ`, `ྻ`, and `ྼ`; true labial `w` and palatal `y` additions remain ordinary `ྭ` and `ྱ`.
+Among non-systemic marks, `?` is reserved for uncertain tone; `†` marks other uncertainty such as incomplete reading or onset evidence. GX `vw` is the conditioned Grade-I/II realization after `v`, so Tibetan writes only one `ཝ`.
 
 In the GX `rVr` type, the two occurrences of `r` represent a single `r` initial restricted to retroflex rhymes. Thus `rur¹`, `rer¹`, `rir¹`, and `rar¹` are written `རུ`, `རེ`, `རི`, and `ར`. The zero onset in the rhyme inventory is only a placeholder for displaying rhymes and is not reanalysed as an `r` initial.
 
