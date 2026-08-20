@@ -47,6 +47,12 @@ o-rhyme receives no grade uncertainty because the inventory has no Grade-IV
 o-rhyme. GX takes priority over GHC. An independently
 uncertain tone remains `?`, so an entry may end in `?†` when both uncertainties
 apply.
+
+GX forms of the shape `rVr` are parsed with an actual `r` onset restricted to
+retroflex rhymes, rather than as a zero onset plus an independent retroflex
+marker. This does not alter the zero-onset placeholders in the published rhyme
+inventory. Actual `v`, `y`, and `r` initials forced into a stack use Tibetan
+fixed forms `ྺ`, `ྻ`, and `ྼ`; medial `w` and `y` continue to use `ྭ` and `ྱ`.
 Duplicate direct records retain the established *Sea of Characters*, then
 *Precious Rhymes of the Sea of Characters*, source priority.
 

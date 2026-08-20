@@ -12,7 +12,14 @@
   const NYIS_SHAD = "༎";
   const SUB_WA = "ྭ";
   const SUB_FIXED_WA = "ྺ";
+  const SUB_FIXED_YA = "ྻ";
+  const SUB_FIXED_RA = "ྼ";
   const SUB_YA = "ྱ";
+  const FIXED_SUBJOINED = new Map([
+    ["v", SUB_FIXED_WA],
+    ["y", SUB_FIXED_YA],
+    ["r", SUB_FIXED_RA]
+  ]);
   const SUB_A = "ྸ";
   const SUPER_SA = "ས";
   const GRADE_FOUR_MARK = "ཡ";
@@ -369,15 +376,14 @@
   function encodeOnset(parsed) {
     const base = chooseBaseInitial(parsed.main.gx);
     const spec = initialByGx.get(base === "" ? "Ø" : base);
+    const inherentRetroflexRa = parsed.retroflex && base === "r";
     let onset = parsed.preinitial || parsed.markedRhymeKind === "preposed-a" ? "འ" : "";
-    if (parsed.retroflex) onset += "ར";
+    if (parsed.retroflex && !inherentRetroflexRa) onset += "ར";
     if (parsed.tight) onset += SUPER_SA;
-    if (parsed.retroflex || parsed.tight) {
-      onset += base === "Ø" || (parsed.retroflex && base === "r")
+    if (parsed.tight || parsed.retroflex && !inherentRetroflexRa) {
+      onset += base === "Ø"
         ? SUB_A
-        : base === "v"
-          ? SUB_FIXED_WA
-          : subjoined.get(spec.letter);
+        : FIXED_SUBJOINED.get(base) || subjoined.get(spec.letter);
     } else {
       onset += spec.letter;
     }
@@ -476,9 +482,15 @@
       if (!map.has(candidate.tibetan)) map.set(candidate.tibetan, candidate);
       else {
         const old = map.get(candidate.tibetan);
-        // Prefer the analysis used by the published examples: nye = n + y,
-        // and prefer a real initial over a nasal-prefix analysis on collisions.
-        if (old.preinitial && !candidate.preinitial) map.set(candidate.tibetan, candidate);
+        // Resolve spelling collisions in favour of the canonical scheme: tight
+        // fixed forms, genuine initials over nasal prefixes, and rVr as an
+        // inherent retroflex r initial rather than an unmarked r syllable.
+        if (candidate.tight && !old.tight
+          || old.preinitial && !candidate.preinitial
+          || candidate.base === "r" && candidate.retroflex && !candidate.tight
+            && old.base === "r" && !old.retroflex) {
+          map.set(candidate.tibetan, candidate);
+        }
       }
     }
     reverseOnsetsByGrade.set(grade, map);

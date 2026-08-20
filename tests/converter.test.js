@@ -72,6 +72,13 @@ assert.equal(converter.gxSyllableToTibetan("vah¹"), "སྺ");
 assert.equal(converter.tibetanSyllableToGx("སྺ"), "vah¹");
 assert.equal(converter.gxSyllableToTibetan("rvar¹"), "རྺ");
 assert.equal(converter.tibetanSyllableToGx("རྺ"), "rvar¹");
+for (const [gx, tibetan] of [
+  ["rur¹", "རུ"], ["rer¹", "རེ"], ["rir¹", "རི"], ["rar¹", "ར"],
+  ["yah¹", "སྻ"], ["ryar¹", "རྻ"], ["rah¹", "སྼ"], ["rwah¹", "སྼྭ"]
+]) {
+  assert.equal(converter.gxSyllableToTibetan(gx), tibetan, `${gx} fixed-form forward`);
+  assert.equal(converter.tibetanSyllableToGx(tibetan), gx, `${gx} fixed-form reverse`);
+}
 assert.equal(converter.tibetanSyllableToGx("ཝྭའོས"), "vwo̱²", "legacy duplicate wa should normalize on reverse input");
 assert.equal(converter.tibetanToGx("འརྐྀས†").output, "rkər²†");
 assert.equal(converter.ghcSyllableToTibetan("we²"), "ཝའིས");
@@ -82,7 +89,7 @@ assert.equal(tangutTable.get("𗎫"), "འརྩེས", "native R.101 must diff
 assert.equal(tangutTable.get("𘆵"), "ཎི", "native Class IV must use ཎ");
 assert.deepEqual(
   converter.tangutToTibetan("𗹦𗼻𗯨𗐯𗂥，", tangutTable),
-  { output: "མའྀ་སྡྀ༹ས་རྸུ་སྐཨེས་ནཡེས། ", errors: [] }
+  { output: "མའྀ་སྡྀ༹ས་རུ་སྐཨེས་ནཡེས། ", errors: [] }
 );
 assert.deepEqual(
   converter.tangutToTibetan("𗹦𗀦𗼻", tangutTable),
@@ -160,7 +167,7 @@ for (const [gx, tibetan] of wDerivedForms) {
 assert.throws(() => converter.tibetanSyllableToGx("ཨྷི"), /不是本方案/u);
 
 const sentenceGx = "mə̱¹ lləh² rur¹ qae̱h² ne²,";
-const sentenceTibetan = "མའྀ་སྡྀ༹ས་རྸུ་སྐཨེས་ནེས། ";
+const sentenceTibetan = "མའྀ་སྡྀ༹ས་རུ་སྐཨེས་ནེས། ";
 assert.equal(converter.gxToTibetan(sentenceGx).output, sentenceTibetan);
 assert.equal(converter.tibetanToGx(sentenceTibetan).output, sentenceGx);
 assert.equal(converter.tibetanToGx("ནེས།ཕུས").output, "ne², phu²");
